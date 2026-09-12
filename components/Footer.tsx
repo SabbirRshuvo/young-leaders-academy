@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 
@@ -8,21 +9,36 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full border border-gold bg-navy text-gold font-bold text-xl">
-                YLA
+            <Link href="/" className="flex items-center gap-3 md:gap-4 mb-6 w-max">
+
+              {/* White Box Container */}
+              <div className="flex items-center justify-center bg-white w-16 h-16 md:w-[76px] md:h-[76px] rounded-xl shadow-md shrink-0 overflow-hidden">
+
+                <Image
+                  src="/logo2.png"
+                  alt="Logo"
+                  width={150}
+                  height={150}
+                  className="w-full h-full object-contain scale-150"
+                />
               </div>
-              <div>
-                <div className="text-lg font-bold text-white leading-tight tracking-wider">YOUNG LEADERS</div>
-                <div className="flex items-center gap-2">
-                  <div className="h-[1px] w-8 bg-gold"></div>
-                  <div className="text-[10px] font-semibold text-gold tracking-[0.2em] leading-tight">ACADEMY</div>
-                  <div className="h-[1px] w-8 bg-gold"></div>
-                </div>
-              </div>
+
+              {/* <div className="flex flex-col justify-center items-center mt-1">
+    <div className="text-[17px] md:text-[22px] font-extrabold text-[#0B2545] leading-none tracking-[0.08em] mb-2">
+      YOUNG LEADERS
+    </div>
+    <div className="flex items-center justify-center gap-2 md:gap-2.5 w-full">
+      <div className="h-[1.5px] w-5 md:w-7 bg-[#D4AF37]"></div>
+      <div className="text-[9px] md:text-[11px] font-bold text-[#D4AF37] tracking-[0.25em] leading-none">
+        ACADEMY
+      </div>
+      <div className="h-[1.5px] w-5 md:w-7 bg-[#D4AF37]"></div>
+    </div>
+  </div> */}
+
             </Link>
             <p className="text-white text-sm font-bold leading-relaxed max-w-[250px]">
-              One Academy. One Journey.<br/>A Lifetime of Impact.
+              One Academy. One Journey.<br />A Lifetime of Impact.
             </p>
             <div className="flex space-x-4 pt-2">
               <Link href="#" className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-gray-300 hover:border-gold hover:text-gold transition-all"><FaFacebook className="w-4 h-4" /></Link>
@@ -31,7 +47,7 @@ export default function Footer() {
               <Link href="#" className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-gray-300 hover:border-gold hover:text-gold transition-all"><FaYoutube className="w-4 h-4" /></Link>
             </div>
           </div>
-          
+
           <div className="space-y-6 lg:pl-8">
             <h4 className="text-lg font-bold text-white mb-6">Quick Links</h4>
             <ul className="space-y-3 text-sm text-gray-300">
@@ -42,7 +58,7 @@ export default function Footer() {
               <li><Link href="/contact" className="hover:text-gold transition-colors flex items-center justify-between group">Contact <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
             </ul>
           </div>
-          
+
           <div className="space-y-6">
             <h4 className="text-lg font-bold text-white mb-6">Contact Us</h4>
             <ul className="space-y-4 text-sm text-gray-300">
@@ -60,20 +76,20 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           <div className="space-y-6">
             <h4 className="text-lg font-bold text-white mb-6">Newsletter</h4>
             <p className="text-sm text-gray-300 leading-relaxed">
               Get the latest updates, program news and inspiring stories.
             </p>
             <form className="flex flex-col gap-3 pt-2">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
+              <input
+                type="email"
+                placeholder="Your email address"
                 className="flex h-10 w-full rounded-sm bg-white px-3 py-2 text-sm text-navy placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 required
               />
-              <button 
+              <button
                 type="submit"
                 className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors"
               >
@@ -82,7 +98,7 @@ export default function Footer() {
             </form>
           </div>
         </div>
-        
+
         <div className="mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
           <p>© {new Date().getFullYear()} Young Leaders Academy. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
