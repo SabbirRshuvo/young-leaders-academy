@@ -1,43 +1,206 @@
+"use client";
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { User } from 'lucide-react';
+import Image from 'next/image';
+import { User, Globe, Menu, X } from 'lucide-react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [lang, setLang] = useState<'en' | 'ar'>('en');
+  const { data: session } = useSession();
+
   return (
     <nav className="sticky top-0 z-50 w-full bg-white shadow-sm">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full border border-gold bg-navy text-gold font-bold text-xl">
-            YLA
-          </div>
-          <div className="hidden sm:block">
-            <div className="text-lg font-bold text-navy leading-tight tracking-wider">YOUNG LEADERS</div>
-            <div className="flex items-center gap-2">
-              <div className="h-[1px] w-8 bg-gold"></div>
-              <div className="text-xs font-semibold text-gold tracking-[0.2em] leading-tight">ACADEMY</div>
-              <div className="h-[1px] w-8 bg-gold"></div>
-            </div>
-          </div>
-        </Link>
 
-        {/* Navigation Links */}
-        <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-navy">
-          <Link href="/" className="transition-colors hover:text-gold border-b-2 border-gold py-1">Home</Link>
-          <Link href="/about" className="transition-colors hover:text-gold py-1">About</Link>
-          <Link href="/programs" className="transition-colors hover:text-gold py-1">Programs</Link>
-          <Link href="/universities" className="transition-colors hover:text-gold py-1">Universities</Link>
-          <Link href="/contact" className="transition-colors hover:text-gold py-1">Contact</Link>
+        {/* Logo - Flex-1 ensures it takes up equal space as the right actions to keep the center links perfectly centered */}
+        <div className="flex-1 flex items-center justify-start">
+          <Link href="/" className="flex items-center gap-0">
+            <Image src="/logo.jpeg" alt="Logo" width={150} height={150} className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain" />
+            <div className="hidden sm:flex flex-col justify-center -ml-3 md:-ml-4">
+              <div className="text-[14px] md:text-[16px] font-extrabold text-navy leading-none tracking-[0.05em] mb-[6px]">YOUNG LEADERS</div>
+              <div className="flex items-center justify-center gap-2">
+                <div className="h-[1px] w-4 bg-gold"></div>
+                <div className="text-[9px] md:text-[10px] font-bold text-gold tracking-[0.2em] leading-none">ACADEMY</div>
+                <div className="h-[1px] w-4 bg-gold"></div>
+              </div>
+            </div>
+          </Link>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-6">
-          <button className="text-sm font-bold text-navy hover:text-gold hidden sm:flex items-center gap-2">
-            <span className="text-gray-400">🌐</span> EN <span className="text-gray-300 px-1">|</span> ع
+        {/* Navigation Links (Desktop) - Auto width to stay in exact center */}
+        <div className="hidden lg:flex items-center justify-center gap-8 text-[15px] font-bold text-navy">
+          <Link href="/" className="relative transition-colors hover:text-gold py-1 group">
+            Home
+            <span className="absolute left-0 bottom-[-4px] w-full h-[3px] bg-gold rounded-full"></span>
+          </Link>
+          <Link href="/about" className="relative transition-colors hover:text-gold py-1 group">
+            About
+            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
+          </Link>
+          <Link href="/programs" className="relative transition-colors hover:text-gold py-1 group">
+            Programs
+            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
+          </Link>
+          <Link href="/universities" className="relative transition-colors hover:text-gold py-1 group">
+            Universities
+            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
+          </Link>
+          <Link href="/contact" className="relative transition-colors hover:text-gold py-1 group">
+            Contact
+            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
+          </Link>
+        </div>
+
+        {/* Right Actions (Desktop) - Flex-1 and justify-end matches Logo width container */}
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
+          <button
+            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            className="flex items-center justify-center gap-2 px-4 py-[10px] rounded-full border border-gray-200/80 shadow-sm hover:bg-gray-50 transition-colors"
+          >
+            <Globe className="w-[18px] h-[18px] text-navy" />
+            <span className={`transition-colors duration-200 text-sm ${lang === 'en' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>EN</span>
+            <span className="text-gray-300 font-normal text-sm">|</span>
+            <span className={`font-arabic transition-colors duration-200 leading-none mt-[2px] text-[15px] ${lang === 'ar' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>ع</span>
           </button>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-10 px-6 py-2 text-sm font-semibold transition-colors">
-            <User className="w-4 h-4" />
-            Login / Register
+
+          {/* whitespace-nowrap added to prevent text from wrapping */}
+          {/* whitespace-nowrap added to prevent text from wrapping */}
+          {session ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 hidden xl:flex bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                {session.user?.image ? (
+                  <Image src={session.user.image} alt="Profile" width={24} height={24} className="rounded-full" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
+                    {(session.user?.name || "U")[0]}
+                  </div>
+                )}
+                <span className="font-bold text-navy text-sm">
+                  {session.user?.name?.split(' ')[0] || "User"}
+                </span>
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 text-navy hover:bg-gray-200 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-sm border border-gray-200"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => signIn()}
+              className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-md"
+            >
+              <User className="w-[18px] h-[18px]" />
+              Login / Register
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <div className="lg:hidden flex flex-1 items-center justify-end gap-3">
+          <button
+            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-navy hover:bg-gray-50 transition-colors"
+          >
+            {lang === 'en' ? (
+              <span className="text-xs font-bold">EN</span>
+            ) : (
+              <span className="text-sm font-bold font-arabic">ع</span>
+            )}
           </button>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex items-center justify-center w-10 h-10 text-navy bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Smooth Mobile Menu Dropdown */}
+      <div
+        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out origin-top ${isMobileMenuOpen ? 'max-h-[500px] opacity-100 py-4' : 'max-h-0 opacity-0 py-0 border-t-0'
+          }`}
+      >
+        <div className="px-4 flex flex-col gap-4">
+          <div className="flex flex-col space-y-1 pb-4 border-b border-gray-100">
+            <Link
+              href="/"
+              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <span className="w-2 h-2 rounded-full bg-gold mr-3"></span>
+              Home
+            </Link>
+            <Link
+              href="/about"
+              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              About
+            </Link>
+            <Link
+              href="/programs"
+              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Programs
+            </Link>
+            <Link
+              href="/universities"
+              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Universities
+            </Link>
+            <Link
+              href="/contact"
+              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Contact
+            </Link>
+          </div>
+
+          <div className="flex flex-col gap-3 pt-2">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setLang('en')}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${lang === 'en' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
+                  }`}
+              >
+                <span>English</span>
+              </button>
+              <button
+                onClick={() => setLang('ar')}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${lang === 'ar' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
+                  }`}
+              >
+                العربية
+              </button>
+            </div>
+            {session ? (
+              <button
+                onClick={() => signOut()}
+                className="whitespace-nowrap w-full inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 text-navy hover:bg-gray-200 h-[48px] px-6 text-sm font-semibold transition-colors shadow-sm border border-gray-200"
+              >
+                Logout ({session.user?.name?.split(' ')[0] || "User"})
+              </button>
+            ) : (
+              <button
+                onClick={() => signIn()}
+                className="whitespace-nowrap w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[48px] px-6 text-sm font-semibold transition-colors shadow-md"
+              >
+                <User className="w-[18px] h-[18px]" />
+                Login / Register
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </nav>

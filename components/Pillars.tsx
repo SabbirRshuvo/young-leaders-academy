@@ -52,7 +52,7 @@ export default function Pillars() {
             Holistic Development for a Brighter Future
           </h2>
           <p className="max-w-[700px] text-gray-500 md:text-lg">
-            We nurture every aspect of a young person's growth, helping them build the skills,
+            We nurture every aspect of a young person&apos;s growth, helping them build the skills,
             character and confidence to lead a meaningful life.
           </p>
         </div>
