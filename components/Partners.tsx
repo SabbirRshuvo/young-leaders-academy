@@ -1,63 +1,116 @@
+'use client';
+
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 export default function Partners() {
   const partners = [
-    { name: "HARVARD", sub: "UNIVERSITY", color: "text-red-800" },
-    { name: "Stanford", sub: "University", color: "text-red-700" },
-    { name: "MIT", sub: "Massachusetts Institute of Technology", color: "text-red-600" },
-    { name: "Yale", sub: "University", color: "text-blue-900" },
-    { name: "OXFORD", sub: "UNIVERSITY OF", color: "text-blue-800" },
-    { name: "Cambridge", sub: "University", color: "text-cyan-800" },
+    { name: "HARVARD", sub: "UNIVERSITY", color: "text-[#A51C30]" },
+    { name: "Stanford", sub: "University", color: "text-[#8C1515]" },
+    { name: "MIT", sub: "Massachusetts Institute of Technology", color: "text-[#A31F34]" },
+    { name: "Yale", sub: "University", color: "text-[#00356B]" },
+    { name: "OXFORD", sub: "UNIVERSITY OF", color: "text-[#002147]" },
+    { name: "Cambridge", sub: "University", color: "text-[#A3C1AD]" },
   ];
-  
+
   return (
-    <section className="w-full py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl text-center">
+    <section className="w-full py-16 md:py-24 bg-[#FAFAFA]">
+      <div className="container mx-auto px-4 md:px-6 max-w-[1440px] text-center">
+
+        {/* ================= HEADER ================= */}
         <div className="flex flex-col items-center justify-center space-y-4 mb-12">
           <div className="flex items-center gap-4">
-            <div className="h-[1px] w-12 bg-gold"></div>
-            <span className="text-gold font-bold tracking-widest text-xs">OUR UNIVERSITY PARTNERS</span>
-            <div className="h-[1px] w-12 bg-gold"></div>
+            <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
+            <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[11px] uppercase">
+              OUR UNIVERSITY PARTNERS
+            </span>
+            <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-navy">
+          <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
             Top Universities. Global Opportunities.
           </h2>
-          <p className="max-w-[800px] text-gray-500 md:text-lg">
+          <p className="max-w-[750px] text-[#6B7B8F] md:text-lg">
             Our partnerships with leading universities open doors to world-class education and endless possibilities.
           </p>
         </div>
 
-        <div className="relative flex items-center justify-center">
-          <button className="absolute left-0 z-10 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-navy transition-colors">
-            <ChevronLeft className="w-8 h-8" />
+        {/* ================= SLIDER SECTION ================= */}
+        {/* CRITICAL FIX: Added STRICT height (h-[160px]) to the main wrapper to stop ANY page jumping */}
+        <div className="relative flex items-center justify-center px-8 md:px-16 mt-14 w-full h-[160px]">
+
+          <button
+            type="button"
+            className="partner-prev absolute left-0 z-10 w-12 h-12 flex items-center justify-center text-gray-400 hover:text-[#0B2545] transition-colors cursor-pointer bg-white rounded-full shadow-sm border border-gray-100 hover:shadow-md"
+          >
+            <ChevronLeft className="w-6 h-6" strokeWidth={2} />
           </button>
-          
-          <div className="flex justify-center items-center gap-4 px-12 overflow-hidden w-full max-w-6xl">
+
+          <Swiper
+            modules={[Autoplay, Navigation, Pagination]}
+            loop={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              prevEl: '.partner-prev',
+              nextEl: '.partner-next',
+            }}
+            pagination={{
+              el: '.partner-pagination',
+              clickable: true,
+            }}
+            breakpoints={{
+              320: { slidesPerView: 1, spaceBetween: 20 },
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              768: { slidesPerView: 3, spaceBetween: 30 },
+              1024: { slidesPerView: 4, spaceBetween: 30 },
+              1280: { slidesPerView: 5, spaceBetween: 30 },
+            }}
+            // STRICT height on Swiper component
+            className="w-full max-w-[1150px] h-[140px] pt-4 pb-4"
+          >
             {partners.map((partner, i) => (
-               <div 
-                 key={i} 
-                 className="flex-shrink-0 w-40 h-20 md:w-48 md:h-24 bg-white border border-gray-200 rounded-md flex flex-col items-center justify-center p-2 shadow-sm"
-               >
-                 {partner.sub === "UNIVERSITY OF" && <div className="text-[8px] font-bold text-gray-500 mb-0.5">{partner.sub}</div>}
-                 <div className={`text-lg md:text-2xl font-serif font-bold leading-none ${partner.color}`}>
-                   {partner.name}
-                 </div>
-                 {partner.sub !== "UNIVERSITY OF" && <div className="text-[8px] md:text-[10px] font-sans font-semibold text-gray-600 mt-1 text-center leading-tight">{partner.sub}</div>}
-               </div>
-            ))}
-          </div>
+              // STRICT height on Slides
+              <SwiperSlide key={i} className="flex justify-center h-[110px]">
+                {/* Changed transition-all to transition-shadow to prevent size shifting */}
+                <div className="w-full h-[110px] bg-white border border-gray-100 rounded-xl flex flex-col items-center justify-center p-4 shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-shadow duration-300">
 
-          <button className="absolute right-0 z-10 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-navy transition-colors">
-            <ChevronRight className="w-8 h-8" />
+                  {partner.sub === "UNIVERSITY OF" && (
+                    <div className="text-[10px] font-bold text-gray-500 mb-1">{partner.sub}</div>
+                  )}
+
+                  <div className={`text-2xl md:text-3xl font-serif font-extrabold leading-none tracking-tight ${partner.color}`}>
+                    {partner.name}
+                  </div>
+
+                  {partner.sub !== "UNIVERSITY OF" && (
+                    <div className="text-[11px] md:text-[12px] font-sans font-semibold text-gray-500 mt-1.5 text-center leading-tight">
+                      {partner.sub}
+                    </div>
+                  )}
+
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <button
+            type="button"
+            className="partner-next absolute right-0 z-10 w-12 h-12 flex items-center justify-center text-gray-400 hover:text-[#0B2545] transition-colors cursor-pointer bg-white rounded-full shadow-sm border border-gray-100 hover:shadow-md"
+          >
+            <ChevronRight className="w-6 h-6" strokeWidth={2} />
           </button>
         </div>
 
-        <div className="flex justify-center items-center gap-2 mt-8">
-          <div className="w-2.5 h-2.5 rounded-full bg-gold"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
-        </div>
+        {/* Pagination Dots - Added fixed height h-[20px] */}
+        <div className="partner-pagination h-[20px] flex justify-center items-center gap-3 mt-4 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-gray-300 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:!bg-[#D4AF37] [&_.swiper-pagination-bullet-active]:!opacity-100 [&_.swiper-pagination-bullet]:transition-all" />
+
       </div>
     </section>
   );

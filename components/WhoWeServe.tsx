@@ -1,62 +1,94 @@
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export default function WhoWeServe() {
   return (
-    <section className="w-full py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-        <div className="grid lg:grid-cols-2 gap-8">
-          
-          {/* Students Card */}
-          <div className="flex flex-col md:flex-row bg-white rounded-lg overflow-hidden shadow-lg border border-gray-100">
-            <div 
-              className="w-full md:w-2/5 h-64 md:h-auto bg-cover bg-center"
-              style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}
-            ></div>
-            <div className="w-full md:w-3/5 p-8 lg:p-12 flex flex-col justify-center">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-[1px] w-8 bg-gold"></div>
-                <span className="text-gold font-bold tracking-widest text-xs">WHO WE SERVE</span>
+    <section className="w-full py-16 bg-white">
+      <div className="max-w-[1440px] mx-auto px-4">
+        {/* Grid Layout - Gap added for clear separation */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch">
+
+          {/* Card 1: Students */}
+          <div className="relative w-full h-full min-h-[450px] bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+            {/* Image Layer - Limited width so it doesn't stretch too far behind text on large screens */}
+            <div className="absolute inset-y-0 left-0 w-full h-full">
+              <img
+                src="/left.png"
+                alt="Students"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+
+            {/* Fade Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-transparent via-white/80 md:via-white/70 to-white" />
+
+            {/* Content Layer */}
+            <div className="relative z-10 w-full md:w-[55%] md:ml-auto h-full flex flex-col justify-end md:justify-center p-8 lg:p-12 pt-[220px] md:pt-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-[1.5px] w-8 bg-[#C59B27]" />
+                <span className="text-[#C59B27] font-bold tracking-widest text-xs uppercase">
+                  WHO WE SERVE
+                </span>
               </div>
-              <h3 className="text-4xl font-extrabold text-navy mb-2">Students</h3>
-              <p className="text-navy font-bold text-lg mb-4">Discover your potential.</p>
-              <p className="text-gray-600 mb-8 text-sm leading-relaxed">
+
+              <h3 className="text-4xl font-serif font-bold text-[#0B2545] mb-2">
+                Students
+              </h3>
+              <p className="text-base font-semibold text-[#0B2545] mb-4">
+                Discover your potential.
+              </p>
+              <p className="text-sm font-sans text-gray-600 mb-8 leading-relaxed max-w-[400px]">
                 We provide students with the tools, mentorship and opportunities to build confidence, develop essential skills and achieve their dreams.
               </p>
+
               <div>
-                <Link 
-                  href="/programs?audience=students" 
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-gold px-6 text-sm font-bold text-navy hover:bg-gold/10 transition-colors"
+                <Link
+                  href="/programs?audience=students"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-[#0B2545] hover:bg-[#C59B27]/10 transition-colors"
                 >
-                  Learn More
-                  <ArrowRight className="w-4 h-4 text-gold" />
+                  Learn More <ArrowRight className="w-4 h-4 text-[#C59B27]" />
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Parents Card */}
-          <div className="flex flex-col md:flex-row bg-navy rounded-lg overflow-hidden shadow-lg text-white">
-            <div 
-              className="w-full md:w-2/5 h-64 md:h-auto bg-cover bg-center"
-              style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}
-            ></div>
-            <div className="w-full md:w-3/5 p-8 lg:p-12 flex flex-col justify-center">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-[1px] w-8 bg-gold"></div>
+          {/* Card 2: Parents */}
+          <div className="relative w-full h-full min-h-[450px] bg-[#072340] overflow-hidden rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.25)]">
+            {/* Image Layer */}
+            <div className="absolute inset-y-0 left-0 w-full h-full">
+              <img
+                src="/right.png"
+                alt="Parents"
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+
+            {/* Fade Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-transparent via-[#072340]/80 md:via-[#072340]/70 to-[#072340]" />
+
+            {/* Content Layer */}
+            <div className="relative z-10 w-full md:w-[55%] md:ml-auto h-full flex flex-col justify-end md:justify-center p-8 lg:p-12 pt-[220px] md:pt-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-[1.5px] w-8 bg-[#C59B27]" />
               </div>
-              <h3 className="text-4xl font-extrabold mb-2">Parents</h3>
-              <p className="font-bold text-lg mb-4">Partner in the journey.</p>
-              <p className="text-gray-300 mb-8 text-sm leading-relaxed">
+
+              <h3 className="text-4xl font-serif font-bold text-white mb-2">
+                Parents
+              </h3>
+              <p className="text-base font-semibold text-white mb-4">
+                Partner in the journey.
+              </p>
+              <p className="text-sm font-sans text-gray-300 mb-8 leading-relaxed max-w-[400px]">
                 We support parents with expert guidance, resources and a trusted community to help their children grow and succeed.
               </p>
+
               <div>
-                <Link 
-                  href="/parents" 
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/50 px-6 text-sm font-bold text-white hover:bg-white/10 transition-colors"
+                <Link
+                  href="/programs?audience=parents"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                 >
-                  Learn More
-                  <ArrowRight className="w-4 h-4 text-gold" />
+                  Learn More <ArrowRight className="w-4 h-4 text-[#C59B27]" />
                 </Link>
               </div>
             </div>
