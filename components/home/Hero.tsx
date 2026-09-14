@@ -13,11 +13,11 @@ export default function Hero() {
         style={{ backgroundImage: `url('/banner.png')` }}
       >
         {/* Deep Navy Gradient Overlay with subtle backdrop blur */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/90 to-transparent backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/90 to-transparent "></div>
       </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -25,15 +25,15 @@ export default function Hero() {
           className="flex flex-col items-start space-y-6 max-w-2xl p-6 md:p-0"
         >
           <div className="w-16 h-1 bg-[#D4AF37] mb-2"></div>
-          
+
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-white leading-[1.1]">
             Preparing Young<br />People For Life.
           </h1>
-          
+
           <p className="text-gray-200 font-bold text-lg md:text-xl max-w-[500px]">
             One Academy. One Journey.<br />A Lifetime of Impact.
           </p>
-          
+
           <div className="pt-4">
             <Link
               href="/programs"
