@@ -3,29 +3,18 @@
 import Link from 'next/link';
 import { GraduationCap, Users, Lightbulb, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
-const programs = [
-  {
-    title: 'Academic Excellence',
-    desc: 'Build a strong academic foundation with expert guidance, personalized support and real-world learning.',
-    icon: GraduationCap,
-    image: '/card1.png',
-  },
-  {
-    title: 'Leadership Development',
-    desc: 'Develop confidence, communication and decision-making skills to become effective and compassionate leaders.',
-    icon: Users,
-    image: '/card2.png',
-  },
-  {
-    title: 'Innovation',
-    desc: 'Explore creativity, technology and problem-solving to turn ideas into real-world solutions.',
-    icon: Lightbulb,
-    image: '/card3.png',
-  }
-];
+
 
 export default function FeaturedPrograms() {
+  const t = useTranslations('FeaturedPrograms');
+  const programs = [
+    { title: t('prog1_title'), desc: t('prog1_desc'), icon: GraduationCap, image: '/card1.png' },
+    { title: t('prog2_title'), desc: t('prog2_desc'), icon: Users, image: '/card2.png' },
+    { title: t('prog3_title'), desc: t('prog3_desc'), icon: Lightbulb, image: '/card3.png' }
+  ];
+
   return (
     <section className="w-full py-16 md:py-24 bg-[#FAF7F2]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px]">
@@ -41,17 +30,17 @@ export default function FeaturedPrograms() {
           <div className="flex items-center gap-4">
             <div className="h-[1px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#B8902E] font-bold tracking-[0.2em] text-[11px] uppercase">
-              FEATURED PROGRAMS
+              {t('tag')}
             </span>
             <div className="h-[1px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
 
           <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
-            Build Skills. Create Opportunities.
+            {t('title')}
           </h2>
 
           <p className="max-w-[700px] text-gray-500 md:text-base font-sans mt-2">
-            Our specialized programs are designed to develop future-ready leaders.
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -97,7 +86,7 @@ export default function FeaturedPrograms() {
                       href={`/programs`}
                       className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-[#0B2545] px-6 text-[13px] font-semibold text-white hover:bg-[#0B2545]/90 transition-colors w-max"
                     >
-                      Enroll Now
+                      {t('viewProgram')}
                       <ArrowRight className="w-4 h-4 text-white" />
                     </Link>
                   </div>

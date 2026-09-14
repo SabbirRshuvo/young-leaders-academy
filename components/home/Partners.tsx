@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { motion } from 'framer-motion';
@@ -10,6 +11,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export default function Partners() {
+  const t = useTranslations('Partners');
   const partners = [
     { name: "HARVARD", sub: "UNIVERSITY", color: "text-[#A51C30]" },
     { name: "Stanford", sub: "University", color: "text-[#8C1515]" },
@@ -24,7 +26,7 @@ export default function Partners() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px] text-center">
 
         {/* ================= HEADER ================= */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -34,21 +36,21 @@ export default function Partners() {
           <div className="flex items-center gap-4">
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[11px] uppercase">
-              OUR UNIVERSITY PARTNERS
+              {t('badge')}
             </span>
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
-            Top Universities. Global Opportunities.
+            {t('title')}
           </h2>
           <p className="max-w-[750px] text-[#6B7B8F] md:text-lg">
-            Our partnerships with leading universities open doors to world-class education and endless possibilities.
+            {t('subtitle')}
           </p>
         </motion.div>
 
         {/* ================= SLIDER SECTION ================= */}
         {/* CRITICAL FIX: Added STRICT height (h-[160px]) to the main wrapper to stop ANY page jumping */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

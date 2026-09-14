@@ -5,22 +5,34 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User, Globe, Menu, X } from 'lucide-react';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [lang, setLang] = useState<'en' | 'ar'>('en');
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('Navigation');
 
-  const isActive = (href: string) => pathname === href || (href !== '/' && pathname?.startsWith(href));
+  const switchLocale = () => {
+    const nextLocale = locale === 'en' ? 'ar' : 'en';
+    const newPath = pathname?.replace(`/${locale}`, `/${nextLocale}`) || `/${nextLocale}`;
+    router.push(newPath);
+  };
+
+  const isActive = (href: string) => {
+    const fullHref = `/${locale}${href === '/' ? '' : href}`;
+    return pathname === fullHref || (href !== '/' && pathname?.startsWith(fullHref));
+  };
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Programs", href: "/programs" },
-    { name: "Universities", href: "/universities" },
-    { name: "Contact", href: "/contact" },
+    { name: t('home'), href: "/" },
+    { name: t('about'), href: "/about" },
+    { name: t('programs'), href: "/programs" },
+    { name: t('universities'), href: "/universities" },
+    { name: t('contact'), href: "/contact" },
   ];
 
   return (
@@ -45,7 +57,7 @@ export default function Navbar() {
         {/* Navigation Links (Desktop) - Auto width to stay in exact center */}
         <div className="hidden lg:flex items-center justify-center gap-8 text-[15px] font-bold text-navy">
           {navLinks.map((link) => (
-            <Link key={link.name} href={link.href} className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href) ? 'text-gold' : ''}`}>
+            <Link key={link.name} href={`/${locale}${link.href === '/' ? '' : link.href}`} className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href) ? 'text-gold' : ''}`}>
               {link.name}
               <span className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${isActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
             </Link>
@@ -55,13 +67,13 @@ export default function Navbar() {
         {/* Right Actions (Desktop) - Flex-1 and justify-end matches Logo width container */}
         <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
           <button
-            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            onClick={switchLocale}
             className="flex items-center justify-center gap-2 px-4 py-[10px] rounded-full border border-gray-200/80 shadow-sm hover:bg-gray-50 transition-colors"
           >
             <Globe className="w-[18px] h-[18px] text-navy" />
-            <span className={`transition-colors duration-200 text-sm ${lang === 'en' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>EN</span>
+            <span className={`transition-colors duration-200 text-sm ${locale === 'en' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>EN</span>
             <span className="text-gray-300 font-normal text-sm">|</span>
-            <span className={`font-arabic transition-colors duration-200 leading-none mt-[2px] text-[15px] ${lang === 'ar' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>ع</span>
+            <span className={`font-arabic transition-colors duration-200 leading-none mt-[2px] text-[15px] ${locale === 'ar' ? 'text-navy font-bold' : 'text-gray-400 font-medium'}`}>ع</span>
           </button>
 
           {/* whitespace-nowrap added to prevent text from wrapping */}
@@ -101,10 +113,10 @@ export default function Navbar() {
         {/* Mobile Menu Toggle */}
         <div className="lg:hidden flex flex-1 items-center justify-end gap-3">
           <button
-            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            onClick={switchLocale}
             className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-navy hover:bg-gray-50 transition-colors"
           >
-            {lang === 'en' ? (
+            {locale === 'en' ? (
               <span className="text-xs font-bold">EN</span>
             ) : (
               <span className="text-sm font-bold font-arabic">ع</span>
@@ -130,7 +142,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <Link
                 key={link.name}
-                href={link.href}
+                href={`/${locale}${link.href === '/' ? '' : link.href}`}
                 className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${isActive(link.href) ? 'text-gold bg-gray-50' : 'text-navy'}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -143,15 +155,15 @@ export default function Navbar() {
           <div className="flex flex-col gap-3 pt-2">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setLang('en')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${lang === 'en' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
+                onClick={switchLocale}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${locale === 'en' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
                   }`}
               >
                 <span>English</span>
               </button>
               <button
-                onClick={() => setLang('ar')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${lang === 'ar' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
+                onClick={switchLocale}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full border transition-colors ${locale === 'ar' ? 'border-navy bg-navy/5 text-navy font-bold' : 'border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold'
                   }`}
               >
                 العربية

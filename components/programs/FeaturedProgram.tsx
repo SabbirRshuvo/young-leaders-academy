@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import { Calendar, Users, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function FeaturedProgram() {
+  const t = useTranslations('FeaturedProgramSingle');
+  
   return (
     <section className="w-full bg-[#FCFAF6] py-16 md:py-24">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -14,15 +17,15 @@ export default function FeaturedProgram() {
             <div className="flex flex-col items-start order-2 lg:order-1">
 
               <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-                Featured Program
+                {t('badge')}
               </div>
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-extrabold text-[#0B2545] leading-tight mb-6">
-                Global Young Leaders Fellowship
+                {t('title')}
               </h2>
 
               <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-8">
-                A transformative program that brings together outstanding young minds from around the world to develop leadership skills, build global networks and create real-world impact.
+                {t('desc')}
               </p>
 
               {/* Metadata Badges */}
@@ -32,8 +35,8 @@ export default function FeaturedProgram() {
                     <Calendar className="w-5 h-5 text-[#D4AF37]" strokeWidth={2} />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Duration</div>
-                    <div className="text-sm font-bold text-[#0B2545]">2 Weeks</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('duration')}</div>
+                    <div className="text-sm font-bold text-[#0B2545]">{t('durationVal')}</div>
                   </div>
                 </div>
 
@@ -42,8 +45,8 @@ export default function FeaturedProgram() {
                     <Users className="w-5 h-5 text-[#D4AF37]" strokeWidth={2} />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Age Group</div>
-                    <div className="text-sm font-bold text-[#0B2545]">16 – 22</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('age')}</div>
+                    <div className="text-sm font-bold text-[#0B2545]">{t('ageVal')}</div>
                   </div>
                 </div>
 
@@ -52,8 +55,8 @@ export default function FeaturedProgram() {
                     <MapPin className="w-5 h-5 text-[#D4AF37]" strokeWidth={2} />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">Format</div>
-                    <div className="text-sm font-bold text-[#0B2545]">In-Person + Online</div>
+                    <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('format')}</div>
+                    <div className="text-sm font-bold text-[#0B2545]">{t('formatVal')}</div>
                   </div>
                 </div>
               </div>
@@ -63,7 +66,7 @@ export default function FeaturedProgram() {
                 href="/programs/global-fellowship"
                 className="inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-105 group"
               >
-                Learn More
+                {t('cta')}
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>

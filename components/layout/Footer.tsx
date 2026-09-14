@@ -2,8 +2,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+  const t = useTranslations('Footer');
   return (
     <footer className="w-full bg-navy text-white py-16">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -21,7 +23,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-white text-sm font-bold leading-relaxed max-w-[250px]">
-              One Academy. One Journey.<br />A Lifetime of Impact.
+              {t('tagline')}
             </p>
             <div className="flex space-x-4 pt-2">
               <Link href="#" className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center text-gray-300 hover:border-gold hover:text-gold transition-all"><FaFacebook className="w-4 h-4" /></Link>
@@ -32,18 +34,18 @@ export default function Footer() {
           </div>
 
           <div className="space-y-6 lg:pl-8">
-            <h4 className="text-lg font-bold text-white mb-6">Quick Links</h4>
+            <h4 className="text-lg font-bold text-white mb-6">{t('quickLinksTitle')}</h4>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li><Link href="/" className="hover:text-gold transition-colors flex items-center justify-between group">Home <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/about" className="hover:text-gold transition-colors flex items-center justify-between group">About <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/programs" className="hover:text-gold transition-colors flex items-center justify-between group">Programs <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/universities" className="hover:text-gold transition-colors flex items-center justify-between group">Universities <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/contact" className="hover:text-gold transition-colors flex items-center justify-between group">Contact <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href="/" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.home')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href="/about" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.about')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href="/programs" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.programs')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href="/universities" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.universities')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href="/contact" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.contact')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
             </ul>
           </div>
 
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-white mb-6">Contact Us</h4>
+            <h4 className="text-lg font-bold text-white mb-6">{t('contactUsTitle')}</h4>
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
@@ -61,14 +63,14 @@ export default function Footer() {
           </div>
 
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-white mb-6">Newsletter</h4>
+            <h4 className="text-lg font-bold text-white mb-6">{t('newsletterTitle')}</h4>
             <p className="text-sm text-gray-300 leading-relaxed">
-              Get the latest updates, program news and inspiring stories.
+              {t('newsletterDesc')}
             </p>
             <form className="flex flex-col gap-3 pt-2">
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder={t('emailPlaceholder')}
                 className="flex h-10 w-full rounded-sm bg-white px-3 py-2 text-sm text-navy placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 required
               />
@@ -76,18 +78,18 @@ export default function Footer() {
                 type="submit"
                 className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors"
               >
-                Subscribe
+                {t('subscribeButton')}
               </button>
             </form>
           </div>
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
-          <p>© {new Date().getFullYear()} Young Leaders Academy. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Young Leaders Academy. {t('rightsReserved')}</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">{t('privacyPolicy')}</Link>
             <span className="text-gray-600">|</span>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms & Conditions</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">{t('termsConditions')}</Link>
           </div>
         </div>
       </div>

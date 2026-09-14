@@ -1,59 +1,61 @@
 "use client";
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export default function UniversityGrid() {
+  const t = useTranslations('UniversityGrid');
+
   const universities = [
     {
-      name: "Harvard University",
-      country: "United States",
-      flag: "🇺🇸",
-      logo: "/harvard.png",
-      tags: ["Leadership", "Innovation", "Global Impact"],
-      desc: "Harvard's multidisciplinary environment offers a powerful model for developing intellectually curious and globally minded leaders."
+      name: 'Harvard University',
+      location: '🇺🇸 United States',
+      image: '/harvard.png',
+      tags: ['LEADERSHIP', 'INNOVATION', 'GLOBAL IMPACT'],
+      description: 'Harvard\'s multidisciplinary environment offers a powerful model for developing intellectually curious and globally minded leaders.',
+      link: '#'
     },
     {
-      name: "University of Oxford",
-      country: "United Kingdom",
-      flag: "🇬🇧",
-      logo: "/oxford.png",
-      tags: ["Academic Excellence", "Leadership", "Global Perspective"],
-      desc: "Oxford represents a tradition of intellectual curiosity and academic excellence, with pathways to global leadership and impact."
+      name: 'University of Oxford',
+      location: '🇬🇧 United Kingdom',
+      image: '/oxford.png',
+      tags: ['ACADEMIC EXCELLENCE', 'LEADERSHIP', 'GLOBAL PERSPECTIVE'],
+      description: 'Oxford represents a tradition of intellectual curiosity and academic excellence, with pathways to global leadership and impact.',
+      link: '#'
     },
     {
-      name: "Stanford University",
-      country: "United States",
-      flag: "🇺🇸",
-      logo: "/stanford.png",
-      tags: ["Innovation", "Entrepreneurship", "Leadership"],
-      desc: "Stanford's culture of innovation demonstrates how academic knowledge can translate into meaningful global impact."
+      name: 'Stanford University',
+      location: '🇺🇸 United States',
+      image: '/standford.png',
+      tags: ['INNOVATION', 'ENTREPRENEURSHIP', 'LEADERSHIP'],
+      description: 'Stanford\'s culture of innovation demonstrates how academic knowledge can translate into meaningful global impact.',
+      link: '#'
     },
     {
-      name: "Massachusetts Institute of Technology",
-      country: "United States",
-      flag: "🇺🇸",
-      logo: "/mit.png",
-      tags: ["STEM", "Innovation", "Problem Solving"],
-      desc: "MIT inspires the next generation of global thinkers and changemakers through world-class research and hands-on learning."
+      name: 'Massachusetts Institute of Technology',
+      location: '🇺🇸 United States',
+      image: '/mit.png',
+      tags: ['STEM', 'INNOVATION', 'PROBLEM SOLVING'],
+      description: 'MIT inspires the next generation of global thinkers and changemakers through world-class research and hands-on learning.',
+      link: '#'
     },
     {
-      name: "University of Cambridge",
-      country: "United Kingdom",
-      flag: "🇬🇧",
-      logo: "/cambridge.png",
-      tags: ["Scholarship", "Research", "Critical Thinking"],
-      desc: "Cambridge's collegiate tradition emphasizes independent thought, critical thinking and interdisciplinary learning."
+      name: 'University of Cambridge',
+      location: '🇬🇧 United Kingdom',
+      image: '/cambridge.png',
+      tags: ['SCHOLARSHIP', 'RESEARCH', 'CRITICAL THINKING'],
+      description: 'Cambridge\'s collegiate tradition emphasizes independent thought, critical thinking and interdisciplinary learning.',
+      link: '#'
     },
     {
-      name: "Yale University",
-      country: "United States",
-      flag: "🇺🇸",
-      logo: "/yale.png",
-      tags: ["Leadership", "Global Affairs", "Academic Excellence"],
-      desc: "Yale's diverse academic community and global perspective help students develop the skills to lead and create lasting impact."
+      name: 'Yale University',
+      location: '🇺🇸 United States',
+      image: '/yale.png',
+      tags: ['LEADERSHIP', 'GLOBAL AFFAIRS', 'ACADEMIC EXCELLENCE'],
+      description: 'Yale\'s diverse academic community and global perspective help students develop the skills to lead and create lasting impact.',
+      link: '#'
     }
   ];
 
@@ -85,18 +87,18 @@ export default function UniversityGrid() {
           <motion.div variants={itemVariants} className="flex items-center gap-4 mb-4">
             <div className="h-[1.5px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-              Our Global Network
+              {t('badge')}
             </span>
           </motion.div>
           <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight mb-6">
-            Partner Universities & World-Class Institutions
+            {t('title')}
           </motion.h2>
           <motion.div variants={itemVariants} className="space-y-4 text-gray-600 font-sans text-base md:text-lg leading-relaxed">
             <p>
-              The world's leading universities represent more than prestigious names — they are communities built around curiosity, intellectual ambition, innovation, and impact.
+              {t('subtitle1')}
             </p>
             <p>
-              Through carefully designed academic pathways and global experiences, YLA helps students understand these environments, prepare for them, and aspire to become part of them.
+              {t('subtitle2')}
             </p>
           </motion.div>
         </motion.div>
@@ -113,55 +115,44 @@ export default function UniversityGrid() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="flex flex-col bg-white rounded-2xl border border-gray-100 p-8 shadow-xl shadow-black/[0.04] hover:-translate-y-1.5 hover:shadow-2xl hover:border-[#D4AF37]/30 transition-all duration-300 group"
+              className="bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-8 flex flex-col h-full hover:-translate-y-1.5 transition-transform duration-300"
             >
-              {/* Top Row: Logo & Name */}
-              <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 flex items-center justify-center shrink-0 overflow-hidden">
-                  <Image
-                    src={uni.logo}
-                    alt={uni.name}
-                    width={64}
-                    height={64}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-                <div className="flex flex-col pt-1">
-                  <h3 className="text-[#0B2545] font-bold font-serif text-lg leading-tight mb-1">
+              {/* Header: Logo & Name */}
+              <div className="flex items-start gap-4 mb-1">
+                <img
+                  src={uni.image}
+                  alt={uni.name}
+                  className="w-[50px] h-[50px] object-contain shrink-0"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="flex flex-col">
+                  <h3 className="font-serif text-[1.35rem] leading-tight text-[#0B2545] font-bold mb-1">
                     {uni.name}
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm leading-none">{uni.flag}</span>
-                    <span className="text-xs text-gray-500 font-medium">{uni.country}</span>
+                  <div className="text-[13px] text-gray-500 font-medium flex items-center gap-1.5">
+                    {uni.location}
                   </div>
                 </div>
               </div>
 
-              {/* Tags separated by dots */}
-              <div className="flex flex-wrap items-center gap-1.5 mb-6 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                {uni.tags.map((tag, i) => (
-                  <span key={i} className="flex items-center">
-                    {tag}
-                    {i < uni.tags.length - 1 && <span className="mx-2 text-gray-300">•</span>}
-                  </span>
-                ))}
+              {/* Tags */}
+              <div className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-4 mt-6 flex-wrap flex gap-1">
+                {uni.tags.join(' • ')}
               </div>
 
               {/* Description */}
-              <p className="text-sm text-gray-600 leading-relaxed mb-8 flex-1">
-                {uni.desc}
+              <p className="text-[14px] text-gray-600 leading-relaxed flex-grow mb-8">
+                {uni.description}
               </p>
 
               {/* Button */}
-              <div className="mt-auto pt-4 border-t border-gray-100">
-                <Link
-                  href="#"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#0B2545] text-white text-sm font-semibold hover:bg-[#071931] transition-colors group/btn w-max"
-                >
-                  View Partnership
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                </Link>
-              </div>
+              <Link
+                href={uni.link}
+                className="inline-flex items-center gap-2 bg-[#0B2545] text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors self-start hover:bg-[#1a365d]"
+              >
+                {t('viewBtn')}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </motion.div>
           ))}
         </motion.div>

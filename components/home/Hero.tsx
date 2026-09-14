@@ -1,10 +1,12 @@
 "use client";
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
+  const t = useTranslations('Hero');
   return (
     <section className="relative w-full h-[600px] md:h-[700px] xl:h-[800px] flex items-center overflow-hidden">
       {/* Background Image */}
@@ -26,11 +28,11 @@ export default function Hero() {
           <div className="w-16 h-1 bg-[#D4AF37] mb-2"></div>
 
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-white leading-[1.1]">
-            Preparing Young<br />People For Life.
+            {t('title').split(' ').slice(0, 2).join(' ')}<br />{t('title').split(' ').slice(2).join(' ')}
           </h1>
 
           <p className="text-gray-200 font-bold text-lg md:text-xl max-w-[500px]">
-            One Academy. One Journey.<br />A Lifetime of Impact.
+            {t('subtitle')}
           </p>
 
           <div className="pt-4">
@@ -38,7 +40,7 @@ export default function Hero() {
               href="/programs"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] px-8 text-base font-bold text-[#0B2545] shadow-lg transition-transform hover:scale-105"
             >
-              Explore Programs
+              {t('cta')}
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>

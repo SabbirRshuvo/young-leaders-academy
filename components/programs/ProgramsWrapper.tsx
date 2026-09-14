@@ -7,7 +7,7 @@ import CoreProgramsGrid from './CoreProgramsGrid';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function ProgramsWrapper() {
-  const [selectedCategory, setSelectedCategory] = useState('All Programs');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   return (
     <>
@@ -17,7 +17,7 @@ export default function ProgramsWrapper() {
       />
       
       <AnimatePresence mode="wait">
-        {selectedCategory === 'All Programs' && (
+        {selectedCategory === 'all' && (
           <motion.div
             key="featured"
             initial={{ opacity: 0, height: 0, overflow: 'hidden' }}

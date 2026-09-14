@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import {
   UserRound,
   Brain,
@@ -11,45 +12,20 @@ import {
   Flag,
 } from 'lucide-react';
 
-const pillars = [
-  {
-    name: 'SELF',
-    icon: UserRound,
-    points: ['Identity', 'Values', 'Confidence', 'Purpose', 'Discipline'],
-  },
-  {
-    name: 'MIND',
-    icon: Brain,
-    points: ['Critical Thinking', 'AI & Technology', 'Innovation', 'Problem Solving', 'Creativity'],
-  },
-  {
-    name: 'LEADERSHIP',
-    icon: Flag,
-    points: ['Leadership', 'Communication', 'Influence', 'Public Speaking', 'Teamwork'],
-  },
-  {
-    name: 'CAREER',
-    icon: BriefcaseBusiness,
-    points: ['University Guidance', 'Career Planning', 'Entrepreneurship', 'Internships', 'Financial Literacy'],
-  },
-  {
-    name: 'HEALTH',
-    icon: HeartPulse,
-    points: ['Sports & Fitness', 'Nutrition', 'Mental Wellbeing', 'Sleep & Recovery', 'Healthy Habits'],
-  },
-  {
-    name: 'SOCIETY',
-    icon: Globe2,
-    points: ['Ethics & Integrity', 'Community Service', 'Social Intelligence', 'Patriotism', 'Global Awareness'],
-  },
-  {
-    name: 'FAMILY',
-    icon: UsersRound,
-    points: ['Parent Coaching', 'Teen Coaching', 'Parenting Skills', 'Family Communication', 'Stronger Relationships'],
-  },
-];
+
 
 export default function Pillars() {
+  const t = useTranslations('Pillars');
+  const pillars = [
+    { name: t('pillars.0.name'), icon: UserRound, points: [t('pillars.0.points.0'), t('pillars.0.points.1'), t('pillars.0.points.2'), t('pillars.0.points.3'), t('pillars.0.points.4')] },
+    { name: t('pillars.1.name'), icon: Brain, points: [t('pillars.1.points.0'), t('pillars.1.points.1'), t('pillars.1.points.2'), t('pillars.1.points.3'), t('pillars.1.points.4')] },
+    { name: t('pillars.2.name'), icon: Flag, points: [t('pillars.2.points.0'), t('pillars.2.points.1'), t('pillars.2.points.2'), t('pillars.2.points.3'), t('pillars.2.points.4')] },
+    { name: t('pillars.3.name'), icon: BriefcaseBusiness, points: [t('pillars.3.points.0'), t('pillars.3.points.1'), t('pillars.3.points.2'), t('pillars.3.points.3'), t('pillars.3.points.4')] },
+    { name: t('pillars.4.name'), icon: HeartPulse, points: [t('pillars.4.points.0'), t('pillars.4.points.1'), t('pillars.4.points.2'), t('pillars.4.points.3'), t('pillars.4.points.4')] },
+    { name: t('pillars.5.name'), icon: Globe2, points: [t('pillars.5.points.0'), t('pillars.5.points.1'), t('pillars.5.points.2'), t('pillars.5.points.3'), t('pillars.5.points.4')] },
+    { name: t('pillars.6.name'), icon: UsersRound, points: [t('pillars.6.points.0'), t('pillars.6.points.1'), t('pillars.6.points.2'), t('pillars.6.points.3'), t('pillars.6.points.4')] },
+  ];
+
   return (
     <section className="relative w-full bg-[#FAF7F2] py-20 md:py-28 overflow-hidden font-sans">
 
@@ -72,15 +48,15 @@ export default function Pillars() {
           <div className="mb-5 flex items-center justify-center gap-4">
             <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
             <span className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.4em] text-[#B8902E]">
-              The 7 Pillars
+              {t('badge')}
             </span>
             <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
           </div>
 
           <h2 className="m-0 max-w-[800px] font-serif text-[36px] sm:text-[46px] md:text-[56px] leading-[1.1] tracking-tight text-[#0B2545] mb-5">
-            <span className="font-bold">Holistic Development</span> <br className="hidden md:block" />
-            <span className="font-normal italic text-[#0B2545]/90">for a Brighter</span>{' '}
-            <span className="font-bold">Future</span>
+            <span className="font-bold">{t('title1')}</span> <br className="hidden md:block" />
+            <span className="font-normal italic text-[#0B2545]/90">{t('title2')}</span>{' '}
+            <span className="font-bold">{t('title3')}</span>
           </h2>
 
           <p className="mt-2 max-w-[650px] text-[14px] md:text-[16px] leading-relaxed text-[#6B7B8F]">

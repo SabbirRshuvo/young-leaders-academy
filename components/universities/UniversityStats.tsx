@@ -2,32 +2,35 @@
 
 import { Globe, GraduationCap, Award, Plane } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export default function UniversityStats() {
+  const t = useTranslations('UniversityStats');
+
   const stats = [
     {
       icon: Globe,
       value: "50+",
-      title: "Partner Universities",
-      desc: "A growing network of universities, academic communities, and international education partners."
+      title: t('stat1Title'),
+      desc: t('stat1Desc')
     },
     {
       icon: GraduationCap,
       value: "Ivy League & Oxbridge",
-      title: "Academic Connections",
-      desc: "Access to leading academic environments, university communities, and global thought leaders."
+      title: t('stat2Title'),
+      desc: t('stat2Desc')
     },
     {
       icon: Award,
       value: "100%",
-      title: "Scholarship Guidance",
-      desc: "Structured guidance to help students identify, prepare for, and pursue competitive scholarship opportunities."
+      title: t('stat3Title'),
+      desc: t('stat3Desc')
     },
     {
       icon: Plane,
       value: "Global",
-      title: "Exchange Pathways",
-      desc: "International exchange, summer immersion, academic visits, and cross-cultural leadership experiences."
+      title: t('stat4Title'),
+      desc: t('stat4Desc')
     }
   ];
 
@@ -59,19 +62,19 @@ export default function UniversityStats() {
           <motion.div variants={itemVariants} className="flex flex-col items-start text-left">
             <div className="flex items-center gap-4 mb-4">
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-                A World of Opportunity
+                {t('badge')}
               </span>
               <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight">
-              Building Global Connections.<br className="hidden md:block" />
-              Creating Future Possibilities.
+              {t('title1')}<br className="hidden md:block" />
+              {t('title2')}
             </h2>
           </motion.div>
           
           <motion.div variants={itemVariants} className="lg:border-l lg:border-gray-200 lg:pl-12">
             <p className="text-gray-600 font-sans text-base md:text-lg leading-relaxed">
-              Our international network gives young leaders the perspective, preparation, and exposure needed to navigate an increasingly global academic landscape.
+              {t('subtitle')}
             </p>
           </motion.div>
         </motion.div>

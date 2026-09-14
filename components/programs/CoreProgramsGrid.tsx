@@ -4,59 +4,67 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Users, Award, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 interface CoreProgramsGridProps {
   selectedCategory: string;
 }
 
 export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridProps) {
+  const t = useTranslations('CoreProgramsGrid');
+  const tHero = useTranslations('ProgramsHero');
+
   const allPrograms = [
     {
-      title: "High School Leadership Program",
-      category: "High School Leadership",
-      description: "Build confidence, develop essential leadership skills and discover your unique potential as a future changemaker.",
-      duration: "4 Weeks",
+      title: t('prog1Title'),
+      categoryId: "high_school",
+      categoryLabel: tHero('cat2'),
+      description: t('prog1Desc'),
+      duration: t('time4w'),
       age: "14 – 18",
-      level: "Beginner",
+      level: t('lvlBeginner'),
       image: "/high-school.png",
       href: "/programs/high-school"
     },
     {
-      title: "Global Mentorship Program",
-      category: "Global Mentorship",
-      description: "Get guidance from industry leaders and alumni, and gain valuable insights into global opportunities.",
-      duration: "8 Weeks",
+      title: t('prog2Title'),
+      categoryId: "mentorship",
+      categoryLabel: tHero('cat3'),
+      description: t('prog2Desc'),
+      duration: t('time8w'),
       age: "16 – 25",
-      level: "Intermediate",
+      level: t('lvlIntermediate'),
       image: "/global-mentor.png",
       href: "/programs/mentorship"
     },
     {
-      title: "Future Skills & Executive Program",
-      category: "Executive Skills",
-      description: "Develop critical thinking, communication and problem-solving skills for academic and professional success.",
-      duration: "6 Weeks",
+      title: t('prog3Title'),
+      categoryId: "executive",
+      categoryLabel: tHero('cat4'),
+      description: t('prog3Desc'),
+      duration: t('time6w'),
       age: "16 – 28",
-      level: "All Levels",
+      level: t('lvlAll'),
       image: "/future-skill.png",
       href: "/programs/executive"
     },
     {
-      title: "Summer Leadership Camp",
-      category: "Summer Camps",
-      description: "An immersive summer experience focused on team-building, outdoor challenges, and leadership development.",
-      duration: "2 Weeks",
+      title: t('prog4Title'),
+      categoryId: "summer",
+      categoryLabel: tHero('cat5'),
+      description: t('prog4Desc'),
+      duration: t('time2w'),
       age: "12 – 16",
-      level: "Beginner",
-      image: "/summer.png", // Placeholder
+      level: t('lvlBeginner'),
+      image: "/summer.png",
       href: "/programs/summer-camps"
     }
   ];
 
   // Filter programs based on selected category
-  const filteredPrograms = selectedCategory === 'All Programs'
+  const filteredPrograms = selectedCategory === 'all'
     ? allPrograms
-    : allPrograms.filter(prog => prog.category === selectedCategory);
+    : allPrograms.filter(prog => prog.categoryId === selectedCategory);
 
   return (
     <section className="w-full bg-[#FAF7F2] py-16 md:py-24">
@@ -67,15 +75,20 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
           <div className="flex items-center gap-4 mb-4">
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
-              Explore All Programs
+              {t('badge')}
             </span>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] mb-4">
-            {selectedCategory === 'All Programs' ? 'Our Core Programs' : selectedCategory}
+            {selectedCategory === 'all' ? t('title') : tHero(
+              selectedCategory === 'high_school' ? 'cat2' :
+              selectedCategory === 'mentorship' ? 'cat3' :
+              selectedCategory === 'executive' ? 'cat4' :
+              'cat5'
+            )}
           </h2>
           <p className="text-gray-600 max-w-2xl text-base md:text-lg">
-            Choose from a range of specialized programs designed to develop your leadership, academic and professional potential.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -102,7 +115,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute bottom-4 left-4 bg-[#D4AF37] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm shadow-sm">
-                    {program.category.toUpperCase()}
+                    {program.categoryLabel.toUpperCase()}
                   </div>
                 </div>
 
@@ -120,21 +133,21 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     <div className="flex flex-col items-start gap-1">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Duration</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('duration')}</span>
                       </div>
                       <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.duration}</span>
                     </div>
                     <div className="flex flex-col items-start gap-1">
                       <div className="flex items-center gap-1.5">
                         <Users className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Age Group</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('ageGroup')}</span>
                       </div>
                       <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.age}</span>
                     </div>
                     <div className="flex flex-col items-start gap-1">
                       <div className="flex items-center gap-1.5">
                         <Award className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Level</span>
+                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('level')}</span>
                       </div>
                       <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.level}</span>
                     </div>
@@ -145,7 +158,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     href={program.href}
                     className="inline-flex items-center justify-center gap-2 w-max px-6 py-2.5 rounded-full bg-[#0B2545] hover:bg-[#071931] text-white font-semibold text-sm transition-colors group/btn"
                   >
-                    View Curriculum
+                    {t('viewBtn')}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                   </Link>
                 </div>

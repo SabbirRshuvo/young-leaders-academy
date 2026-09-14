@@ -1,33 +1,36 @@
 import { GraduationCap, Landmark, Globe, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function OurImpact() {
+  const t = useTranslations('OurImpact');
+  
   const stats = [
     {
       icon: <GraduationCap className="w-8 h-8 text-[#0B2545]" strokeWidth={1.5} />,
-      number: "5,000+",
-      label: "Students Mentored",
-      description: "Guiding young minds across the globe.",
+      number: t('stat1Num'),
+      label: t('stat1Label'),
+      description: t('stat1Desc'),
       delayClass: "animate-fade-in-up-delay-1"
     },
     {
       icon: <Landmark className="w-8 h-8 text-[#0B2545]" strokeWidth={1.5} />,
-      number: "50+",
-      label: "Partner Universities",
-      description: "Top institutions worldwide.",
+      number: t('stat2Num'),
+      label: t('stat2Label'),
+      description: t('stat2Desc'),
       delayClass: "animate-fade-in-up-delay-2"
     },
     {
       icon: <Globe className="w-8 h-8 text-[#0B2545]" strokeWidth={1.5} />,
-      number: "92%",
-      label: "Global Success Rate",
-      description: "Our students achieve their goals.",
+      number: t('stat3Num'),
+      label: t('stat3Label'),
+      description: t('stat3Desc'),
       delayClass: "animate-fade-in-up-delay-3"
     },
     {
       icon: <Users className="w-8 h-8 text-[#0B2545]" strokeWidth={1.5} />,
-      number: "40+",
-      label: "Countries",
-      description: "A truly global community.",
+      number: t('stat4Num'),
+      label: t('stat4Label'),
+      description: t('stat4Desc'),
       delayClass: "animate-fade-in-up-delay-4"
     }
   ];
@@ -41,17 +44,17 @@ export default function OurImpact() {
           <div className="flex items-center justify-center gap-4 mb-2">
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
-              Our Impact
+              {t('badge')}
             </span>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           
           <h2 className="text-[#0B2545] font-serif text-3xl md:text-4xl font-bold mt-2 mb-3">
-            Numbers That Tell Our Story
+            {t('title')}
           </h2>
           
           <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-[17px] leading-relaxed font-sans">
-            Our growing community of learners, partners and alumni continues to create a positive impact around the world.
+            {t('subtitle')}
           </p>
         </div>
 
