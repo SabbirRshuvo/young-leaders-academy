@@ -12,7 +12,6 @@ export default function Hero() {
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('/banner.png')` }}
       >
-        {/* Deep Navy Gradient Overlay with subtle backdrop blur */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/90 to-transparent "></div>
       </div>
 

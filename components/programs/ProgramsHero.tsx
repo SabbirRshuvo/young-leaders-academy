@@ -26,6 +26,7 @@ export default function ProgramsHero({ selectedCategory, setSelectedCategory }: 
           src="/program-banner.png" // Placeholder image
           alt="Students"
           fill
+          sizes="100vw"
           className="object-cover object-center"
           priority
         />

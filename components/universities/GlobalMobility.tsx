@@ -127,6 +127,7 @@ export default function GlobalMobility() {
                 src="/card1.png" // Placeholder
                 alt="Students studying abroad"
                 fill
+                sizes="(max-width: 1024px) 100vw, 33vw"
                 className="object-cover object-center"
               />
             </div>

@@ -11,8 +11,9 @@ export default function JoinOurJourney() {
         src="/enjoy.png" // Placeholder for hikers image
         alt="Hikers on a mountain summit"
         fill
+        sizes="100vw"
         className="object-cover object-right"
-        quality={70}
+        quality={75}
       />
 
       {/* Gradient Overlay */}

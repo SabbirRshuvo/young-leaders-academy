@@ -11,8 +11,9 @@ export default function ProgramsCta() {
         src="/program-cta.png"
         alt="Hikers on a mountain summit"
         fill
+        sizes="100vw"
         className="object-cover object-right"
-        quality={70}
+        quality={75}
       />
 
       {/* Gradient Overlay */}

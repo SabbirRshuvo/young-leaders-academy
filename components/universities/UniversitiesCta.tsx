@@ -14,8 +14,9 @@ export default function UniversitiesCta() {
         src="/enjoy.png" // Placeholder image for hikers
         alt="Hikers on a mountain summit"
         fill
+        sizes="100vw"
         className="object-cover object-right"
-        quality={70}
+        quality={75}
       />
 
       {/* Gradient Overlay */}

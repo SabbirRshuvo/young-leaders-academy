@@ -18,6 +18,7 @@ export default function FoundersNote() {
                 src="/card1.png" // Placeholder, replace with actual founders image
                 alt="Founders of Young Leaders Academy"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>
