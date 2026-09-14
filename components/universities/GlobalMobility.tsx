@@ -41,11 +41,11 @@ export default function GlobalMobility() {
   return (
     <section className="w-full py-16 md:py-24 bg-[#FCFAF6] overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
+
           {/* Left: Text & Button */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -58,11 +58,11 @@ export default function GlobalMobility() {
               </span>
               <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             </motion.div>
-            
+
             <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight mb-6">
               Study Abroad & Global Immersion Pathways
             </motion.h2>
-            
+
             <motion.div variants={itemVariants} className="space-y-4 text-gray-600 font-sans text-sm md:text-base leading-relaxed mb-8">
               <p>
                 The world is the classroom. Our global mobility programmes give students the chance to experience international universities, engage with diverse perspectives, and develop the confidence to thrive in an interconnected world.
@@ -84,7 +84,7 @@ export default function GlobalMobility() {
           </motion.div>
 
           {/* Middle: Checklist */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -111,7 +111,7 @@ export default function GlobalMobility() {
           </motion.div>
 
           {/* Right: Image */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -120,12 +120,12 @@ export default function GlobalMobility() {
           >
             {/* Offset Gold Border Frame */}
             <div className="absolute top-4 left-8 right-0 bottom-0 border-2 border-[#D4AF37] z-0"></div>
-            
+
             {/* Image Container */}
             <div className="relative z-10 w-full h-[350px] sm:h-[450px] lg:h-[500px] bg-white shadow-xl">
-              <Image 
-                src="/card1.png" // Placeholder
-                alt="Students studying abroad"
+              <Image
+                src="/universities-chat.png" // Placeholder
+                alt="Students discussing"
                 fill
                 sizes="(max-width: 1024px) 100vw, 33vw"
                 className="object-cover object-center"

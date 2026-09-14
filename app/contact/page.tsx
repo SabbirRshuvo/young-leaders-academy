@@ -1,8 +1,22 @@
+import ContactHero from '@/components/contact/ContactHero';
+import ContactFormSection from '@/components/contact/ContactFormSection';
+import GlobalPresence from '@/components/contact/GlobalPresence';
+import ContactImageBanner from '@/components/contact/ContactImageBanner';
+import ContactCta from '@/components/contact/ContactCta';
+
+export const metadata = {
+  title: 'Contact Us | Young Leaders Academy',
+  description: 'Get in touch with Young Leaders Academy. We are here to answer your questions about our programs, university pathways, and global opportunities.',
+};
+
 export default function ContactPage() {
   return (
-    <main className="min-h-screen py-24 px-6 flex flex-col items-center justify-center text-center">
-      <h1 className="text-4xl font-serif text-[#0B2545] font-bold mb-4">Contact Us</h1>
-      <p className="text-gray-600">Coming soon...</p>
+    <main className="flex min-h-screen flex-col items-center justify-start w-full bg-white">
+      <ContactHero />
+      <ContactFormSection />
+      <GlobalPresence />
+      <ContactImageBanner />
+      <ContactCta />
     </main>
   );
 }

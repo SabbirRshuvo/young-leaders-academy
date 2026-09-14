@@ -9,7 +9,7 @@ export default function Hero() {
     <section className="relative w-full h-[600px] md:h-[700px] xl:h-[800px] flex items-center overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 z-0 bg-cover bg-left bg-no-repeat"
         style={{ backgroundImage: `url('/banner.png')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/90 to-transparent "></div>
