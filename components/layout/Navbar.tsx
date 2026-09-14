@@ -5,15 +5,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User, Globe, Menu, X } from 'lucide-react';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [lang, setLang] = useState<'en' | 'ar'>('en');
   const { data: session } = useSession();
+  const pathname = usePathname();
+
+  const isActive = (href: string) => pathname === href || (href !== '/' && pathname?.startsWith(href));
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Programs", href: "/programs" },
+    { name: "Universities", href: "/universities" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white shadow-sm">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+      <div className="max-w-[1440px] mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-12">
 
         {/* Logo - Flex-1 ensures it takes up equal space as the right actions to keep the center links perfectly centered */}
         <div className="flex-1 flex items-center justify-start">
@@ -32,26 +44,12 @@ export default function Navbar() {
 
         {/* Navigation Links (Desktop) - Auto width to stay in exact center */}
         <div className="hidden lg:flex items-center justify-center gap-8 text-[15px] font-bold text-navy">
-          <Link href="/" className="relative transition-colors hover:text-gold py-1 group">
-            Home
-            <span className="absolute left-0 bottom-[-4px] w-full h-[3px] bg-gold rounded-full"></span>
-          </Link>
-          <Link href="/about" className="relative transition-colors hover:text-gold py-1 group">
-            About
-            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
-          </Link>
-          <Link href="/programs" className="relative transition-colors hover:text-gold py-1 group">
-            Programs
-            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
-          </Link>
-          <Link href="/universities" className="relative transition-colors hover:text-gold py-1 group">
-            Universities
-            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
-          </Link>
-          <Link href="/contact" className="relative transition-colors hover:text-gold py-1 group">
-            Contact
-            <span className="absolute left-0 bottom-[-4px] w-0 h-[3px] bg-gold transition-all duration-300 group-hover:w-full rounded-full"></span>
-          </Link>
+          {navLinks.map((link) => (
+            <Link key={link.name} href={link.href} className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href) ? 'text-gold' : ''}`}>
+              {link.name}
+              <span className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${isActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+            </Link>
+          ))}
         </div>
 
         {/* Right Actions (Desktop) - Flex-1 and justify-end matches Logo width container */}
@@ -129,42 +127,17 @@ export default function Navbar() {
       >
         <div className="px-4 flex flex-col gap-4">
           <div className="flex flex-col space-y-1 pb-4 border-b border-gray-100">
-            <Link
-              href="/"
-              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <span className="w-2 h-2 rounded-full bg-gold mr-3"></span>
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/programs"
-              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Programs
-            </Link>
-            <Link
-              href="/universities"
-              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Universities
-            </Link>
-            <Link
-              href="/contact"
-              className="text-navy font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${isActive(link.href) ? 'text-gold bg-gray-50' : 'text-navy'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span className={`w-2 h-2 rounded-full mr-3 shrink-0 transition-colors ${isActive(link.href) ? 'bg-gold' : 'bg-transparent'}`}></span>
+                {link.name}
+              </Link>
+            ))}
           </div>
 
           <div className="flex flex-col gap-3 pt-2">

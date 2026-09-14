@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { motion } from 'framer-motion';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -20,10 +21,16 @@ export default function Partners() {
 
   return (
     <section className="w-full py-16 md:py-24 bg-[#FAFAFA]">
-      <div className="container mx-auto px-4 md:px-6 max-w-[1440px] text-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px] text-center">
 
         {/* ================= HEADER ================= */}
-        <div className="flex flex-col items-center justify-center space-y-4 mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          className="flex flex-col items-center justify-center space-y-4 mb-12"
+        >
           <div className="flex items-center gap-4">
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[11px] uppercase">
@@ -37,11 +44,17 @@ export default function Partners() {
           <p className="max-w-[750px] text-[#6B7B8F] md:text-lg">
             Our partnerships with leading universities open doors to world-class education and endless possibilities.
           </p>
-        </div>
+        </motion.div>
 
         {/* ================= SLIDER SECTION ================= */}
         {/* CRITICAL FIX: Added STRICT height (h-[160px]) to the main wrapper to stop ANY page jumping */}
-        <div className="relative flex items-center justify-center px-8 md:px-16 mt-14 w-full h-[160px]">
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+          className="relative flex items-center justify-center px-8 md:px-16 mt-14 w-full h-[160px]"
+        >
 
           <button
             type="button"
@@ -106,7 +119,7 @@ export default function Partners() {
           >
             <ChevronRight className="w-6 h-6" strokeWidth={2} />
           </button>
-        </div>
+        </motion.div>
 
         {/* Pagination Dots - Added fixed height h-[20px] */}
         <div className="partner-pagination h-[20px] flex justify-center items-center gap-3 mt-4 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-gray-300 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:!bg-[#D4AF37] [&_.swiper-pagination-bullet-active]:!opacity-100 [&_.swiper-pagination-bullet]:transition-all" />

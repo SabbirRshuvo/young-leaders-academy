@@ -6,36 +6,19 @@ import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 export default function Footer() {
   return (
     <footer className="w-full bg-navy text-white py-16">
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-3 md:gap-4 mb-6 w-max">
-
-              {/* White Box Container */}
-              <div className="flex items-center justify-center bg-white w-16 h-16 md:w-[76px] md:h-[76px] rounded-xl shadow-md shrink-0 overflow-hidden">
-
-                <Image
-                  src="/logo2.png"
-                  alt="Logo"
-                  width={150}
-                  height={150}
-                  className="w-full h-full object-contain scale-150"
-                />
+            <Link href="/" className="flex items-center gap-8 mb-6 w-max">
+              <Image src="/logo.jpeg" alt="Logo" width={150} height={150} className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain rounded-md" />
+              <div className="hidden sm:flex flex-col justify-center">
+                <div className="text-[14px] md:text-[16px] font-extrabold text-white leading-none tracking-[0.05em] mb-[6px]">YOUNG LEADERS</div>
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-[1px] w-4 bg-gold"></div>
+                  <div className="text-[9px] md:text-[10px] font-bold text-gold tracking-[0.2em] leading-none">ACADEMY</div>
+                  <div className="h-[1px] w-4 bg-gold"></div>
+                </div>
               </div>
-
-              {/* <div className="flex flex-col justify-center items-center mt-1">
-    <div className="text-[17px] md:text-[22px] font-extrabold text-[#0B2545] leading-none tracking-[0.08em] mb-2">
-      YOUNG LEADERS
-    </div>
-    <div className="flex items-center justify-center gap-2 md:gap-2.5 w-full">
-      <div className="h-[1.5px] w-5 md:w-7 bg-[#D4AF37]"></div>
-      <div className="text-[9px] md:text-[11px] font-bold text-[#D4AF37] tracking-[0.25em] leading-none">
-        ACADEMY
-      </div>
-      <div className="h-[1.5px] w-5 md:w-7 bg-[#D4AF37]"></div>
-    </div>
-  </div> */}
-
             </Link>
             <p className="text-white text-sm font-bold leading-relaxed max-w-[250px]">
               One Academy. One Journey.<br />A Lifetime of Impact.
@@ -68,11 +51,11 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <span>+880 1234 567890</span>
+                <Link href="tel:+8801234567890">+880 1234 567890</Link>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <span>info@ylaacademy.com</span>
+                <Link href="mailto:[EMAIL_ADDRESS]">example@gmail.com</Link>
               </li>
             </ul>
           </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import {
   UserRound,
   Brain,
@@ -50,7 +51,7 @@ const pillars = [
 
 export default function Pillars() {
   return (
-    <section className="relative w-full bg-[#CFD9E5] py-20 md:py-28 overflow-hidden font-sans">
+    <section className="relative w-full bg-[#FAF7F2] py-20 md:py-28 overflow-hidden font-sans">
 
       {/* ================= BACKGROUND DECORATIVE RINGS ================= */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
@@ -58,10 +59,16 @@ export default function Pillars() {
         <div className="absolute top-[30%] -right-[15%] w-[50vw] h-[50vw] rounded-full border-[1.5px] border-[#D4AF37]/15" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1440px] px-4 md:px-8 z-10">
+      <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12 z-10">
 
         {/* ================= HEADER ================= */}
-        <div className="mb-16 flex flex-col items-center text-center relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mb-16 flex flex-col items-center text-center relative z-10"
+        >
           <div className="mb-5 flex items-center justify-center gap-4">
             <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
             <span className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.4em] text-[#B8902E]">
@@ -80,17 +87,21 @@ export default function Pillars() {
             We nurture every aspect of a young person&apos;s growth, helping them build
             the skills, character and confidence to lead a meaningful life.
           </p>
-        </div>
+        </motion.div>
 
         {/* ================= STATIC GRID (4 Top, 3 Bottom) ================= */}
         {/* flex-wrap and justify-center will naturally force 4 items on top and 3 centered on the bottom on large screens */}
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-[1280px] mx-auto">
-          {pillars.map((pillar) => {
+        <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-[1440px] mx-auto">
+          {pillars.map((pillar, index) => {
             const Icon = pillar.icon;
             return (
-              <div
+              <motion.div
                 key={pillar.name}
-                className="group relative h-[520px] w-full sm:w-[320px] lg:w-[280px] xl:w-[295px] bg-white rounded-[28px] shadow-[0_8px_30px_rgba(11,37,69,0.06)] overflow-hidden flex flex-col items-center pt-10 px-6 sm:px-8 border border-gray-200 transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_15px_40px_rgba(212,175,55,0.15)] hover:border-[#D4AF37]/40"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                className="group relative h-[520px] w-full sm:w-[320px] lg:w-[280px] xl:w-[295px] bg-white rounded-[28px] overflow-hidden flex flex-col items-center pt-10 px-6 sm:px-8 border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300"
               >
 
                 {/* Glowing background behind the icon */}
@@ -139,7 +150,7 @@ export default function Pillars() {
                   </svg>
                 </div>
 
-              </div>
+              </motion.div>
             );
           })}
         </div>
