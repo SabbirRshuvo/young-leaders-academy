@@ -12,18 +12,16 @@ export default function UniversitiesHero() {
   };
 
   return (
-    <section className="relative w-full h-[600px] md:h-[700px] xl:h-[800px] flex items-center overflow-hidden">
-      {/* Background Image */}
+    <section className="relative w-full h-[500px] md:h-[600px] xl:h-[700px] flex items-center overflow-hidden">
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url('/universities-hero.png')` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('/universities-banner.png')` }}
       >
-        {/* Deep Navy Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-[#0B2545]/90 via-[#0B2545]/80 md:via-[#0B2545]/90 to-[#0B2545]/40 md:to-transparent backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0"></div>
       </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10">
-        <motion.div 
+        <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -43,11 +41,11 @@ export default function UniversitiesHero() {
             </span>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </motion.div>
-          
+
           <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white leading-[1.15]">
             Bridging Young Leaders to World-Class Institutions
           </motion.h1>
-          
+
           <motion.div variants={itemVariants} className="space-y-4">
             <p className="text-gray-200 font-bold text-base md:text-lg lg:text-xl">
               Opening doors to exceptional academic experiences, global networks, and transformative university pathways.
@@ -56,7 +54,7 @@ export default function UniversitiesHero() {
               Young Leaders Academy connects ambitious students with international academic communities through university exposure, leadership programmes, exchange experiences, and strategic preparation for the world's most competitive institutions.
             </p>
           </motion.div>
-          
+
           <motion.div variants={itemVariants} className="pt-6 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <Link
               href="#network"
