@@ -20,26 +20,25 @@ export default function ContactCta() {
 
   return (
     <section className="relative w-full overflow-hidden flex items-center min-h-[400px] md:min-h-[450px]">
-      
-      {/* Background Image */}
-      <Image 
-        src="/enjoy.png" // Placeholder image for hikers
+
+      <Image
+        src="/enjoy.png"
         alt="Hikers on a mountain summit"
         fill
         sizes="100vw"
-        className="object-cover object-center"
+        className="object-cover"
         quality={75}
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-[#0B2545]/95 via-[#0B2545]/85 to-[#0B2545]/60 z-10"></div>
+      <div className="absolute inset-0 "></div>
 
       {/* Content Container */}
       <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-16 md:py-20 relative z-20">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left Text */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -62,7 +61,7 @@ export default function ContactCta() {
           </motion.div>
 
           {/* Right Newsletter Input */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -70,14 +69,14 @@ export default function ContactCta() {
             className="w-full lg:max-w-md ml-auto"
           >
             <form className="relative flex items-center w-full">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
+              <input
+                type="email"
+                placeholder="Your email address"
                 className="w-full h-14 md:h-16 pl-6 pr-[72px] rounded-lg bg-[#0B2545]/50 border border-white/20 text-white placeholder:text-gray-300 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all backdrop-blur-md"
                 required
               />
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="absolute right-1 top-1 bottom-1 w-12 md:w-14 rounded-md bg-[#D4AF37] hover:bg-[#C59B27] flex items-center justify-center transition-colors group"
                 aria-label="Subscribe to newsletter"
               >
@@ -86,7 +85,7 @@ export default function ContactCta() {
             </form>
           </motion.div>
         </div>
-        
+
       </div>
     </section>
   );

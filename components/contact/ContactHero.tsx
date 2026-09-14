@@ -10,7 +10,7 @@ export default function ContactHero() {
   };
 
   return (
-    <section className="relative w-full h-[500px] md:h-[600px] xl:h-[700px] flex items-center overflow-hidden">
+    <section className="relative w-full h-[400px] md:h-[500px] xl:h-[600px] flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image

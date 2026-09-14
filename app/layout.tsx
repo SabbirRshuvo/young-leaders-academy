@@ -30,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="font-sans antialiased min-h-full flex flex-col">
+      <body className="font-sans antialiased min-h-full flex flex-col" suppressHydrationWarning>
         <Providers>
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>

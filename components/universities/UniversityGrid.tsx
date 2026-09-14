@@ -10,48 +10,48 @@ export default function UniversityGrid() {
     {
       name: "Harvard University",
       country: "United States",
-      flag: "/flag-us.png", // Placeholder
-      logo: "/logo-harvard.png", // Placeholder
+      flag: "🇺🇸",
+      logo: "/harvard.png",
       tags: ["Leadership", "Innovation", "Global Impact"],
       desc: "Harvard's multidisciplinary environment offers a powerful model for developing intellectually curious and globally minded leaders."
     },
     {
       name: "University of Oxford",
       country: "United Kingdom",
-      flag: "/flag-uk.png",
-      logo: "/logo-oxford.png",
+      flag: "🇬🇧",
+      logo: "/oxford.png",
       tags: ["Academic Excellence", "Leadership", "Global Perspective"],
       desc: "Oxford represents a tradition of intellectual curiosity and academic excellence, with pathways to global leadership and impact."
     },
     {
       name: "Stanford University",
       country: "United States",
-      flag: "/flag-us.png",
-      logo: "/logo-stanford.png",
+      flag: "🇺🇸",
+      logo: "/stanford.png",
       tags: ["Innovation", "Entrepreneurship", "Leadership"],
       desc: "Stanford's culture of innovation demonstrates how academic knowledge can translate into meaningful global impact."
     },
     {
       name: "Massachusetts Institute of Technology",
       country: "United States",
-      flag: "/flag-us.png",
-      logo: "/logo-mit.png",
+      flag: "🇺🇸",
+      logo: "/mit.png",
       tags: ["STEM", "Innovation", "Problem Solving"],
       desc: "MIT inspires the next generation of global thinkers and changemakers through world-class research and hands-on learning."
     },
     {
       name: "University of Cambridge",
       country: "United Kingdom",
-      flag: "/flag-uk.png",
-      logo: "/logo-cambridge.png",
+      flag: "🇬🇧",
+      logo: "/cambridge.png",
       tags: ["Scholarship", "Research", "Critical Thinking"],
       desc: "Cambridge's collegiate tradition emphasizes independent thought, critical thinking and interdisciplinary learning."
     },
     {
       name: "Yale University",
       country: "United States",
-      flag: "/flag-us.png",
-      logo: "/logo-yale.png",
+      flag: "🇺🇸",
+      logo: "/yale.png",
       tags: ["Leadership", "Global Affairs", "Academic Excellence"],
       desc: "Yale's diverse academic community and global perspective help students develop the skills to lead and create lasting impact."
     }
@@ -73,9 +73,9 @@ export default function UniversityGrid() {
   return (
     <section className="w-full py-16 md:py-24 bg-white overflow-hidden" id="network">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
-        
+
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -102,7 +102,7 @@ export default function UniversityGrid() {
         </motion.div>
 
         {/* 3-Column Grid */}
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -110,31 +110,35 @@ export default function UniversityGrid() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
         >
           {universities.map((uni, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               variants={itemVariants}
               className="flex flex-col bg-white rounded-2xl border border-gray-100 p-8 shadow-xl shadow-black/[0.04] hover:-translate-y-1.5 hover:shadow-2xl hover:border-[#D4AF37]/30 transition-all duration-300 group"
             >
               {/* Top Row: Logo & Name */}
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-xl border border-gray-100 bg-[#FCFAF6] flex items-center justify-center shrink-0 p-2 overflow-hidden shadow-sm">
-                  {/* Placeholder for University Logo */}
-                  <div className="w-full h-full bg-gray-200 rounded animate-pulse" />
+                <div className="w-16 h-16 flex items-center justify-center shrink-0 overflow-hidden">
+                  <Image
+                    src={uni.logo}
+                    alt={uni.name}
+                    width={64}
+                    height={64}
+                    className="object-contain w-full h-full"
+                  />
                 </div>
                 <div className="flex flex-col pt-1">
-                  <h3 className="text-[#0B2545] font-bold font-serif text-lg leading-tight mb-2">
+                  <h3 className="text-[#0B2545] font-bold font-serif text-lg leading-tight mb-1">
                     {uni.name}
                   </h3>
                   <div className="flex items-center gap-2">
-                    {/* Placeholder for Flag */}
-                    <div className="w-4 h-3 bg-gray-200 rounded-sm shrink-0" />
+                    <span className="text-sm leading-none">{uni.flag}</span>
                     <span className="text-xs text-gray-500 font-medium">{uni.country}</span>
                   </div>
                 </div>
               </div>
 
               {/* Tags separated by dots */}
-              <div className="flex flex-wrap items-center gap-1.5 mb-6 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#D4AF37]">
+              <div className="flex flex-wrap items-center gap-1.5 mb-6 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-gray-500">
                 {uni.tags.map((tag, i) => (
                   <span key={i} className="flex items-center">
                     {tag}

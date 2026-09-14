@@ -12,7 +12,7 @@ export default function UniversitiesHero() {
   };
 
   return (
-    <section className="relative w-full h-[600px] md:h-[700px] xl:h-[800px] flex items-center overflow-hidden">
+    <section className="relative w-full h-[500px] md:h-[600px] xl:h-[700px] flex items-center overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('/universities-banner.png')` }}
