@@ -1,16 +1,25 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function WhoWeServe() {
   return (
     <section className="w-full py-16 bg-white">
-      <div className="max-w-[1440px] mx-auto px-4">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Grid Layout - Gap added for clear separation */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch">
 
           {/* Card 1: Students */}
-          <div className="relative w-full h-full min-h-[450px] bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+          <motion.div 
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            className="group relative w-full h-full min-h-[450px] bg-white overflow-hidden rounded-[24px] border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
+          >
             {/* Image Layer - Limited width so it doesn't stretch too far behind text on large screens */}
             <div className="absolute inset-y-0 left-0 w-full h-full">
               <img
@@ -51,10 +60,16 @@ export default function WhoWeServe() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Card 2: Parents */}
-          <div className="relative w-full h-full min-h-[450px] bg-[#072340] overflow-hidden rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.15)] transition-shadow hover:shadow-[0_8px_30px_rgb(0,0,0,0.25)]">
+          {/* Card 2: Partners & Institutions */}
+          <motion.div 
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+            className="group relative w-full h-full min-h-[450px] bg-[#0B2545] overflow-hidden rounded-[24px] border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
+          >
             {/* Image Layer */}
             <div className="absolute inset-y-0 left-0 w-full h-full">
               <img
@@ -92,7 +107,7 @@ export default function WhoWeServe() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

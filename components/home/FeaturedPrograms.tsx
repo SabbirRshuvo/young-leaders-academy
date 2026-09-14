@@ -1,5 +1,8 @@
+"use client";
+
 import Link from 'next/link';
 import { GraduationCap, Users, Lightbulb, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const programs = [
   {
@@ -24,11 +27,17 @@ const programs = [
 
 export default function FeaturedPrograms() {
   return (
-    <section className="w-full py-16 md:py-24 bg-[#CFD9E5]">
-      <div className="container mx-auto px-4 md:px-6 max-w-[1440px]">
+    <section className="w-full py-16 md:py-24 bg-[#FAF7F2]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px]">
 
         {/* ================= HEADER ================= */}
-        <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
+        >
           <div className="flex items-center gap-4">
             <div className="h-[1px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#B8902E] font-bold tracking-[0.2em] text-[11px] uppercase">
@@ -44,16 +53,20 @@ export default function FeaturedPrograms() {
           <p className="max-w-[700px] text-gray-500 md:text-base font-sans mt-2">
             Our specialized programs are designed to develop future-ready leaders.
           </p>
-        </div>
+        </motion.div>
 
         {/* ================= CARDS GRID ================= */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {programs.map((prog, i) => {
             const Icon = prog.icon;
             return (
-              <div
+              <motion.div
                 key={i}
-                className="flex flex-col bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow duration-300"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                className="group flex flex-col bg-white rounded-3xl border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl overflow-hidden"
               >
                 {/* Image Section */}
                 <div className="w-full h-[220px] relative">
@@ -90,7 +103,7 @@ export default function FeaturedPrograms() {
                   </div>
                 </div>
 
-              </div>
+              </motion.div>
             );
           })}
         </div>
