@@ -2,10 +2,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function Footer() {
   const t = useTranslations('Footer');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   return (
     <footer className="w-full bg-navy text-white py-16">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -36,11 +38,11 @@ export default function Footer() {
           <div className="space-y-6 lg:pl-8">
             <h4 className="text-lg font-bold text-white mb-6">{t('quickLinksTitle')}</h4>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li><Link href="/" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.home')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/about" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.about')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/programs" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.programs')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/universities" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.universities')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/contact" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.contact')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.home')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/about`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.about')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/programs`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.programs')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/universities`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.universities')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/contact`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.contact')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
             </ul>
           </div>
 
@@ -84,12 +86,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
+        <div className={`mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center ${isAr ? 'md:flex-row-reverse' : ''}`}>
           <p>© {new Date().getFullYear()} Young Leaders Academy. {t('rightsReserved')}</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-white transition-colors">{t('privacyPolicy')}</Link>
+          <div className="flex space-x-6 mt-4 md:mt-0 items-center">
+            <Link href={`/${locale}/privacy`} className={`hover:text-white transition-colors ${isAr ? 'ml-6' : ''}`}>{t('privacyPolicy')}</Link>
             <span className="text-gray-600">|</span>
-            <Link href="/terms" className="hover:text-white transition-colors">{t('termsConditions')}</Link>
+            <Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('termsConditions')}</Link>
           </div>
         </div>
       </div>

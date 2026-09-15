@@ -60,7 +60,7 @@ export default function Partners() {
 
           <button
             type="button"
-            className="partner-prev absolute left-0 z-10 w-12 h-12 flex items-center justify-center text-gray-400 hover:text-[#0B2545] transition-colors cursor-pointer bg-white rounded-full shadow-sm border border-gray-100 hover:shadow-md"
+            className="partner-prev absolute left-0 z-10 w-12 h-12 flex items-center justify-center text-gray-400 hover:text-[#0B2545] transition-colors cursor-pointer bg-white rounded-full shadow-sm border border-gray-300 hover:shadow-md"
           >
             <ChevronLeft className="w-6 h-6" strokeWidth={2} />
           </button>
@@ -94,7 +94,7 @@ export default function Partners() {
               // STRICT height on Slides
               <SwiperSlide key={i} className="flex justify-center h-[110px]">
                 {/* Changed transition-all to transition-shadow to prevent size shifting */}
-                <div className="w-full h-[110px] bg-white border border-gray-100 rounded-xl flex flex-col items-center justify-center p-4 shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-shadow duration-300">
+                <div className="w-full h-[110px] bg-white border border-gray-300 rounded-xl flex flex-col items-center justify-center p-4 shadow-[0_4px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-shadow duration-300">
 
                   {partner.sub === "UNIVERSITY OF" && (
                     <div className="text-[10px] font-bold text-gray-500 mb-1">{partner.sub}</div>
