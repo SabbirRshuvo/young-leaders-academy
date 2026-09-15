@@ -42,7 +42,7 @@ export default function Navbar() {
         {/* Logo - Flex-1 ensures it takes up equal space as the right actions to keep the center links perfectly centered */}
         <div className="flex-1 flex items-center justify-start">
           <Link href="/" className="flex items-center gap-0">
-            <Image src="/logo.jpeg" alt="Logo" width={150} height={150} className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain" />
+            <Image src="/logo.jpeg" alt="Logo" width={150} height={150} priority className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain" />
             <div className="hidden sm:flex flex-col justify-center -ml-3 md:-ml-4">
               <div className="text-[14px] md:text-[16px] font-extrabold text-navy leading-none tracking-[0.05em] mb-[6px]">YOUNG LEADERS</div>
               <div className="flex items-center justify-center gap-2">

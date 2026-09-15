@@ -26,15 +26,15 @@ export default function ContactFormSection() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }
   };
 
-  
+
 
   return (
     <section className="w-full py-16 md:py-24 bg-[#FCFAF6] overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
-          
+
           {/* Left Column: {t('badge1')} */}
-          <motion.div 
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -43,14 +43,14 @@ export default function ContactFormSection() {
           >
             <motion.div variants={itemVariants} className="flex items-center gap-4 mb-4">
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-                Contact Information
+                {t('badge1')}
               </span>
             </motion.div>
-            
+
             <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight mb-6">
-              Get in Touch
+              {t('title1')}
             </motion.h2>
-            
+
             <motion.p variants={itemVariants} className="text-[#0B2545] font-sans font-medium text-base md:text-lg mb-12 max-w-md">
               {t('subtitle1')}
             </motion.p>
@@ -68,9 +68,9 @@ export default function ContactFormSection() {
                       {info.details.map((line, i) => {
                         const isLink = info.link && i === 0;
                         return isLink ? (
-                          <a 
-                            key={i} 
-                            href={info.link!} 
+                          <a
+                            key={i}
+                            href={info.link!}
                             className="text-gray-600 text-sm md:text-base leading-relaxed hover:text-[#D4AF37] transition-colors"
                           >
                             {line}
@@ -89,7 +89,7 @@ export default function ContactFormSection() {
           </motion.div>
 
           {/* Right Column: Contact Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -101,7 +101,7 @@ export default function ContactFormSection() {
                   {t('form_badge')}
                 </span>
               </div>
-              
+
               <h3 className="text-3xl font-serif font-bold text-[#0B2545] mb-8">
                 {t('form_title')}
               </h3>
@@ -111,12 +111,12 @@ export default function ContactFormSection() {
                   {/* Full Name */}
                   <div className="flex flex-col gap-2">
                     <label htmlFor="name" className="text-sm font-bold text-[#0B2545]">
-                      Full Name <span className="text-red-500">*</span>
+                      {t('form_name')} <span className="text-red-500">*</span>
                     </label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      placeholder={t('form_name_ph')} 
+                    <input
+                      type="text"
+                      id="name"
+                      placeholder={t('form_name_ph')}
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all text-sm text-gray-800 placeholder:text-gray-400"
                       required
                     />
@@ -124,12 +124,12 @@ export default function ContactFormSection() {
                   {/* Email */}
                   <div className="flex flex-col gap-2">
                     <label htmlFor="email" className="text-sm font-bold text-[#0B2545]">
-                      Email Address <span className="text-red-500">*</span>
+                      {t('form_email')} <span className="text-red-500">*</span>
                     </label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      placeholder={t('form_email_ph')} 
+                    <input
+                      type="email"
+                      id="email"
+                      placeholder={t('form_email_ph')}
                       className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all text-sm text-gray-800 placeholder:text-gray-400"
                       required
                     />
@@ -139,10 +139,10 @@ export default function ContactFormSection() {
                 {/* Subject */}
                 <div className="flex flex-col gap-2">
                   <label htmlFor="subject" className="text-sm font-bold text-[#0B2545]">
-                    Subject <span className="text-red-500">*</span>
+                    {t('form_subject')} <span className="text-red-500">*</span>
                   </label>
-                  <select 
-                    id="subject" 
+                  <select
+                    id="subject"
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all text-sm text-gray-800 appearance-none"
                     required
                     defaultValue=""
@@ -158,20 +158,20 @@ export default function ContactFormSection() {
                 {/* Message */}
                 <div className="flex flex-col gap-2 flex-1">
                   <label htmlFor="message" className="text-sm font-bold text-[#0B2545]">
-                    Message <span className="text-red-500">*</span>
+                    {t('form_message')} <span className="text-red-500">*</span>
                   </label>
-                  <textarea 
-                    id="message" 
+                  <textarea
+                    id="message"
                     rows={4}
-                    placeholder={t('form_message_ph')} 
+                    placeholder={t('form_message_ph')}
                     className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all text-sm text-gray-800 placeholder:text-gray-400 resize-none flex-1 min-h-[120px]"
                     required
                   ></textarea>
                 </div>
 
                 {/* Submit Button */}
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="w-full mt-2 inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-[1.01] shadow-md group"
                 >
                   {t('form_submit')}

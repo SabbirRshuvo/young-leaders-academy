@@ -80,7 +80,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] mb-4">
-            {selectedCategory === 'all' ? t('title') : tHero(
+            {selectedCategory === 'all' ? t('titlePrefix') : tHero(
               selectedCategory === 'high_school' ? 'cat2' :
               selectedCategory === 'mentorship' ? 'cat3' :
               selectedCategory === 'executive' ? 'cat4' :
@@ -158,7 +158,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     href={program.href}
                     className="inline-flex items-center justify-center gap-2 w-max px-6 py-2.5 rounded-full bg-[#0B2545] hover:bg-[#071931] text-white font-semibold text-sm transition-colors group/btn"
                   >
-                    {t('viewBtn')}
+                    {t('cta')}
                     <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                   </Link>
                 </div>
@@ -169,7 +169,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
 
         {filteredPrograms.length === 0 && (
           <div className="w-full text-center py-12">
-            <p className="text-gray-500">No programs found for this category currently.</p>
+            <p className="text-gray-500">{t('noPrograms')}</p>
           </div>
         )}
 
