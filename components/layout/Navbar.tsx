@@ -15,6 +15,7 @@ export default function Navbar() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('Navigation');
+  // const router = useRouter();
 
   const switchLocale = () => {
     const nextLocale = locale === 'en' ? 'ar' : 'en';
@@ -101,7 +102,9 @@ export default function Navbar() {
             </div>
           ) : (
             <button
-              onClick={() => signIn()}
+              onClick={() => {
+                router.push("/en/sign-up");
+              }}
               className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-md"
             >
               <User className="w-[18px] h-[18px]" />
@@ -178,7 +181,7 @@ export default function Navbar() {
               </button>
             ) : (
               <button
-                onClick={() => signIn()}
+                onClick={() => router.push("/en/sign-up")}
                 className="whitespace-nowrap w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[48px] px-6 text-sm font-semibold transition-colors shadow-md"
               >
                 <User className="w-[18px] h-[18px]" />
