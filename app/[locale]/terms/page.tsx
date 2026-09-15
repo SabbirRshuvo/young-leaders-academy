@@ -150,8 +150,6 @@ export default async function TermsConditionsPage({
               </div>
             ))}
           </div>
-
-          {/* Contact Support Link */}
           <div className="flex flex-col items-center text-center bg-gray-100 rounded-3xl p-10 border border-gray-300">
             <h3 className="text-2xl font-bold text-[#0B2545] mb-4">
               {isAr ? "هل لديك أسئلة حول شروطنا؟" : "Have questions about our terms?"}
