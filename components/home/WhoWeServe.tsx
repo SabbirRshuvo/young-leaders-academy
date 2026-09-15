@@ -4,8 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export default function WhoWeServe() {
+  const t = useTranslations('WhoWeServe');
   return (
     <section className="w-full py-16 bg-white">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -13,7 +15,7 @@ export default function WhoWeServe() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch">
 
           {/* Card 1: Students */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -37,18 +39,18 @@ export default function WhoWeServe() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-[1.5px] w-8 bg-[#C59B27]" />
                 <span className="text-[#C59B27] font-bold tracking-widest text-xs uppercase">
-                  WHO WE SERVE
+                  {t('tag')}
                 </span>
               </div>
 
               <h3 className="text-4xl font-serif font-bold text-[#0B2545] mb-2">
-                Students
+                {t('studentsTitle')}
               </h3>
               <p className="text-base font-semibold text-[#0B2545] mb-4">
-                Discover your potential.
+                {t('studentsSubtitle')}
               </p>
               <p className="text-sm font-sans text-gray-600 mb-8 leading-relaxed max-w-[400px]">
-                We provide students with the tools, mentorship and opportunities to build confidence, develop essential skills and achieve their dreams.
+                {t('studentsDesc')}
               </p>
 
               <div>
@@ -56,14 +58,14 @@ export default function WhoWeServe() {
                   href="/programs?audience=students"
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-[#0B2545] hover:bg-[#C59B27]/10 transition-colors"
                 >
-                  Learn More <ArrowRight className="w-4 h-4 text-[#C59B27]" />
+                  {t('exploreMore')} <ArrowRight className="w-4 h-4 text-[#C59B27]" />
                 </Link>
               </div>
             </div>
           </motion.div>
 
           {/* Card 2: Partners & Institutions */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -89,13 +91,13 @@ export default function WhoWeServe() {
               </div>
 
               <h3 className="text-4xl font-serif font-bold text-white mb-2">
-                Parents
+                {t('parentsTitle')}
               </h3>
               <p className="text-base font-semibold text-white mb-4">
-                Partner in the journey.
+                {t('parentsSubtitle')}
               </p>
               <p className="text-sm font-sans text-gray-300 mb-8 leading-relaxed max-w-[400px]">
-                We support parents with expert guidance, resources and a trusted community to help their children grow and succeed.
+                {t('parentsDesc')}
               </p>
 
               <div>
@@ -103,7 +105,7 @@ export default function WhoWeServe() {
                   href="/programs?audience=parents"
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                 >
-                  Learn More <ArrowRight className="w-4 h-4 text-[#C59B27]" />
+                  {t('exploreMore')} <ArrowRight className="w-4 h-4 text-[#C59B27]" />
                 </Link>
               </div>
             </div>

@@ -1,10 +1,12 @@
 "use client";
 
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 
 export default function ContactCta() {
+  const t = useTranslations('ContactCta');
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -47,16 +49,16 @@ export default function ContactCta() {
           >
             <motion.div variants={itemVariants} className="flex items-center gap-4 mb-4">
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-                Stay Connected
+                {t('badge')}
               </span>
             </motion.div>
 
             <motion.h2 variants={itemVariants} className="text-white font-serif text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mb-4">
-              Join Our Global Community
+              {t('title')}
             </motion.h2>
 
             <motion.p variants={itemVariants} className="text-gray-200 text-sm md:text-base leading-relaxed font-sans max-w-md">
-              Get the latest updates on programs, university pathways, and leadership opportunities.
+              {t('subtitle')}
             </motion.p>
           </motion.div>
 
@@ -71,7 +73,7 @@ export default function ContactCta() {
             <form className="relative flex items-center w-full">
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder={t('input_ph')}
                 className="w-full h-14 md:h-16 pl-6 pr-[72px] rounded-lg bg-[#0B2545]/50 border border-white/20 text-white placeholder:text-gray-300 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all backdrop-blur-md"
                 required
               />

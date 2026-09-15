@@ -1,7 +1,10 @@
 import Image from 'next/image';
 import { Quote } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function FoundersNote() {
+  const t = useTranslations('FoundersNote');
+
   return (
     <section className="w-full bg-[#0B2545] py-16 md:py-24 overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -31,14 +34,14 @@ export default function FoundersNote() {
             <div className="flex items-center gap-4 mb-4 md:mb-6">
               <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
-                Founder's Note
+                {t('badge')}
               </span>
               <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37] lg:hidden"></div>
             </div>
 
             {/* Main Heading */}
             <h2 className="text-white font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-bold leading-tight mb-8">
-              A Message from Our Founders
+              {t('title')}
             </h2>
 
             {/* Quote Icon */}
@@ -46,7 +49,7 @@ export default function FoundersNote() {
 
             {/* Quote Body */}
             <blockquote className="text-gray-200 text-base md:text-lg lg:text-xl leading-relaxed italic mb-10 font-medium">
-              "We founded Young Leaders Academy because we believe that education has the power to transform lives, communities and nations. Our mission is to provide young people with the right tools, guidance and opportunities to become the leaders of tomorrow."
+              {t('quote')}
             </blockquote>
 
             {/* Sign-off */}
@@ -54,10 +57,10 @@ export default function FoundersNote() {
               <div className="w-12 h-[2px] bg-[#D4AF37]"></div>
               <div>
                 <div className="text-white font-serif italic text-2xl md:text-3xl mb-1">
-                  The Founders
+                  {t('signOffTitle')}
                 </div>
                 <div className="text-gray-400 text-[10px] md:text-xs tracking-widest uppercase font-bold">
-                  Young Leaders Academy
+                  {t('signOffSubtitle')}
                 </div>
               </div>
             </div>

@@ -3,14 +3,18 @@
 import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 import { MapPin } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function GlobalPresence() {
+  const t = useTranslations('GlobalPresence');
   const locations = [
-    { city: "Dhaka", desc: "Headquarters" },
-    { city: "London", desc: "Europe Office" },
-    { city: "New York", desc: "Regional Office" },
-    { city: "Singapore", desc: "Asia Pacific Office" },
+    { city: t('loc1_city'), desc: t('loc1_desc') },
+    { city: t('loc2_city'), desc: t('loc2_desc') },
+    { city: t('loc3_city'), desc: t('loc3_desc') },
+    { city: t('loc4_city'), desc: t('loc4_desc') }
   ];
+
+  
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -41,33 +45,33 @@ export default function GlobalPresence() {
             <motion.div variants={itemVariants} className="flex items-center gap-4 mb-4">
               <div className="h-[2px] w-8 bg-[#D4AF37]"></div>
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-                Our Global Presence
+                {t('badge')}
               </span>
             </motion.div>
             
             <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight mb-6">
-              A Worldwide Network
+              {t('title')}
             </motion.h2>
             
             <motion.p variants={itemVariants} className="text-gray-600 font-sans text-sm md:text-base leading-relaxed mb-10 max-w-sm">
-              From our headquarters to our international partners, we are connected across the globe to bring world-class opportunities closer to you.
+              {t('subtitle')}
             </motion.p>
 
             {/* Stats Row */}
             <motion.div variants={itemVariants} className="flex items-center gap-6 md:gap-8">
               <div className="flex flex-col">
-                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">6</span>
-                <span className="text-xs md:text-sm font-semibold text-gray-500">Continents</span>
+                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">{t('stat1_val')}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-500">{t('stat1_lbl')}</span>
               </div>
               <div className="h-12 w-[1px] bg-gray-300"></div>
               <div className="flex flex-col">
-                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">20+</span>
-                <span className="text-xs md:text-sm font-semibold text-gray-500">Countries</span>
+                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">{t('stat2_val')}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-500">{t('stat2_lbl')}</span>
               </div>
               <div className="h-12 w-[1px] bg-gray-300"></div>
               <div className="flex flex-col">
-                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">50+</span>
-                <span className="text-xs md:text-sm font-semibold text-gray-500">Partner Institutions</span>
+                <span className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] leading-none mb-1">{t('stat3_val')}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-500">{t('stat3_lbl')}</span>
               </div>
             </motion.div>
           </motion.div>

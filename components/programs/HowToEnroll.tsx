@@ -2,31 +2,34 @@
 
 import { FileText, ClipboardList, Users, GraduationCap, ArrowRight } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export default function HowToEnroll() {
+  const t = useTranslations('HowToEnroll');
+  
   const steps = [
     {
       num: "1",
-      title: "Choose Program",
-      desc: "Explore our programs and find the right fit for your goals.",
+      title: t('step1Title'),
+      desc: t('step1Desc'),
       icon: FileText
     },
     {
       num: "2",
-      title: "Submit Application",
-      desc: "Complete the online application form with your details.",
+      title: t('step2Title'),
+      desc: t('step2Desc'),
       icon: ClipboardList
     },
     {
       num: "3",
-      title: "Interview",
-      desc: "Attend a short interview to help us know you better.",
+      title: t('step3Title'),
+      desc: t('step3Desc'),
       icon: Users
     },
     {
       num: "4",
-      title: "Welcome Aboard",
-      desc: "Get accepted and start your journey with us!",
+      title: t('step4Title'),
+      desc: t('step4Desc'),
       icon: GraduationCap
     }
   ];
@@ -61,15 +64,15 @@ export default function HowToEnroll() {
           <div className="flex items-center gap-4 mb-2 md:mb-4">
             <div className="h-[1.5px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-              Simple Steps to Get Started
+              {t('badge')}
             </span>
             <div className="h-[1.5px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#0B2545] mt-2 mb-3">
-            How to Enroll
+            {t('title')}
           </h2>
           <p className="text-gray-600 font-sans max-w-xl mx-auto text-sm md:text-base leading-relaxed">
-            Joining Young Leaders Academy is easy. Follow these simple steps to begin your journey.
+            {t('subtitle')}
           </p>
         </motion.div>
 

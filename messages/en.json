@@ -1,0 +1,383 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "programs": "Programs",
+    "universities": "Universities",
+    "contact": "Contact"
+  },
+  "Hero": {
+    "title": "Preparing Young People For Life.",
+    "subtitle": "One Academy. One Journey. A Lifetime of Impact.",
+    "cta": "Explore Programs"
+  },
+  "Pillars": {
+    "badge": "The 7 Pillars",
+    "title1": "Holistic Development",
+    "title2": "for a Brighter",
+    "title3": "Future",
+    "desc": "We nurture every aspect of a young person's growth, helping them build the skills, character and confidence to lead a meaningful life.",
+    "pillars": [
+      {
+        "name": "SELF",
+        "points": [
+          "Identity",
+          "Values",
+          "Confidence",
+          "Purpose",
+          "Discipline"
+        ]
+      },
+      {
+        "name": "MIND",
+        "points": [
+          "Critical Thinking",
+          "AI & Technology",
+          "Innovation",
+          "Problem Solving",
+          "Creativity"
+        ]
+      },
+      {
+        "name": "LEADERSHIP",
+        "points": [
+          "Leadership",
+          "Communication",
+          "Influence",
+          "Public Speaking",
+          "Teamwork"
+        ]
+      },
+      {
+        "name": "CAREER",
+        "points": [
+          "University Guidance",
+          "Career Planning",
+          "Entrepreneurship",
+          "Internships",
+          "Financial Literacy"
+        ]
+      },
+      {
+        "name": "HEALTH",
+        "points": [
+          "Sports & Fitness",
+          "Nutrition",
+          "Mental Wellbeing",
+          "Sleep & Recovery",
+          "Healthy Habits"
+        ]
+      },
+      {
+        "name": "SOCIETY",
+        "points": [
+          "Ethics & Integrity",
+          "Community Service",
+          "Social Intelligence",
+          "Patriotism",
+          "Global Awareness"
+        ]
+      },
+      {
+        "name": "FAMILY",
+        "points": [
+          "Parent Coaching",
+          "Teen Coaching",
+          "Parenting Skills",
+          "Family Communication",
+          "Stronger Relationships"
+        ]
+      }
+    ]
+  },
+  "WhoWeServe": {
+    "tag": "WHO WE SERVE",
+    "studentsTitle": "Students",
+    "studentsSubtitle": "Discover Your Potential",
+    "studentsDesc": "We equip students with the tools, mentorship, and global opportunities to build confidence, leadership, and lifelong impact.",
+    "students_btn": "Explore More",
+    "parentsTitle": "Parents",
+    "parentsSubtitle": "Partners in the Journey",
+    "parentsDesc": "We partner with parents through tailored guidance and trusted resources to help their children thrive and excel.",
+    "parents_btn": "Explore More",
+    "exploreMore": "Explore More"
+  },
+  "Footer": {
+    "tagline": "One Academy. One Journey. A Lifetime of Impact.",
+    "quickLinksTitle": "Quick Links",
+    "contactUsTitle": "Contact Us",
+    "newsletterTitle": "Newsletter",
+    "newsletterDesc": "Get the latest updates, program news and inspiring stories.",
+    "emailPlaceholder": "Your email address",
+    "subscribeButton": "Subscribe",
+    "rightsReserved": "All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms & Conditions",
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "programs": "Programs",
+      "universities": "Universities",
+      "contact": "Contact"
+    }
+  },
+  "FeaturedPrograms": {
+    "tag": "ACADEMIC EXCELLENCE",
+    "title": "Featured Programs",
+    "subtitle": "Discover world-class pathways designed to cultivate future leaders, researchers, and global changemakers.",
+    "prog1_title": "Academic Excellence",
+    "prog1_desc": "Build a strong academic foundation with expert guidance, personalized support and real-world learning.",
+    "prog2_title": "Leadership Development",
+    "prog2_desc": "Develop confidence, communication and decision-making skills to become effective and compassionate leaders.",
+    "prog3_title": "Innovation",
+    "prog3_desc": "Explore creativity, technology and problem-solving to turn ideas into real-world solutions.",
+    "viewProgram": "View Program",
+    "learnMore": "Learn More",
+    "exploreAll": "Explore All Programs"
+  },
+  "Partners": {
+    "badge": "OUR UNIVERSITY PARTNERS",
+    "title": "Top Universities. Global Opportunities.",
+    "subtitle": "Our partnerships with leading universities open doors to world-class education and endless possibilities."
+  },
+  "ContactHero": {
+    "badge": "Get In Touch",
+    "title": "We'd Love to Hear From You",
+    "subtitle": "Have questions about our programs, university pathways, or global opportunities? Our team is here to help. Reach out and let's start your journey together."
+  },
+  "ContactFormSection": {
+    "badge1": "Contact Information",
+    "title1": "Get in Touch",
+    "subtitle1": "Our team is available to assist you with any questions about our programs, admissions, or global opportunities.",
+    "info1_title": "Our Headquarters",
+    "info1_line1": "House 12, Road 5, Banani",
+    "info1_line2": "Dhaka 1213, Bangladesh",
+    "info2_title": "Phone Number",
+    "info2_line1": "+880 1896 123 456",
+    "info2_line2": "(Mon - Fri, 9:00 AM - 6:00 PM)",
+    "info3_title": "Email Address",
+    "info3_line1": "hello@youngleadersacademy.com",
+    "info3_line2": "(We reply within 24 hours)",
+    "info4_title": "Office Working Hours",
+    "info4_line1": "Sunday - Thursday: 9:00 AM - 6:00 PM",
+    "info4_line2": "Friday & Saturday: Closed",
+    "form_badge": "Send Us A Message",
+    "form_title": "We're Here to Help",
+    "form_name": "Full Name",
+    "form_name_ph": "Your full name",
+    "form_email": "Email Address",
+    "form_email_ph": "you@example.com",
+    "form_subject": "Subject",
+    "form_subject_default": "Select a subject",
+    "form_subject_opt1": "Admissions & Enrollment",
+    "form_subject_opt2": "Program Details",
+    "form_subject_opt3": "University Partnerships",
+    "form_subject_opt4": "Other Inquiry",
+    "form_message": "Message",
+    "form_message_ph": "Tell us how we can help you...",
+    "form_submit": "Send Message",
+    "form_footer": "Your information is safe with us."
+  },
+  "ContactCta": {
+    "badge": "Stay Connected",
+    "title": "Join Our Global Community",
+    "subtitle": "Get the latest updates on programs, university pathways, and leadership opportunities.",
+    "input_ph": "Your email address"
+  },
+  "GlobalPresence": {
+    "badge": "Our Global Presence",
+    "title": "A Worldwide Network",
+    "subtitle": "From our headquarters to our international partners, we are connected across the globe to bring world-class opportunities closer to you.",
+    "stat1_val": "6",
+    "stat1_lbl": "Continents",
+    "stat2_val": "20+",
+    "stat2_lbl": "Countries",
+    "stat3_val": "50+",
+    "stat3_lbl": "Partner Institutions",
+    "loc1_city": "Dhaka",
+    "loc1_desc": "Headquarters",
+    "loc2_city": "London",
+    "loc2_desc": "Europe Office",
+    "loc3_city": "New York",
+    "loc3_desc": "Regional Office",
+    "loc4_city": "Singapore",
+    "loc4_desc": "Asia Pacific Office"
+  },
+  "AboutHero": {
+    "badge": "About Us",
+    "title1": "Building Legacies,",
+    "title2": "Inspiring Future Leaders",
+    "subtitle": "Young Leaders Academy is more than an educational platform — it’s a global movement. We empower young people with the knowledge, skills and connections to create a better, brighter future.",
+    "cta": "Our Journey"
+  },
+  "FoundersNote": {
+    "badge": "Founder's Note",
+    "title": "A Message from Our Founders",
+    "quote": "\"We founded Young Leaders Academy because we believe that education has the power to transform lives, communities and nations. Our mission is to provide young people with the right tools, guidance and opportunities to become the leaders of tomorrow.\"",
+    "signOffTitle": "The Founders",
+    "signOffSubtitle": "Young Leaders Academy"
+  },
+  "OurStory": {
+    "badge": "Our Story",
+    "title1": "A Dream to Create",
+    "title2": "Lasting Impact",
+    "p1": "Young Leaders Academy was founded with a simple but powerful belief — that every young person, no matter where they come from, deserves access to world-class education, mentorship and global opportunities.",
+    "p2": "We started this journey to bridge the gap between talent and opportunity, helping students build the skills, confidence and connections they need to succeed in a rapidly changing world.",
+    "card1Title": "Why We Started",
+    "card1Desc": "We saw too many bright and talented young people without the right guidance, resources or access to global opportunities.",
+    "card2Title": "Our Vision",
+    "card2Desc": "To be a globally recognized academy that develops ethical, innovative and impact-driven leaders for a more inclusive and sustainable world.",
+    "card3Title": "Our Core Values",
+    "val1": "Integrity",
+    "val2": "Excellence",
+    "val3": "Compassion",
+    "val4": "Collaboration",
+    "val5": "Global Mindset"
+  },
+  "OurImpact": {
+    "badge": "Our Impact",
+    "title": "Numbers That Tell Our Story",
+    "subtitle": "Our growing community of learners, partners and alumni continues to create a positive impact around the world.",
+    "stat1Num": "5,000+",
+    "stat1Label": "Students Mentored",
+    "stat1Desc": "Guiding young minds across the globe.",
+    "stat2Num": "50+",
+    "stat2Label": "Partner Universities",
+    "stat2Desc": "Top institutions worldwide.",
+    "stat3Num": "92%",
+    "stat3Label": "Global Success Rate",
+    "stat3Desc": "Our students achieve their goals.",
+    "stat4Num": "40+",
+    "stat4Label": "Countries",
+    "stat4Desc": "A truly global community."
+  },
+  "JoinOurJourney": {
+    "badge": "Join Our Journey",
+    "title": "Be Part of Something Bigger",
+    "subtitle": "Together, we can build a future where every young person has the opportunity to lead, innovate and create change.",
+    "cta": "Explore Programs"
+  },
+  "ProgramsHero": {
+    "badge": "Our Programs",
+    "title": "Shaping Tomorrow's Leaders Through Specialized Programs",
+    "subtitle": "From academic excellence to global exposure, our programs are designed to help young people build skills, confidence and a clear path to a brighter future.",
+    "cat1": "All Programs",
+    "cat2": "High School Leadership",
+    "cat3": "Global Mentorship",
+    "cat4": "Executive Skills",
+    "cat5": "Summer Camps"
+  },
+  "CoreProgramsGrid": {
+    "badge": "Explore All Programs",
+    "titlePrefix": "Our Core Programs",
+    "subtitle": "Choose from a range of specialized programs designed to develop your leadership, academic and professional potential.",
+    "prog1Title": "High School Leadership Program",
+    "prog1Desc": "Build confidence, develop essential leadership skills and discover your unique potential as a future changemaker.",
+    "prog2Title": "Global Mentorship Program",
+    "prog2Desc": "Get guidance from industry leaders and alumni, and gain valuable insights into global opportunities.",
+    "prog3Title": "Future Skills & Executive Program",
+    "prog3Desc": "Develop critical thinking, communication and problem-solving skills for academic and professional success.",
+    "prog4Title": "Summer Leadership Camp",
+    "prog4Desc": "An immersive summer experience focused on team-building, outdoor challenges, and leadership development.",
+    "duration": "Duration",
+    "ageGroup": "Age Group",
+    "level": "Level",
+    "lvlBeginner": "Beginner",
+    "lvlIntermediate": "Intermediate",
+    "lvlAll": "All Levels",
+    "time4w": "4 Weeks",
+    "time8w": "8 Weeks",
+    "time6w": "6 Weeks",
+    "time2w": "2 Weeks",
+    "cta": "View Curriculum",
+    "noPrograms": "No programs found for this category currently."
+  },
+  "HowToEnroll": {
+    "badge": "Simple Steps to Get Started",
+    "title": "How to Enroll",
+    "subtitle": "Joining Young Leaders Academy is easy. Follow these simple steps to begin your journey.",
+    "step1Title": "Choose Program",
+    "step1Desc": "Explore our programs and find the right fit for your goals.",
+    "step2Title": "Submit Application",
+    "step2Desc": "Complete the online application form with your details.",
+    "step3Title": "Interview",
+    "step3Desc": "Attend a short interview to help us know you better.",
+    "step4Title": "Welcome Aboard",
+    "step4Desc": "Get accepted and start your journey with us!"
+  },
+  "ProgramsCta": {
+    "badge": "Your Future Starts Here",
+    "title": "Ready to Become a Leader?",
+    "subtitle": "Join a global community of ambitious young people and start your journey towards a brighter, more impactful future.",
+    "cta": "Explore Programs"
+  },
+  "UniversitiesHero": {
+    "badge": "Global Partnerships",
+    "title": "Bridging Young Leaders to World-Class Institutions",
+    "subtitle1": "Opening doors to exceptional academic experiences, global networks, and transformative university pathways.",
+    "subtitle2": "Young Leaders Academy connects ambitious students with international academic communities through university exposure, leadership programmes, exchange experiences, and strategic preparation for the world's most competitive institutions.",
+    "cta1": "Explore Our Global Network",
+    "cta2": "Discover Global Pathways"
+  },
+  "UniversityStats": {
+    "badge": "A World of Opportunity",
+    "title1": "Building Global Connections.",
+    "title2": "Creating Future Possibilities.",
+    "subtitle": "Our international network gives young leaders the perspective, preparation, and exposure needed to navigate an increasingly global academic landscape.",
+    "stat1Title": "Partner Universities",
+    "stat1Desc": "A growing network of universities, academic communities, and international education partners.",
+    "stat2Title": "Academic Connections",
+    "stat2Desc": "Access to leading academic environments, university communities, and global thought leaders.",
+    "stat3Title": "Scholarship Guidance",
+    "stat3Desc": "Structured guidance to help students identify, prepare for, and pursue competitive scholarship opportunities.",
+    "stat4Title": "Exchange Pathways",
+    "stat4Desc": "International exchange, summer immersion, academic visits, and cross-cultural leadership experiences."
+  },
+  "GlobalMobility": {
+    "badge": "Global Mobility",
+    "title": "Study Abroad & Global Immersion Pathways",
+    "subtitle1": "The world is the classroom. Our global mobility programmes give students the chance to experience international universities, engage with diverse perspectives, and develop the confidence to thrive in an interconnected world.",
+    "subtitle2": "From summer exchange programmes and international seminars to cultural immersion experiences and cross-border leadership projects, every journey combines academic enrichment, cultural intelligence and meaningful global connections.",
+    "cta": "Explore Global Mobility",
+    "ben1Title": "Cross-Cultural Collaboration",
+    "ben1Desc": "Work with peers from different cultures and academic backgrounds.",
+    "ben2Title": "Academic & University Exposure",
+    "ben2Desc": "Experience world-class lectures, seminars and campus environments.",
+    "ben3Title": "Mentorship from Global Faculty",
+    "ben3Desc": "Learn from experienced educators, professionals and global leaders.",
+    "ben4Title": "Exclusive Admission Pathways",
+    "ben4Desc": "Gain access to competitive university applications and scholarship opportunities."
+  },
+  "UniversitiesCta": {
+    "badge": "Your Global Journey Starts Here",
+    "title": "Ready to Step Onto the Global Stage?",
+    "subtitle": "Join our next cohort and unlock doors to the world's most prestigious academic institutions.",
+    "cta1": "Explore Programs & Pathways",
+    "cta2": "Speak With an Advisor"
+  },
+  "NavbarExtra": {
+    "brand1": "YOUNG LEADERS",
+    "brand2": "ACADEMY",
+    "login": "Login / Register",
+    "logout": "Logout"
+  },
+  "FeaturedProgramSingle": {
+    "badge": "Featured Program",
+    "title": "Global Young Leaders Fellowship",
+    "desc": "A transformative program that brings together outstanding young minds from around the world to develop leadership skills, build global networks and create real-world impact.",
+    "duration": "Duration",
+    "durationVal": "2 Weeks",
+    "age": "Age Group",
+    "ageVal": "16 – 22",
+    "format": "Format",
+    "formatVal": "In-Person + Online",
+    "cta": "Learn More"
+  },
+  "UniversityGrid": {
+    "badge": "Our Global Network",
+    "title": "Partner Universities & World-Class Institutions",
+    "subtitle1": "The world's leading universities represent more than prestigious names — they are communities built around curiosity, intellectual ambition, innovation, and impact.",
+    "subtitle2": "Through carefully designed academic pathways and global experiences, YLA helps students understand these environments, prepare for them, and aspire to become part of them.",
+    "viewBtn": "View Partnership"
+  }
+}

@@ -4,24 +4,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 export default function GlobalMobility() {
+  const t = useTranslations('GlobalMobility');
+
   const benefits = [
     {
-      title: "Cross-Cultural Collaboration",
-      desc: "Work with peers from different cultures and academic backgrounds."
+      title: t('ben1Title'),
+      desc: t('ben1Desc')
     },
     {
-      title: "Academic & University Exposure",
-      desc: "Experience world-class lectures, seminars and campus environments."
+      title: t('ben2Title'),
+      desc: t('ben2Desc')
     },
     {
-      title: "Mentorship from Global Faculty",
-      desc: "Learn from experienced educators, professionals and global leaders."
+      title: t('ben3Title'),
+      desc: t('ben3Desc')
     },
     {
-      title: "Exclusive Admission Pathways",
-      desc: "Gain access to competitive university applications and scholarship opportunities."
+      title: t('ben4Title'),
+      desc: t('ben4Desc')
     }
   ];
 
@@ -54,21 +57,21 @@ export default function GlobalMobility() {
           >
             <motion.div variants={itemVariants} className="flex items-center gap-4 mb-4">
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[10px] md:text-xs uppercase">
-                Global Mobility
+                {t('badge')}
               </span>
               <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             </motion.div>
 
             <motion.h2 variants={itemVariants} className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-[#0B2545] leading-tight mb-6">
-              Study Abroad & Global Immersion Pathways
+              {t('title')}
             </motion.h2>
 
             <motion.div variants={itemVariants} className="space-y-4 text-gray-600 font-sans text-sm md:text-base leading-relaxed mb-8">
               <p>
-                The world is the classroom. Our global mobility programmes give students the chance to experience international universities, engage with diverse perspectives, and develop the confidence to thrive in an interconnected world.
+                {t('subtitle1')}
               </p>
               <p>
-                From summer exchange programmes and international seminars to cultural immersion experiences and cross-border leadership projects, every journey combines academic enrichment, cultural intelligence and meaningful global connections.
+                {t('subtitle2')}
               </p>
             </motion.div>
 
@@ -77,7 +80,7 @@ export default function GlobalMobility() {
                 href="#mobility"
                 className="inline-flex items-center gap-2 px-8 py-3.5 md:py-4 rounded-full bg-[#0B2545] text-white font-bold text-sm md:text-base hover:bg-[#071931] transition-colors group"
               >
-                Explore Global Mobility
+                {t('cta')}
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
