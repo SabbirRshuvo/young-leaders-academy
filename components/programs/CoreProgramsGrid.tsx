@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Users, Award, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface CoreProgramsGridProps {
   selectedCategory: string;
@@ -13,6 +13,7 @@ interface CoreProgramsGridProps {
 export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridProps) {
   const t = useTranslations('CoreProgramsGrid');
   const tHero = useTranslations('ProgramsHero');
+  const locale = useLocale();
 
   const allPrograms = [
     {
@@ -24,7 +25,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
       age: "14 – 18",
       level: t('lvlBeginner'),
       image: "/high-school.png",
-      href: "/programs/high-school"
+      href: "/programs/high-school-leadership-program"
     },
     {
       title: t('prog2Title'),
@@ -35,7 +36,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
       age: "16 – 25",
       level: t('lvlIntermediate'),
       image: "/global-mentor.png",
-      href: "/programs/mentorship"
+      href: "/programs/global-mentorship-program"
     },
     {
       title: t('prog3Title'),
@@ -46,7 +47,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
       age: "16 – 28",
       level: t('lvlAll'),
       image: "/future-skill.png",
-      href: "/programs/executive"
+      href: "/programs/future-skills-executive-program"
     },
     {
       title: t('prog4Title'),
@@ -57,7 +58,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
       age: "12 – 16",
       level: t('lvlBeginner'),
       image: "/summer.png",
-      href: "/programs/summer-camps"
+      href: "/programs/summer-leadership-camp"
     }
   ];
 
@@ -111,6 +112,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     src={program.image}
                     alt={program.title}
                     fill
+                    priority={index < 4}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -155,7 +157,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
 
                   {/* Button */}
                   <Link
-                    href={program.href}
+                    href={`/${locale}${program.href}`}
                     className="inline-flex items-center justify-center gap-2 w-max px-6 py-2.5 rounded-full bg-[#0B2545] hover:bg-[#071931] text-white font-semibold text-sm transition-colors group/btn"
                   >
                     {t('cta')}
