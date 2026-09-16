@@ -54,7 +54,7 @@ export default function ParentsSupport() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
-              className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-gray-100 hover:-translate-y-2 group"
+              className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-gray-300 hover:-translate-y-2 group"
             >
               <div className="w-14 h-14 bg-[#072340]/5 rounded-xl flex items-center justify-center mb-6 group-hover:bg-[#072340] transition-colors duration-300">
                 <support.icon className="w-7 h-7 text-[#072340] group-hover:text-[#D4AF37] transition-colors duration-300" />

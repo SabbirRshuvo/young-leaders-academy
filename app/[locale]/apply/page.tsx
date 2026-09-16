@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
@@ -15,10 +15,10 @@ function ApplyFormContent() {
   const locale = useLocale();
   const isAr = locale === 'ar';
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Form State
@@ -68,51 +68,47 @@ function ApplyFormContent() {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg(null);
-    
-    try {
-      const { error } = await supabase
-        .from('applications')
-        .insert([
-          {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            age: parseInt(formData.age) || 0,
-            school: formData.school,
-            program_id: formData.program,
-            motivation: formData.motivation
-          }
-        ]);
 
-      if (error) throw error;
-      
-      // Send automated email
-      await fetch('/api/send-email', {
+    try {
+      // Find the program title to send to checkout
+      let programTitle = formData.program; // fallback
+      const foundProgram = programsData.find(p => p.id === formData.program);
+      if (foundProgram) {
+        programTitle = isAr ? foundProgram.title.ar : foundProgram.title.en;
+      } else {
+        const foundUni = universitiesData.find(u => u.id === formData.program);
+        if (foundUni) programTitle = foundUni.name;
+      }
+
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'apply',
-          locale,
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            phone: formData.phone,
-            age: parseInt(formData.age) || 0,
-            school: formData.school,
-            program_id: formData.program,
-            motivation: formData.motivation
-          }
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          programId: formData.program,
+          programTitle,
+          locale
         })
       });
 
-      setIsSuccess(true);
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Checkout failed');
+      }
+
+      // Redirect to the success URL returned by the mock API
+      if (data.redirectUrl) {
+        router.push(data.redirectUrl);
+      }
+
     } catch (err: any) {
-      console.error("Error submitting application:", err);
-      setErrorMsg(isAr ? "حدث خطأ أثناء إرسال طلبك. يرجى المحاولة مرة أخرى." : "An error occurred while submitting your application. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error starting checkout:", err);
+      setErrorMsg(isAr ? "حدث خطأ أثناء الانتقال للدفع. يرجى المحاولة مرة أخرى." : "An error occurred while proceeding to payment. Please try again.");
+      setIsSubmitting(false); // only set false on error, so spinner stays during redirect
     }
   };
 
@@ -135,23 +131,7 @@ function ApplyFormContent() {
     })
   };
 
-  if (isSuccess) {
-    return (
-      <div className="w-full max-w-2xl mx-auto bg-white rounded-3xl p-10 md:p-16 shadow-xl border border-gray-300 flex flex-col items-center text-center">
-        <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
-          <CheckCircle2 className="w-12 h-12 text-green-500" />
-        </div>
-        <h2 className="text-3xl font-bold text-[#0B2545] mb-4">{t('successTitle')}</h2>
-        <p className="text-gray-600 text-lg mb-8">{t('successDesc')}</p>
-        <Link
-          href={`/${locale}`}
-          className="bg-[#0B2545] text-white px-8 py-3 rounded-full font-bold transition-colors hover:bg-[#1a365d]"
-        >
-          {t('backHome')}
-        </Link>
-      </div>
-    );
-  }
+  // Removed local success rendering because we redirect on success
 
   return (
     <div className={`w-full max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-300 ${isAr ? 'font-arabic' : 'font-sans'}`}>
@@ -315,11 +295,10 @@ function ApplyFormContent() {
               type="button"
               onClick={handleNext}
               disabled={!canProceed()}
-              className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${
-                canProceed() 
-                  ? 'bg-[#0B2545] text-white hover:bg-[#1a365d] cursor-pointer' 
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
-              } ${isAr ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${canProceed()
+                ? 'bg-[#0B2545] text-white hover:bg-[#1a365d] cursor-pointer'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
+                } ${isAr ? 'flex-row-reverse' : ''}`}
             >
               {t('nextBtn')}
               {isAr ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
@@ -328,18 +307,17 @@ function ApplyFormContent() {
             <button
               type="submit"
               disabled={isSubmitting || !canProceed()}
-              className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${
-                isSubmitting || !canProceed()
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
-                  : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] hover:from-[#e3be47] hover:to-[#d6a931]'
-              } ${isAr ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${isSubmitting || !canProceed()
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
+                : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] hover:from-[#e3be47] hover:to-[#d6a931]'
+                } ${isAr ? 'flex-row-reverse' : ''}`}
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-[#0B2545]/20 border-t-[#0B2545] rounded-full animate-spin"></div>
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              {isSubmitting ? t('submitting') : t('submitBtn')}
+              {isSubmitting ? (isAr ? 'جاري الانتقال للدفع...' : 'Proceeding to Payment...') : (isAr ? 'الانتقال للدفع' : 'Proceed to Payment')}
             </button>
           )}
         </div>

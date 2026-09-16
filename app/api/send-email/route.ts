@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     let clientHtml = '';
 
     // Use a publicly accessible URL for the logo so it renders in email clients even when testing locally
-    const logoUrl = `${url.origin}/logo.jpeg`;
+    const logoUrl = 'https://i.ibb.co/Lz1fCCF2/logo.jpg';
 
     const getEmailWrapper = (content: string) => `
 <!DOCTYPE html>
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     </div>
     <div class="footer">
       © ${new Date().getFullYear()} Young Leaders Academy.<br>
-      <a href="https://youngleadersacademy.com" style="color: #D4AF37; text-decoration: none;">Visit our website</a>
+      <a href="https://youngleadersacademy.com" style="color: #D4AF37; text-decoration: none;"> ${isAr ? 'قم بزيارة موقعنا' : 'Visit our website'} </a>
     </div>
   </div>
 </body>

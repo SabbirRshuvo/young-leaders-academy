@@ -4,10 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function UniversitiesHero() {
   const t = useTranslations('UniversitiesHero');
+  const locale = useLocale();
 
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 24 },
@@ -67,7 +68,7 @@ export default function UniversitiesHero() {
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
             </Link>
             <Link
-              href="#pathways"
+              href={`/${locale}/programs`}
               className="w-full sm:w-auto inline-flex h-12 md:h-14 items-center justify-center gap-2 rounded-full border-2 border-white/30 hover:border-white/80 bg-transparent px-8 md:px-10 text-sm md:text-base font-bold text-white transition-all hover:bg-white/10"
             >
               {t('cta2')}
