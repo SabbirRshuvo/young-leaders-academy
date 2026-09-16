@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 export default function Page() {
@@ -13,6 +14,7 @@ export default function Page() {
     const [selectedRole, setSelectedRole] = useState<
         "student" | "parent" | null
     >(null);
+    const router = useRouter();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -226,7 +228,10 @@ export default function Page() {
                 .eq("name", selectedRole)
                 .single();
 
+            console.log("Testing Role: ", roleData)
+
             if (roleError) {
+                console.log("Role Data: ", roleData)
                 console.error("Role lookup error:", roleError);
 
                 toast.error(
@@ -243,6 +248,8 @@ export default function Page() {
 
                 return;
             }
+
+            console.log("RoleData: ", roleData)
 
             // ==========================================
             // 4. CREATE USER ↔ ROLE RELATIONSHIP
@@ -273,6 +280,8 @@ export default function Page() {
             // ==========================================
             // 5. SUCCESS
             // ==========================================
+
+            router.push("/en")
 
             toast.success(
                 selectedRole === "student"
@@ -862,17 +871,14 @@ export default function Page() {
 
                                     <p className="text-center text-sm text-gray-600 pt-1">
                                         Already have an account?{" "}
-
                                         <Link
-                                            href="/login"
+                                            href="/en/login"
                                             className="font-semibold text-navy hover:text-gold transition-colors"
                                         >
                                             Log in
                                         </Link>
                                     </p>
-
                                 </form>
-
                             </div>
                         </motion.div>
                     )}
