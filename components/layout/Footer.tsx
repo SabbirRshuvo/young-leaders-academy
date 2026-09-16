@@ -1,13 +1,53 @@
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { useTranslations, useLocale } from 'next-intl';
+import { supabase } from '@/lib/supabase';
 
 export default function Footer() {
   const t = useTranslations('Footer');
   const locale = useLocale();
   const isAr = locale === 'ar';
+
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    setMessage(null);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email }]);
+
+      if (error) {
+        // Handle unique violation (already subscribed)
+        if (error.code === '23505') {
+          setMessage({ type: 'error', text: isAr ? 'هذا البريد الإلكتروني مسجل بالفعل.' : 'This email is already subscribed.' });
+        } else {
+          throw error;
+        }
+      } else {
+        setMessage({ type: 'success', text: isAr ? 'تم الاشتراك بنجاح!' : 'Successfully subscribed!' });
+        setEmail('');
+      }
+    } catch (err) {
+      console.error('Newsletter error:', err);
+      setMessage({ type: 'error', text: isAr ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : 'An error occurred. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className="w-full bg-navy text-white py-16">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -69,19 +109,31 @@ export default function Footer() {
             <p className="text-sm text-gray-300 leading-relaxed">
               {t('newsletterDesc')}
             </p>
-            <form className="flex flex-col gap-3 pt-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-3 pt-2">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('emailPlaceholder')}
                 className="flex h-10 w-full rounded-sm bg-white px-3 py-2 text-sm text-navy placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 required
               />
               <button
                 type="submit"
-                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors"
+                disabled={isSubmitting}
+                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors disabled:opacity-70"
               >
-                {t('subscribeButton')}
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin"></div>
+                ) : (
+                  t('subscribeButton')
+                )}
               </button>
+              {message && (
+                <p className={`text-sm mt-1 ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                  {message.text}
+                </p>
+              )}
             </form>
           </div>
         </div>
