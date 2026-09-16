@@ -3,17 +3,29 @@
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function StudentsCta() {
   const t = useTranslations('StudentsPage');
   const locale = useLocale();
   const isRtl = locale === 'ar';
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  // Increase parallax effect with larger transform values
+  const y = useTransform(scrollYProgress, [0, 1], ["-35%", "35%"]);
 
   return (
-    <section className="relative w-full py-20 md:py-32 bg-[#0B2545] overflow-hidden">
+    <section ref={containerRef} className="relative w-full py-20 md:py-32 bg-[#0B2545] overflow-hidden">
       {/* Background Parallax Image */}
-      <div className="absolute inset-0 bg-[url('/left.png')] bg-fixed bg-cover bg-left -scale-x-100" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/80 to-[#0B2545]/20" />
+      <motion.div 
+        style={{ y }}
+        className="absolute left-0 right-0 -top-[45%] -bottom-[45%] bg-[url('/left.png')] bg-cover bg-center md:bg-top -scale-x-100" 
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545]/90 via-[#0B2545]/40 to-[#0B2545]/10" />
 
       {/* Background Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#D4AF37]/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />

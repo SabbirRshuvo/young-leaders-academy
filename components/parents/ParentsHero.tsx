@@ -17,7 +17,7 @@ export default function ParentsHero() {
         <img 
           src="/right.png" 
           alt="Parents Hero" 
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center md:object-top -scale-x-100"
         />
       </div>
       {/* Fade Overlay */}
