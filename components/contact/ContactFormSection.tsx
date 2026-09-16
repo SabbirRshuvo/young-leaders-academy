@@ -50,6 +50,22 @@ export default function ContactFormSection() {
         ]);
 
       if (error) throw error;
+      
+      // Send automated email
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'contact',
+          locale,
+          data: {
+            full_name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message
+          }
+        })
+      });
 
       setIsSuccess(true);
     } catch (err) {

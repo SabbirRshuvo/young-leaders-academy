@@ -37,6 +37,17 @@ export default function Footer() {
           throw error;
         }
       } else {
+        // Send automated email
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'newsletter',
+            locale,
+            data: { email }
+          })
+        });
+
         setMessage({ type: 'success', text: isAr ? 'تم الاشتراك بنجاح!' : 'Successfully subscribed!' });
         setEmail('');
       }

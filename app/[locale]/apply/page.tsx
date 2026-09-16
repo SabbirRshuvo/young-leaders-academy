@@ -87,6 +87,26 @@ function ApplyFormContent() {
 
       if (error) throw error;
       
+      // Send automated email
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'apply',
+          locale,
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            age: parseInt(formData.age) || 0,
+            school: formData.school,
+            program_id: formData.program,
+            motivation: formData.motivation
+          }
+        })
+      });
+
       setIsSuccess(true);
     } catch (err: any) {
       console.error("Error submitting application:", err);
