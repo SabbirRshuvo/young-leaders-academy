@@ -83,7 +83,7 @@ export default function UniversityGrid() {
             <motion.div
               key={index}
               variants={itemVariants}
-              className={`bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-8 flex flex-col h-full hover:-translate-y-1.5 transition-transform duration-300 ${isAr ? 'font-arabic' : ''}`}
+              className={`bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-300 p-8 flex flex-col h-full hover:-translate-y-1.5 transition-transform duration-300 ${isAr ? 'font-arabic' : ''}`}
             >
               {/* Header: Logo & Name */}
               <div className={`flex items-start gap-4 mb-1 ${isAr ? 'flex-row-reverse text-right' : 'text-left'}`}>
