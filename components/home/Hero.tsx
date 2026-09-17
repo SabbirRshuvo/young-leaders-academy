@@ -1,12 +1,13 @@
 "use client";
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
   const t = useTranslations('Hero');
+  const locale = useLocale();
   return (
     <section className="relative w-full h-[600px] md:h-[700px] xl:h-[800px] flex items-center overflow-hidden">
       {/* Background Image */}
@@ -37,7 +38,7 @@ export default function Hero() {
 
           <div className="pt-4">
             <Link
-              href="/programs"
+              href={`/${locale}/programs`}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] px-8 text-base font-bold text-[#0B2545] shadow-lg transition-transform hover:scale-105"
             >
               {t('cta')}

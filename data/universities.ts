@@ -1,0 +1,338 @@
+export const universitiesData = [
+  {
+    id: "harvard",
+    name: "Harvard University",
+    location: {
+      en: "🇺🇸 United States",
+      ar: "🇺🇸 الولايات المتحدة"
+    },
+    logo: "/harvard.png",
+    heroImage: "/features-program.png", // using an existing image for now
+    badge: {
+      en: "Featured University",
+      ar: "جامعة مميزة"
+    },
+    overview: {
+      en: "Harvard's multidisciplinary environment offers a powerful model for developing intellectually curious and globally minded leaders. The university provides an unparalleled global network and world-class faculty dedicated to shaping the leaders of tomorrow.",
+      ar: "توفر بيئة هارفارد متعددة التخصصات نموذجًا قويًا لتطوير قادة يتمتعون بالفضول الفكري والعقلية العالمية. تقدم الجامعة شبكة عالمية لا مثيل لها وهيئة تدريس ذات مستوى عالمي مكرسة لتشكيل قادة الغد."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "4%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#1" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "24%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1636" }
+    ],
+    requirements: [
+      {
+        en: "Academic Excellence (High GPA and rigorous coursework)",
+        ar: "التميز الأكاديمي (معدل تراكمي مرتفع ودورات دراسية صارمة)"
+      },
+      {
+        en: "Standardized Tests (SAT/ACT required for some programs)",
+        ar: "الاختبارات الموحدة (مطلوب SAT/ACT لبعض البرامج)"
+      },
+      {
+        en: "Extracurricular Leadership and Community Impact",
+        ar: "القيادة اللامنهجية والتأثير المجتمعي"
+      },
+      {
+        en: "Strong Letters of Recommendation",
+        ar: "خطابات توصية قوية"
+      }
+    ],
+    programs: [
+      {
+        en: "Global Leadership & Policy",
+        ar: "القيادة والسياسة العالمية"
+      },
+      {
+        en: "Advanced Technology & Innovation",
+        ar: "التكنولوجيا المتقدمة والابتكار"
+      },
+      {
+        en: "International Business",
+        ar: "إدارة الأعمال الدولية"
+      }
+    ]
+  },
+  {
+    id: "oxford",
+    name: "University of Oxford",
+    location: {
+      en: "🇬🇧 United Kingdom",
+      ar: "🇬🇧 المملكة المتحدة"
+    },
+    logo: "/oxford.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Top UK Partner",
+      ar: "أفضل شريك في المملكة المتحدة"
+    },
+    overview: {
+      en: "Oxford represents a tradition of intellectual curiosity and academic excellence, with pathways to global leadership and impact. The tutorial system ensures deep academic engagement and personalized learning.",
+      ar: "تمثل أكسفورد تقليدًا للفضول الفكري والتميز الأكاديمي، مع مسارات للقيادة والتأثير العالمي. يضمن نظام التدريس الجامعي مشاركة أكاديمية عميقة وتعلمًا شخصيًا."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "17%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#2" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "45%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1096" }
+    ],
+    requirements: [
+      {
+        en: "Outstanding Academic Record (A-Levels, IB, or equivalent)",
+        ar: "سجل أكاديمي متميز (A-Levels، IB، أو ما يعادلها)"
+      },
+      {
+        en: "English Language Proficiency (IELTS/TOEFL)",
+        ar: "إتقان اللغة الإنجليزية (IELTS/TOEFL)"
+      },
+      {
+        en: "Admissions Assessment / Subject Test",
+        ar: "تقييم القبول / اختبار الموضوع"
+      },
+      {
+        en: "Successful Interview",
+        ar: "مقابلة ناجحة"
+      }
+    ],
+    programs: [
+      {
+        en: "Politics, Philosophy, and Economics (PPE)",
+        ar: "السياسة والفلسفة والاقتصاد (PPE)"
+      },
+      {
+        en: "Law and Jurisprudence",
+        ar: "القانون والفقه"
+      },
+      {
+        en: "Medical Sciences",
+        ar: "العلوم الطبية"
+      }
+    ]
+  },
+  {
+    id: "stanford",
+    name: "Stanford University",
+    location: {
+      en: "🇺🇸 United States",
+      ar: "🇺🇸 الولايات المتحدة"
+    },
+    logo: "/standford.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Silicon Valley Partner",
+      ar: "شريك سيليكون فالي"
+    },
+    overview: {
+      en: "Stanford's culture of innovation demonstrates how academic knowledge can translate into meaningful global impact, particularly in technology and entrepreneurship.",
+      ar: "توضح ثقافة الابتكار في ستانفورد كيف يمكن ترجمة المعرفة الأكاديمية إلى تأثير عالمي ملموس، لا سيما في مجال التكنولوجيا وريادة الأعمال."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "4%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#3" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "24%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1885" }
+    ],
+    requirements: [
+      {
+        en: "Exceptional Academic Performance",
+        ar: "أداء أكاديمي استثنائي"
+      },
+      {
+        en: "Demonstrated Entrepreneurial Spirit",
+        ar: "روح المبادرة المثبتة"
+      },
+      {
+        en: "Impactful Extracurricular Activities",
+        ar: "أنشطة لامنهجية مؤثرة"
+      },
+      {
+        en: "Compelling Personal Essays",
+        ar: "مقالات شخصية مقنعة"
+      }
+    ],
+    programs: [
+      {
+        en: "Computer Science & AI",
+        ar: "علوم الكمبيوتر والذكاء الاصطناعي"
+      },
+      {
+        en: "Business & Entrepreneurship",
+        ar: "الأعمال وريادة الأعمال"
+      },
+      {
+        en: "Engineering",
+        ar: "الهندسة"
+      }
+    ]
+  },
+  {
+    id: "mit",
+    name: "Massachusetts Institute of Technology",
+    location: {
+      en: "🇺🇸 United States",
+      ar: "🇺🇸 الولايات المتحدة"
+    },
+    logo: "/mit.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Tech & Engineering",
+      ar: "التكنولوجيا والهندسة"
+    },
+    overview: {
+      en: "MIT inspires the next generation of global thinkers and changemakers through world-class research, hands-on learning, and a focus on solving complex real-world problems.",
+      ar: "يلهم معهد ماساتشوستس للتكنولوجيا الجيل القادم من المفكرين العالميين وصناع التغيير من خلال أبحاث عالمية المستوى، والتعلم العملي، والتركيز على حل مشاكل العالم الحقيقي المعقدة."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "4%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#1 (QS)" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "29%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1861" }
+    ],
+    requirements: [
+      {
+        en: "Strong Foundation in STEM Subjects",
+        ar: "أساس قوي في مواد العلوم والتكنولوجيا والهندسة والرياضيات"
+      },
+      {
+        en: "Demonstrated Analytical Skills",
+        ar: "مهارات تحليلية مثبتة"
+      },
+      {
+        en: "Hands-on Project Experience",
+        ar: "خبرة عملية في المشاريع"
+      },
+      {
+        en: "Teacher Evaluations",
+        ar: "تقييمات المعلمين"
+      }
+    ],
+    programs: [
+      {
+        en: "Robotics & Engineering",
+        ar: "الروبوتات والهندسة"
+      },
+      {
+        en: "Data Science & Mathematics",
+        ar: "علوم البيانات والرياضيات"
+      },
+      {
+        en: "Physics & Natural Sciences",
+        ar: "الفيزياء والعلوم الطبيعية"
+      }
+    ]
+  },
+  {
+    id: "cambridge",
+    name: "University of Cambridge",
+    location: {
+      en: "🇬🇧 United Kingdom",
+      ar: "🇬🇧 المملكة المتحدة"
+    },
+    logo: "/cambridge.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Research Excellence",
+      ar: "التميز البحثي"
+    },
+    overview: {
+      en: "Cambridge's collegiate tradition emphasizes independent thought, critical thinking and interdisciplinary learning, producing numerous Nobel laureates and world leaders.",
+      ar: "يؤكد التقليد الجامعي في كامبريدج على الفكر المستقل والتفكير النقدي والتعلم متعدد التخصصات، مما أدى إلى تخريج العديد من الحائزين على جائزة نوبل وقادة العالم."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "21%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#2 (QS)" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "40%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1209" }
+    ],
+    requirements: [
+      {
+        en: "Top Academic Grades (A*A*A at A-Level or equivalent)",
+        ar: "أعلى الدرجات الأكاديمية (A*A*A في المستوى A أو ما يعادله)"
+      },
+      {
+        en: "Admissions Test / Written Assessment",
+        ar: "اختبار القبول / التقييم الكتابي"
+      },
+      {
+        en: "Rigorous Interview Process",
+        ar: "عملية مقابلة صارمة"
+      },
+      {
+        en: "Super-curricular Engagement",
+        ar: "المشاركة الفائقة في المناهج الدراسية"
+      }
+    ],
+    programs: [
+      {
+        en: "Natural Sciences",
+        ar: "العلوم الطبيعية"
+      },
+      {
+        en: "Economics",
+        ar: "الاقتصاد"
+      },
+      {
+        en: "Humanities & Arts",
+        ar: "العلوم الإنسانية والفنون"
+      }
+    ]
+  },
+  {
+    id: "yale",
+    name: "Yale University",
+    location: {
+      en: "🇺🇸 United States",
+      ar: "🇺🇸 الولايات المتحدة"
+    },
+    logo: "/yale.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Global Affairs",
+      ar: "الشؤون العالمية"
+    },
+    overview: {
+      en: "Yale's diverse academic community and global perspective help students develop the skills to lead and create lasting impact across various fields including law, arts, and public service.",
+      ar: "يساعد المجتمع الأكاديمي المتنوع في جامعة ييل والمنظور العالمي الطلاب على تطوير المهارات للقيادة وإحداث تأثير دائم عبر مجالات مختلفة بما في ذلك القانون والفنون والخدمة العامة."
+    },
+    stats: [
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "5%" },
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#10" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "22%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1701" }
+    ],
+    requirements: [
+      {
+        en: "Academic Excellence & Intellectual Curiosity",
+        ar: "التميز الأكاديمي والفضول الفكري"
+      },
+      {
+        en: "Demonstrated Leadership Potential",
+        ar: "إمكانات قيادية مثبتة"
+      },
+      {
+        en: "Strong Writing Skills",
+        ar: "مهارات كتابية قوية"
+      },
+      {
+        en: "Commitment to Public Good",
+        ar: "الالتزام بالصالح العام"
+      }
+    ],
+    programs: [
+      {
+        en: "Global Affairs",
+        ar: "الشؤون العالمية"
+      },
+      {
+        en: "Law & Legal Studies",
+        ar: "القانون والدراسات القانونية"
+      },
+      {
+        en: "Arts & Humanities",
+        ar: "الفنون والعلوم الإنسانية"
+      }
+    ]
+  }
+];

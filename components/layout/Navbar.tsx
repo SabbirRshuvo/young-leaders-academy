@@ -28,242 +28,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations("Navigation");
-
-  /*
-  |--------------------------------------------------------------------------
-  | Get authenticated Supabase user + role
-  |--------------------------------------------------------------------------
-  */
-
-  useEffect(() => {
-    let mounted = true;
-
-    const getUserAndRole = async () => {
-      try {
-        setRoleLoading(true);
-
-        /*
-        |--------------------------------------------------------------------------
-        | 1. Get currently authenticated Supabase user
-        |--------------------------------------------------------------------------
-        */
-
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError) {
-          console.error("Navbar user lookup error:", userError);
-
-          if (mounted) {
-            setUser(null);
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        if (!user) {
-          if (mounted) {
-            setUser(null);
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        if (mounted) {
-          setUser(user);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 2. Get user's role
-        |--------------------------------------------------------------------------
-        */
-
-        const { data: roleData, error: roleError } = await supabase
-          .from("user_roles")
-          .select(`
-            role_id,
-            roles (
-              name
-            )
-          `)
-          .eq("user_id", user.id)
-          .single();
-
-        if (roleError) {
-          console.error("Navbar role lookup error:", roleError);
-
-          if (mounted) {
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Extract role name
-        |--------------------------------------------------------------------------
-        |
-        | Depending on your Supabase generated types, `roles` can sometimes
-        | appear as an array even though the relationship is one-to-one.
-        |
-        */
-
-        const roles = roleData?.roles;
-
-        let roleName: string | null = null;
-
-        if (Array.isArray(roles)) {
-          roleName = roles[0]?.name ?? null;
-        } else if (roles && typeof roles === "object") {
-          roleName = (roles as { name?: string }).name ?? null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 4. Store only supported roles
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-          roleName === "student" ||
-          roleName === "parent" ||
-          roleName === "coach" ||
-          roleName === "admin"
-        ) {
-          if (mounted) {
-            setUserRole(roleName);
-          }
-        } else {
-          if (mounted) {
-            setUserRole(null);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch navbar user/role:", error);
-
-        if (mounted) {
-          setUser(null);
-          setUserRole(null);
-        }
-      } finally {
-        if (mounted) {
-          setRoleLoading(false);
-        }
-      }
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Initial load
-    |--------------------------------------------------------------------------
-    */
-
-    getUserAndRole();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Listen for Supabase auth changes
-    |--------------------------------------------------------------------------
-    |
-    | This means the navbar automatically updates when:
-    | - user logs in
-    | - user logs out
-    | - session changes
-    |--------------------------------------------------------------------------
-    */
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-
-      if (!session?.user) {
-        setUser(null);
-        setUserRole(null);
-        setRoleLoading(false);
-        return;
-      }
-
-      /*
-      | Update user immediately
-      */
-
-      setUser(session.user);
-
-      /*
-      | Fetch role after authentication changes
-      */
-
-      const { data: roleData, error: roleError } = await supabase
-        .from("user_roles")
-        .select(`
-          role_id,
-          roles (
-            name
-          )
-        `)
-        .eq("user_id", session.user.id)
-        .single();
-
-      if (roleError) {
-        console.error(
-          "Navbar role lookup error after auth change:",
-          roleError
-        );
-
-        setUserRole(null);
-        setRoleLoading(false);
-        return;
-      }
-
-      const roles = roleData?.roles;
-
-      let roleName: string | null = null;
-
-      if (Array.isArray(roles)) {
-        roleName = roles[0]?.name ?? null;
-      } else if (roles && typeof roles === "object") {
-        roleName = (roles as { name?: string }).name ?? null;
-      }
-
-      if (
-        roleName === "student" ||
-        roleName === "parent" ||
-        roleName === "coach" ||
-        roleName === "admin"
-      ) {
-        setUserRole(roleName);
-      } else {
-        setUserRole(null);
-      }
-
-      setRoleLoading(false);
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cleanup
-    |--------------------------------------------------------------------------
-    */
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  /*
-  |--------------------------------------------------------------------------
-  | Locale
-  |--------------------------------------------------------------------------
-  */
+  const t = useTranslations('Navigation');
+  const tExtra = useTranslations('NavbarExtra');
 
   const switchLocale = () => {
     const nextLocale = locale === "en" ? "ar" : "en";
@@ -676,14 +442,12 @@ export default function Navbar() {
                 <span className="font-bold text-navy text-sm">
                   {userName}
                 </span>
-
-                <ChevronDown
-                  className={`w-4 h-4 text-navy transition-transform ${isProfileMenuOpen
-                      ? "rotate-180"
-                      : ""
-                    }`}
-                />
-
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 text-navy hover:bg-gray-200 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-sm border border-gray-200"
+              >
+                {tExtra('logout')}
               </button>
 
               {/* Profile dropdown */}
@@ -757,9 +521,7 @@ export default function Navbar() {
             >
 
               <User className="w-[18px] h-[18px]" />
-
-              Login / Register
-
+              {tExtra('login')}
             </button>
 
           )}
@@ -942,14 +704,15 @@ export default function Navbar() {
                 }
                 className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
               >
-                Settings
-              </Link>
-
+                {tExtra('logout')} ({session.user?.name?.split(' ')[0] || "User"})
+              </button>
+            ) : (
               <button
-                onClick={handleLogout}
-                className="w-full rounded-full bg-gray-100 text-navy h-[48px] font-semibold border border-gray-200"
+                onClick={() => signIn()}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[48px] px-6 text-[15px] font-semibold transition-all shadow-md"
               >
-                Logout ({userName})
+                <User className="w-[18px] h-[18px]" />
+                {tExtra('login')}
               </button>
 
             </div>

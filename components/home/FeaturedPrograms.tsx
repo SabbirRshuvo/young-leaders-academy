@@ -3,16 +3,18 @@
 import Link from 'next/link';
 import { GraduationCap, Users, Lightbulb, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 
 
 export default function FeaturedPrograms() {
   const t = useTranslations('FeaturedPrograms');
+  const locale = useLocale();
+
   const programs = [
-    { title: t('prog1_title'), desc: t('prog1_desc'), icon: GraduationCap, image: '/card1.png' },
-    { title: t('prog2_title'), desc: t('prog2_desc'), icon: Users, image: '/card2.png' },
-    { title: t('prog3_title'), desc: t('prog3_desc'), icon: Lightbulb, image: '/card3.png' }
+    { id: 'global-young-leaders-fellowship', title: t('prog1_title'), desc: t('prog1_desc'), icon: GraduationCap, image: '/card1.png' },
+    { id: 'high-school-leadership-program', title: t('prog2_title'), desc: t('prog2_desc'), icon: Users, image: '/card2.png' },
+    { id: 'global-mentorship-program', title: t('prog3_title'), desc: t('prog3_desc'), icon: Lightbulb, image: '/card3.png' }
   ];
 
   return (
@@ -83,11 +85,11 @@ export default function FeaturedPrograms() {
 
                   <div className="mt-auto">
                     <Link
-                      href={`/programs`}
-                      className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-[#0B2545] px-6 text-[13px] font-semibold text-white hover:bg-[#0B2545]/90 transition-colors w-max"
+                      href={`/${locale}/programs/${prog.id}`}
+                      className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0B2545] to-[#1A3A65] hover:from-[#133055] hover:to-[#0B2545] px-6 text-[13px] font-semibold text-white shadow-md hover:shadow-lg transition-all duration-300 w-max group"
                     >
                       {t('viewProgram')}
-                      <ArrowRight className="w-4 h-4 text-white" />
+                      <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </div>

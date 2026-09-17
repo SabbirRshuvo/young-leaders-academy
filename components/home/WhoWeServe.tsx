@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function WhoWeServe() {
   const t = useTranslations('WhoWeServe');
+  const locale = useLocale();
   return (
     <section className="w-full py-16 bg-white">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -55,7 +56,7 @@ export default function WhoWeServe() {
 
               <div>
                 <Link
-                  href="/programs?audience=students"
+                  href={`/${locale}/students`}
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-[#0B2545] hover:bg-[#C59B27]/10 transition-colors"
                 >
                   {t('exploreMore')} <ArrowRight className="w-4 h-4 text-[#C59B27]" />
@@ -102,7 +103,7 @@ export default function WhoWeServe() {
 
               <div>
                 <Link
-                  href="/programs?audience=parents"
+                  href={`/${locale}/parents`}
                   className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-[#C59B27] text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                 >
                   {t('exploreMore')} <ArrowRight className="w-4 h-4 text-[#C59B27]" />

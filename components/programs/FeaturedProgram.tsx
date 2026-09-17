@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import { Calendar, Users, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function FeaturedProgram() {
   const t = useTranslations('FeaturedProgramSingle');
-  
+  const locale = useLocale();
+
   return (
     <section className="w-full bg-[#FCFAF6] py-16 md:py-24">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -63,7 +64,7 @@ export default function FeaturedProgram() {
 
               {/* CTA */}
               <Link
-                href="/programs/global-fellowship"
+                href={`/${locale}/programs/global-young-leaders-fellowship`}
                 className="inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-105 group"
               >
                 {t('cta')}

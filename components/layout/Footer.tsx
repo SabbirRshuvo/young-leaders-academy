@@ -1,11 +1,64 @@
+"use client";
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { supabase } from '@/lib/supabase';
 
 export default function Footer() {
   const t = useTranslations('Footer');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    setMessage(null);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email }]);
+
+      if (error) {
+        // Handle unique violation (already subscribed)
+        if (error.code === '23505') {
+          setMessage({ type: 'error', text: isAr ? 'هذا البريد الإلكتروني مسجل بالفعل.' : 'This email is already subscribed.' });
+        } else {
+          throw error;
+        }
+      } else {
+        // Send automated email
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'newsletter',
+            locale,
+            data: { email }
+          })
+        });
+
+        setMessage({ type: 'success', text: isAr ? 'تم الاشتراك بنجاح!' : 'Successfully subscribed!' });
+        setEmail('');
+      }
+    } catch (err) {
+      console.error('Newsletter error:', err);
+      setMessage({ type: 'error', text: isAr ? 'حدث خطأ. يرجى المحاولة مرة أخرى.' : 'An error occurred. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <footer className="w-full bg-navy text-white py-16">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -36,11 +89,11 @@ export default function Footer() {
           <div className="space-y-6 lg:pl-8">
             <h4 className="text-lg font-bold text-white mb-6">{t('quickLinksTitle')}</h4>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li><Link href="/" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.home')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/about" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.about')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/programs" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.programs')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/universities" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.universities')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
-              <li><Link href="/contact" className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.contact')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.home')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/about`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.about')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/programs`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.programs')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/universities`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.universities')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}/contact`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.contact')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
             </ul>
           </div>
 
@@ -67,29 +120,41 @@ export default function Footer() {
             <p className="text-sm text-gray-300 leading-relaxed">
               {t('newsletterDesc')}
             </p>
-            <form className="flex flex-col gap-3 pt-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-3 pt-2">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('emailPlaceholder')}
                 className="flex h-10 w-full rounded-sm bg-white px-3 py-2 text-sm text-navy placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 required
               />
               <button
                 type="submit"
-                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors"
+                disabled={isSubmitting}
+                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors disabled:opacity-70"
               >
-                {t('subscribeButton')}
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin"></div>
+                ) : (
+                  t('subscribeButton')
+                )}
               </button>
+              {message && (
+                <p className={`text-sm mt-1 ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                  {message.text}
+                </p>
+              )}
             </form>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
+        <div className={`mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center ${isAr ? 'md:flex-row-reverse' : ''}`}>
           <p>© {new Date().getFullYear()} Young Leaders Academy. {t('rightsReserved')}</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-white transition-colors">{t('privacyPolicy')}</Link>
+          <div className="flex space-x-6 mt-4 md:mt-0 items-center">
+            <Link href={`/${locale}/privacy`} className={`hover:text-white transition-colors ${isAr ? 'ml-6' : ''}`}>{t('privacyPolicy')}</Link>
             <span className="text-gray-600">|</span>
-            <Link href="/terms" className="hover:text-white transition-colors">{t('termsConditions')}</Link>
+            <Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('termsConditions')}</Link>
           </div>
         </div>
       </div>
