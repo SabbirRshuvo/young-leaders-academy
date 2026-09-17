@@ -4,10 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function GlobalMobility() {
   const t = useTranslations('GlobalMobility');
+  const locale = useLocale();
 
   const benefits = [
     {
@@ -77,8 +78,8 @@ export default function GlobalMobility() {
 
             <motion.div variants={itemVariants}>
               <Link
-                href="#mobility"
-                className="inline-flex items-center gap-2 px-8 py-3.5 md:py-4 rounded-full bg-[#0B2545] text-white font-bold text-sm md:text-base hover:bg-[#071931] transition-colors group"
+                href={`/${locale}/apply`}
+                className="inline-flex items-center gap-2 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#0B2545] to-[#1A3A65] text-white font-bold text-sm md:text-base hover:from-[#133055] hover:to-[#0B2545] shadow-md hover:shadow-lg transition-all duration-300 group"
               >
                 {t('cta')}
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />

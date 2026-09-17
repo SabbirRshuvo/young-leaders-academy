@@ -334,5 +334,165 @@ export const universitiesData = [
         ar: "الفنون والعلوم الإنسانية"
       }
     ]
+  },
+  {
+    id: "ksu",
+    name: "King Saud University",
+    location: {
+      en: "🇸🇦 Saudi Arabia",
+      ar: "🇸🇦 المملكة العربية السعودية"
+    },
+    logo: "/ksu.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "National Leader",
+      ar: "رائد وطني"
+    },
+    overview: {
+      en: "King Saud University is Saudi Arabia's premier higher education institution, dedicated to providing high-quality education and advancing knowledge through pioneering research. It stands as a beacon of academic excellence in the region.",
+      ar: "جامعة الملك سعود هي مؤسسة التعليم العالي الرائدة في المملكة العربية السعودية، مكرسة لتوفير تعليم عالي الجودة والنهوض بالمعرفة من خلال الأبحاث الرائدة. وتقف كمنارة للتميز الأكاديمي في المنطقة."
+    },
+    stats: [
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#141 (QS)" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "12%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1957" },
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "Highly Competitive" }
+    ],
+    requirements: [
+      {
+        en: "High School GPA (Outstanding Academic Record)",
+        ar: "معدل تراكمي عالي في المدرسة الثانوية (سجل أكاديمي متميز)"
+      },
+      {
+        en: "Qudurat (General Aptitude Test)",
+        ar: "اختبار القدرات العامة (قياس)"
+      },
+      {
+        en: "Tahsili (Standardized Achievement Test)",
+        ar: "الاختبار التحصيلي"
+      }
+    ],
+    programs: [
+      {
+        en: "Medicine & Health Sciences",
+        ar: "الطب والعلوم الصحية"
+      },
+      {
+        en: "Engineering & Technology",
+        ar: "الهندسة والتكنولوجيا"
+      },
+      {
+        en: "Business Administration",
+        ar: "إدارة الأعمال"
+      }
+    ]
+  },
+  {
+    id: "kfupm",
+    name: "King Fahd University of Petroleum and Minerals",
+    location: {
+      en: "🇸🇦 Saudi Arabia",
+      ar: "🇸🇦 المملكة العربية السعودية"
+    },
+    logo: "/kfupm.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Engineering & STEM",
+      ar: "الهندسة والعلوم والتكنولوجيا"
+    },
+    overview: {
+      en: "KFUPM is a leading institution renowned globally for its excellence in science, engineering, and business. It equips students with the skills required to lead in the industrial and energy sectors.",
+      ar: "جامعة الملك فهد للبترول والمعادن هي مؤسسة رائدة تشتهر عالمياً بتميزها في العلوم والهندسة والأعمال. تزود الطلاب بالمهارات اللازمة للقيادة في قطاعي الصناعة والطاقة."
+    },
+    stats: [
+      { label: { en: "Global Rank", ar: "التصنيف العالمي" }, value: "#101 (QS)" },
+      { label: { en: "Employment Rate", ar: "معدل التوظيف" }, value: "95%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "1963" },
+      { label: { en: "Acceptance Rate", ar: "معدل القبول" }, value: "Very Competitive" }
+    ],
+    requirements: [
+      {
+        en: "Exceptional Scores in Qudurat & Tahsili",
+        ar: "درجات استثنائية في القدرات والتحصيلي"
+      },
+      {
+        en: "Strong Background in Mathematics & Science",
+        ar: "خلفية قوية في الرياضيات والعلوم"
+      },
+      {
+        en: "English Proficiency",
+        ar: "إتقان اللغة الإنجليزية"
+      }
+    ],
+    programs: [
+      {
+        en: "Petroleum Engineering",
+        ar: "هندسة البترول"
+      },
+      {
+        en: "Computer Science & AI",
+        ar: "علوم الحاسب والذكاء الاصطناعي"
+      },
+      {
+        en: "Industrial Management",
+        ar: "الإدارة الصناعية"
+      }
+    ]
+  },
+  {
+    id: "kaust",
+    name: "King Abdullah University of Science and Technology",
+    location: {
+      en: "🇸🇦 Saudi Arabia",
+      ar: "🇸🇦 المملكة العربية السعودية"
+    },
+    logo: "/kaust.png",
+    heroImage: "/features-program.png",
+    badge: {
+      en: "Research & Innovation",
+      ar: "البحث والابتكار"
+    },
+    overview: {
+      en: "KAUST is a world-class graduate research university dedicated to advancing innovation, science, and technology. It attracts top minds globally to solve some of the world's most pressing challenges.",
+      ar: "جامعة الملك عبدالله للعلوم والتقنية هي جامعة بحثية عالمية المستوى للدراسات العليا مكرسة للنهوض بالابتكار والعلوم والتكنولوجيا. وتستقطب أفضل العقول عالمياً لحل التحديات الأكثر إلحاحاً."
+    },
+    stats: [
+      { label: { en: "Research Output", ar: "الإنتاج البحثي" }, value: "Very High" },
+      { label: { en: "International Students", ar: "الطلاب الدوليين" }, value: "70%" },
+      { label: { en: "Founded", ar: "تأسست" }, value: "2009" },
+      { label: { en: "Citations per Faculty", ar: "الاستشهادات لأعضاء التدريس" }, value: "Top 10 Global" }
+    ],
+    requirements: [
+      {
+        en: "Outstanding Academic Record (Bachelor's/Master's degree)",
+        ar: "سجل أكاديمي متميز (درجة البكالوريوس/الماجستير)"
+      },
+      {
+        en: "Demonstrated Research Potential",
+        ar: "إمكانات بحثية مثبتة"
+      },
+      {
+        en: "Letters of Recommendation",
+        ar: "خطابات توصية قوية"
+      },
+      {
+        en: "Statement of Purpose",
+        ar: "بيان الغرض (رسالة دافع)"
+      }
+    ],
+    programs: [
+      {
+        en: "Biological & Environmental Sciences",
+        ar: "العلوم البيولوجية والبيئية"
+      },
+      {
+        en: "Computer & Electrical Engineering",
+        ar: "الهندسة الكهربائية والحاسب الآلي"
+      },
+      {
+        en: "Physical Science & Engineering",
+        ar: "العلوم والهندسة الفيزيائية"
+      }
+    ]
   }
 ];

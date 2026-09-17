@@ -20,6 +20,7 @@ function ApplyFormContent() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [consentGiven, setConsentGiven] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -50,7 +51,7 @@ function ApplyFormContent() {
 
   const isStep1Valid = formData.firstName.trim() !== '' && formData.lastName.trim() !== '' && formData.email.trim() !== '' && formData.phone.trim() !== '';
   const isStep2Valid = formData.age.trim() !== '' && formData.school.trim() !== '' && formData.program.trim() !== '';
-  const isStep3Valid = formData.motivation.trim() !== '';
+  const isStep3Valid = formData.motivation.trim() !== '' && consentGiven;
 
   const canProceed = () => {
     if (step === 1) return isStep1Valid;
@@ -287,6 +288,38 @@ function ApplyFormContent() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none transition-all bg-gray-50/50 focus:bg-white resize-none"
                 />
               </div>
+
+              {/* VAT Breakdown */}
+              <div className="p-5 rounded-2xl bg-[#0B2545]/5 border border-[#0B2545]/10 mt-2">
+                <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
+                  <span>{t('vatBase')}</span>
+                  <span className="font-medium">1,500 {t('sar')}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-gray-600 mb-4 pb-4 border-b border-gray-200">
+                  <span>{t('vatLabel')}</span>
+                  <span className="font-medium">225 {t('sar')}</span>
+                </div>
+                <div className="flex justify-between items-center text-base font-bold text-[#0B2545]">
+                  <span>{t('vatTotal')}</span>
+                  <span>1,725 {t('sar')}</span>
+                </div>
+              </div>
+
+              {/* PDPL Consent */}
+              <label className="flex items-start gap-3 mt-4 cursor-pointer group">
+                <div className="relative flex items-center justify-center shrink-0 mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={consentGiven}
+                    onChange={(e) => setConsentGiven(e.target.checked)}
+                    className="w-5 h-5 appearance-none border-2 border-gray-300 rounded-md checked:bg-[#D4AF37] checked:border-[#D4AF37] transition-colors peer cursor-pointer"
+                  />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
+                </div>
+                <span className="text-sm text-gray-600 leading-relaxed select-none group-hover:text-gray-800 transition-colors">
+                  {t('pdplConsent')}
+                </span>
+              </label>
 
               {errorMsg && (
                 <div className="p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3">
