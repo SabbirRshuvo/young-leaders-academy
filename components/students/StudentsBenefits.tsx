@@ -31,10 +31,10 @@ export default function StudentsBenefits() {
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-16">
           <div className="flex items-center gap-4 mb-4">
-            <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
               {t('benefitsBadge')}
             </span>
+            <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-[#0B2545] font-serif text-3xl md:text-4xl lg:text-5xl font-bold mb-6">

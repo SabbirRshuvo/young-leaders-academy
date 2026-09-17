@@ -1,45 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
 import { Calendar, MapPin, Monitor, Users, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { upcomingEvents, Event } from "@/data/events";
+import EventRsvpModal from "@/components/events/EventRsvpModal";
 
 export default function EventsPreview() {
   const t = useTranslations("EventsPreview");
   const locale = useLocale();
   const isAr = locale === "ar";
 
-  const events = [
-    {
-      id: 1,
-      title: t("event1Title"),
-      date: t("event1Date"),
-      location: t("event1Loc"),
-      type: "in-person",
-      typeLabel: t("typeInPerson"),
-      icon: Users
-    },
-    {
-      id: 2,
-      title: t("event2Title"),
-      date: t("event2Date"),
-      location: t("event2Loc"),
-      type: "virtual",
-      typeLabel: t("typeVirtual"),
-      icon: Monitor
-    },
-    {
-      id: 3,
-      title: t("event3Title"),
-      date: t("event3Date"),
-      location: t("event3Loc"),
-      type: "in-person",
-      typeLabel: t("typeInPerson"),
-      icon: Users
-    }
-  ];
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  const events = upcomingEvents.slice(0, 3);
 
   return (
     <section className="w-full py-16 bg-[#F8F9FA] relative overflow-hidden">
@@ -67,7 +43,7 @@ export default function EventsPreview() {
 
           <Link
             href={`/${locale}/events`}
-            className="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors"
+            className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors"
           >
             {t("viewAllBtn")}
             <ArrowRight className="w-4 h-4" />
@@ -89,8 +65,8 @@ export default function EventsPreview() {
                 <div className="flex flex-col gap-2">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-max ${event.type === 'virtual' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
                     }`}>
-                    <event.icon className="w-3.5 h-3.5" />
-                    {event.typeLabel}
+                    {event.type === 'virtual' ? <Monitor className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
+                    {isAr ? event.typeLabelAr : event.typeLabelEn}
                   </span>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-[#0B2545]/5 flex items-center justify-center shrink-0">
@@ -99,26 +75,26 @@ export default function EventsPreview() {
               </div>
 
               <h3 className="font-serif text-xl font-bold text-[#0B2545] mb-4 line-clamp-2 min-h-[56px]">
-                {event.title}
+                {isAr ? event.titleAr : event.titleEn}
               </h3>
 
               <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-gray-100">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Calendar className="w-4 h-4 text-gray-400" />
-                  <span>{event.date}</span>
+                  <span>{isAr ? event.dateAr : event.dateEn}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <MapPin className="w-4 h-4 text-gray-400" />
-                  <span>{event.location}</span>
+                  <span>{isAr ? event.locationAr : event.locationEn}</span>
                 </div>
               </div>
 
-              <Link
-                href={`/${locale}/events/${event.id}`}
-                className="mt-6 inline-flex justify-center items-center gap-2 w-full py-3 rounded-xl bg-[#0B2545] text-white text-sm font-bold hover:bg-[#133055] transition-colors"
+              <button
+                onClick={() => setSelectedEvent(event)}
+                className="mt-6 inline-flex justify-center items-center gap-2 w-full py-3 rounded-xl bg-[#0B2545] text-white text-sm font-bold hover:bg-[#133055] transition-colors min-h-[44px]"
               >
                 {t("registerBtn")}
-              </Link>
+              </button>
             </motion.div>
           ))}
         </div>
@@ -135,6 +111,12 @@ export default function EventsPreview() {
         </div>
 
       </div>
+
+      <EventRsvpModal
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        event={selectedEvent}
+      />
     </section>
   );
 }
