@@ -3,23 +3,28 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { Mail, Phone, MapPin, ShieldCheck, Receipt } from 'lucide-react';
+import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube, FaApplePay, FaCcVisa, FaCcMastercard } from 'react-icons/fa';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
 
 export default function Footer() {
   const t = useTranslations('Footer');
+  const tf = useTranslations('Forms');
   const locale = useLocale();
   const isAr = locale === 'ar';
 
   const [email, setEmail] = useState('');
+  const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !consent) {
+      setMessage({ type: 'error', text: isAr ? 'يرجى إدخال البريد الإلكتروني والموافقة على الشروط.' : 'Please enter email and agree to terms.' });
+      return;
+    }
 
     setIsSubmitting(true);
     setMessage(null);
@@ -129,10 +134,24 @@ export default function Footer() {
                 className="flex h-10 w-full rounded-sm bg-white px-3 py-2 text-sm text-navy placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 required
               />
+              <div className="flex items-start gap-2 mt-1">
+                <input 
+                  type="checkbox" 
+                  id="pdplConsentFooter"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-1 shrink-0 w-3.5 h-3.5 text-gold rounded border-gray-400 focus:ring-gold bg-transparent"
+                  required
+                />
+                <label htmlFor="pdplConsentFooter" className="text-xs text-gray-400 leading-tight cursor-pointer">
+                  {tf('pdplConsent')}
+                </label>
+              </div>
+
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors disabled:opacity-70"
+                disabled={isSubmitting || !consent}
+                className="inline-flex h-10 items-center justify-center rounded-sm bg-gold px-4 text-sm font-bold text-navy shadow hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-1"
               >
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin"></div>
@@ -149,7 +168,31 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className={`mt-16 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center ${isAr ? 'md:flex-row-reverse' : ''}`}>
+        {/* Trust Markers */}
+        <div className={`mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 ${isAr ? 'md:flex-row-reverse' : ''}`}>
+          <div className={`flex flex-wrap items-center justify-center gap-6 ${isAr ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center gap-2 text-gray-300 ${isAr ? 'flex-row-reverse' : ''}`}>
+              <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-sm font-semibold">{t('pdplCertified')}</span>
+            </div>
+            <div className="h-4 w-px bg-white/20 hidden md:block"></div>
+            <div className={`flex items-center gap-2 text-gray-300 ${isAr ? 'flex-row-reverse' : ''}`}>
+              <Receipt className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-sm font-semibold">{t('vatCompliant')}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3 opacity-70">
+            {/* Payment Icons */}
+            <div className="bg-white px-2 py-1 rounded text-[#0B2545] font-bold text-xs tracking-wider">mada</div>
+            <FaApplePay className="w-10 h-10 text-white" />
+            <FaCcVisa className="w-8 h-8 text-white" />
+            <FaCcMastercard className="w-8 h-8 text-white" />
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className={`mt-8 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center ${isAr ? 'md:flex-row-reverse' : ''}`}>
           <p>© {new Date().getFullYear()} Young Leaders Academy. {t('rightsReserved')}</p>
           <div className="flex space-x-6 mt-4 md:mt-0 items-center">
             <Link href={`/${locale}/privacy`} className={`hover:text-white transition-colors ${isAr ? 'ml-6' : ''}`}>{t('privacyPolicy')}</Link>

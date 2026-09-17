@@ -14,8 +14,11 @@ export default function Partners() {
   const t = useTranslations('Partners');
   const partners = [
     { name: "HARVARD", sub: "UNIVERSITY", color: "text-[#A51C30]" },
+    { name: "KSU", sub: "King Saud University", color: "text-[#184F8D]" },
     { name: "Stanford", sub: "University", color: "text-[#8C1515]" },
+    { name: "KAUST", sub: "King Abdullah University", color: "text-[#005570]" },
     { name: "MIT", sub: "Massachusetts Institute of Technology", color: "text-[#A31F34]" },
+    { name: "KFUPM", sub: "King Fahd University", color: "text-[#006A4D]" },
     { name: "Yale", sub: "University", color: "text-[#00356B]" },
     { name: "OXFORD", sub: "UNIVERSITY OF", color: "text-[#002147]" },
     { name: "Cambridge", sub: "University", color: "text-[#A3C1AD]" },
