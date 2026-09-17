@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer";
 import { Providers } from "@/components/layout/Providers";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { Toaster } from "react-hot-toast";
 
 const playfair = Playfair_Display({
     variable: "--font-serif",
@@ -50,7 +49,6 @@ export default async function RootLayout({
                 <NextIntlClientProvider messages={messages}>
                     <Providers>
                         <Navbar />
-                        <Toaster />
                         <main className="flex-1 flex flex-col">{children}</main>
                         <Footer />
                     </Providers>
