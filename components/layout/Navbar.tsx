@@ -39,187 +39,25 @@ export default function Navbar() {
   useEffect(() => {
     let mounted = true;
 
-    const getUserAndRole = async () => {
-      try {
-        setRoleLoading(true);
-
-        /*
-        |--------------------------------------------------------------------------
-        | 1. Get currently authenticated Supabase user
-        |--------------------------------------------------------------------------
-        */
-
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError) {
-          console.error("Navbar user lookup error:", userError);
-
-          if (mounted) {
-            setUser(null);
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        if (!user) {
-          if (mounted) {
-            setUser(null);
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        if (mounted) {
-          setUser(user);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 2. Get user's role
-        |--------------------------------------------------------------------------
-        */
-
-        const { data: roleData, error: roleError } = await supabase
-          .from("user_roles")
-          .select(`
-            role_id,
-            roles (
-              name
-            )
-          `)
-          .eq("user_id", user.id)
-          .single();
-
-        if (roleError) {
-          console.error("Navbar role lookup error:", roleError);
-
-          if (mounted) {
-            setUserRole(null);
-          }
-
-          return;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Extract role name
-        |--------------------------------------------------------------------------
-        |
-        | Depending on your Supabase generated types, `roles` can sometimes
-        | appear as an array even though the relationship is one-to-one.
-        |
-        */
-
-        const roles = roleData?.roles;
-
-        let roleName: string | null = null;
-
-        if (Array.isArray(roles)) {
-          roleName = roles[0]?.name ?? null;
-        } else if (roles && typeof roles === "object") {
-          roleName = (roles as { name?: string }).name ?? null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 4. Store only supported roles
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-          roleName === "student" ||
-          roleName === "parent" ||
-          roleName === "coach" ||
-          roleName === "admin"
-        ) {
-          if (mounted) {
-            setUserRole(roleName);
-          }
-        } else {
-          if (mounted) {
-            setUserRole(null);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch navbar user/role:", error);
-
-        if (mounted) {
-          setUser(null);
-          setUserRole(null);
-        }
-      } finally {
-        if (mounted) {
-          setRoleLoading(false);
-        }
-      }
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Initial load
-    |--------------------------------------------------------------------------
-    */
-
-    getUserAndRole();
-
-    /*
-    |--------------------------------------------------------------------------
-    | Listen for Supabase auth changes
-    |--------------------------------------------------------------------------
-    |
-    | This means the navbar automatically updates when:
-    | - user logs in
-    | - user logs out
-    | - session changes
-    |--------------------------------------------------------------------------
-    */
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-
-      if (!session?.user) {
-        setUser(null);
-        setUserRole(null);
-        setRoleLoading(false);
-        return;
-      }
-
-      /*
-      | Update user immediately
-      */
-
-      setUser(session.user);
-
-      /*
-      | Fetch role after authentication changes
-      */
-
+    const getUserRole = async (userId: string) => {
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select(`
-          role_id,
-          roles (
-            name
-          )
-        `)
-        .eq("user_id", session.user.id)
+        role_id,
+        roles (
+          name
+        )
+      `)
+        .eq("user_id", userId)
         .single();
 
       if (roleError) {
-        console.error(
-          "Navbar role lookup error after auth change:",
-          roleError
-        );
+        console.error("Navbar role lookup error:", roleError);
 
-        setUserRole(null);
-        setRoleLoading(false);
+        if (mounted) {
+          setUserRole(null);
+        }
+
         return;
       }
 
@@ -239,18 +77,155 @@ export default function Navbar() {
         roleName === "coach" ||
         roleName === "admin"
       ) {
-        setUserRole(roleName);
+        if (mounted) {
+          setUserRole(roleName);
+        }
       } else {
+        if (mounted) {
+          setUserRole(null);
+        }
+      }
+    };
+
+    const getInitialSession = async () => {
+      try {
+        setRoleLoading(true);
+
+        /*
+        |----------------------------------------------------------------------
+        | Get the current Supabase session
+        |----------------------------------------------------------------------
+        |
+        | If the visitor is logged out, session will simply be null.
+        | This is NOT an error.
+        |
+        */
+
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error(
+            "Navbar session lookup error:",
+            sessionError
+          );
+
+          if (mounted) {
+            setUser(null);
+            setUserRole(null);
+            setRoleLoading(false);
+          }
+
+          return;
+        }
+
+        /*
+        |----------------------------------------------------------------------
+        | No session = logged out
+        |----------------------------------------------------------------------
+        */
+
+        if (!session?.user) {
+          if (mounted) {
+            setUser(null);
+            setUserRole(null);
+            setRoleLoading(false);
+          }
+
+          return;
+        }
+
+        /*
+        |----------------------------------------------------------------------
+        | Session exists
+        |----------------------------------------------------------------------
+        */
+
+        if (mounted) {
+          setUser(session.user);
+        }
+
+        await getUserRole(session.user.id);
+      } catch (error) {
+        console.error(
+          "Failed to fetch navbar session/role:",
+          error
+        );
+
+        if (mounted) {
+          setUser(null);
+          setUserRole(null);
+        }
+      } finally {
+        if (mounted) {
+          setRoleLoading(false);
+        }
+      }
+    };
+
+    /*
+    |----------------------------------------------------------------------
+    | Initial session check
+    |----------------------------------------------------------------------
+    */
+
+    getInitialSession();
+
+    /*
+    |----------------------------------------------------------------------
+    | Listen for authentication changes
+    |----------------------------------------------------------------------
+    */
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+
+      /*
+      |--------------------------------------------------------------------
+      | User logged out
+      |--------------------------------------------------------------------
+      */
+
+      if (!session?.user) {
+        setUser(null);
         setUserRole(null);
+        setRoleLoading(false);
+
+        return;
       }
 
-      setRoleLoading(false);
+      /*
+      |--------------------------------------------------------------------
+      | User logged in / session restored
+      |--------------------------------------------------------------------
+      */
+
+      setUser(session.user);
+      setRoleLoading(true);
+
+      /*
+      | Fetch role
+      */
+
+      setTimeout(async () => {
+        if (!mounted) return;
+
+        await getUserRole(session.user.id);
+
+        if (mounted) {
+          setRoleLoading(false);
+        }
+      }, 0);
     });
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Cleanup
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     */
 
     return () => {
@@ -581,8 +556,8 @@ export default function Navbar() {
               key={link.name}
               href={`/${locale}${link.href === "/" ? "" : link.href}`}
               className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href)
-                  ? "text-gold"
-                  : ""
+                ? "text-gold"
+                : ""
                 }`}
             >
 
@@ -590,8 +565,8 @@ export default function Navbar() {
 
               <span
                 className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${isActive(link.href)
-                    ? "w-full"
-                    : "w-0 group-hover:w-full"
+                  ? "w-full"
+                  : "w-0 group-hover:w-full"
                   }`}
               />
 
@@ -618,8 +593,8 @@ export default function Navbar() {
 
             <span
               className={`text-sm ${locale === "en"
-                  ? "text-navy font-bold"
-                  : "text-gray-400 font-medium"
+                ? "text-navy font-bold"
+                : "text-gray-400 font-medium"
                 }`}
             >
               EN
@@ -631,8 +606,8 @@ export default function Navbar() {
 
             <span
               className={`font-arabic text-[15px] ${locale === "ar"
-                  ? "text-navy font-bold"
-                  : "text-gray-400 font-medium"
+                ? "text-navy font-bold"
+                : "text-gray-400 font-medium"
                 }`}
             >
               ع
@@ -679,8 +654,8 @@ export default function Navbar() {
 
                 <ChevronDown
                   className={`w-4 h-4 text-navy transition-transform ${isProfileMenuOpen
-                      ? "rotate-180"
-                      : ""
+                    ? "rotate-180"
+                    : ""
                     }`}
                 />
 
@@ -817,8 +792,8 @@ export default function Navbar() {
 
       <div
         className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
-            ? "max-h-[700px] opacity-100 py-4"
-            : "max-h-0 opacity-0 py-0 border-t-0"
+          ? "max-h-[700px] opacity-100 py-4"
+          : "max-h-0 opacity-0 py-0 border-t-0"
           }`}
       >
 
@@ -834,8 +809,8 @@ export default function Navbar() {
                 key={link.name}
                 href={`/${locale}${link.href === "/" ? "" : link.href}`}
                 className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${isActive(link.href)
-                    ? "text-gold bg-gray-50"
-                    : "text-navy"
+                  ? "text-gold bg-gray-50"
+                  : "text-navy"
                   }`}
                 onClick={() =>
                   setIsMobileMenuOpen(false)
@@ -844,8 +819,8 @@ export default function Navbar() {
 
                 <span
                   className={`w-2 h-2 rounded-full mr-3 shrink-0 ${isActive(link.href)
-                      ? "bg-gold"
-                      : "bg-transparent"
+                    ? "bg-gold"
+                    : "bg-transparent"
                     }`}
                 />
 
@@ -864,8 +839,8 @@ export default function Navbar() {
             <button
               onClick={switchLocale}
               className={`flex-1 py-3 rounded-full border ${locale === "en"
-                  ? "border-navy bg-navy/5 text-navy font-bold"
-                  : "border-gray-200 text-gray-500"
+                ? "border-navy bg-navy/5 text-navy font-bold"
+                : "border-gray-200 text-gray-500"
                 }`}
             >
               English
@@ -874,8 +849,8 @@ export default function Navbar() {
             <button
               onClick={switchLocale}
               className={`flex-1 py-3 rounded-full border ${locale === "ar"
-                  ? "border-navy bg-navy/5 text-navy font-bold"
-                  : "border-gray-200 text-gray-500"
+                ? "border-navy bg-navy/5 text-navy font-bold"
+                : "border-gray-200 text-gray-500"
                 }`}
             >
               العربية
