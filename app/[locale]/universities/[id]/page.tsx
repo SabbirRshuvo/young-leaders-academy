@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { universitiesData } from '@/data/universities';
 import { MapPin, Globe, Users, History, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
+import UniversityDetailCta from '@/components/universities/UniversityDetailCta';
 
 export default async function UniversityDetailsPage({
   params
@@ -161,30 +162,13 @@ export default async function UniversityDetailsPage({
             </div>
 
             {/* CTA */}
-            <div className="bg-[#0B2545] p-8 rounded-3xl shadow-xl flex flex-col relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-              
-              <h3 className={`text-2xl font-bold text-white mb-4 ${isAr ? 'text-right' : 'text-left'}`}>
-                {isAr ? 'هل أنت مستعد للتقديم؟' : 'Ready to Apply?'}
-              </h3>
-              <p className={`text-gray-300 text-sm mb-8 ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>
-                {isAr 
-                  ? 'ابدأ طلبك اليوم وانضم إلى نخبة الطلاب في شبكتنا الأكاديمية العالمية.' 
-                  : 'Start your application today and join elite students in our global academic network.'}
-              </p>
-
-              <Link
-                href={`/${locale}/apply?university=${university.id}`}
-                className={`w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-lg transition-transform duration-300 hover:scale-[1.02] shadow-lg group ${isAr ? 'flex-row-reverse' : ''}`}
-              >
-                {applyNowText}
-                {isAr ? (
-                  <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-                ) : (
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                )}
-              </Link>
-            </div>
+            <UniversityDetailCta 
+              universityId={university.id}
+              universityName={university.name}
+              locale={locale}
+              isAr={isAr}
+              applyNowText={applyNowText}
+            />
 
           </div>
 

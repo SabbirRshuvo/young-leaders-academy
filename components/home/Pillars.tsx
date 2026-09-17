@@ -38,7 +38,7 @@ export default function Pillars() {
       <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12 z-10">
 
         {/* ================= HEADER ================= */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -60,13 +60,9 @@ export default function Pillars() {
           </h2>
 
           <p className="mt-2 max-w-[650px] text-[14px] md:text-[16px] leading-relaxed text-[#6B7B8F]">
-            We nurture every aspect of a young person&apos;s growth, helping them build
-            the skills, character and confidence to lead a meaningful life.
+            {t('desc')}
           </p>
         </motion.div>
-
-        {/* ================= STATIC GRID (4 Top, 3 Bottom) ================= */}
-        {/* flex-wrap and justify-center will naturally force 4 items on top and 3 centered on the bottom on large screens */}
         <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-[1440px] mx-auto">
           {pillars.map((pillar, index) => {
             const Icon = pillar.icon;

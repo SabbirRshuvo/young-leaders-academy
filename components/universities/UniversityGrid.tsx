@@ -1,15 +1,25 @@
 "use client";
 
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Info } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { universitiesData } from '@/data/universities';
+import RequestInfoModal from './RequestInfoModal';
 
 export default function UniversityGrid() {
   const t = useTranslations('UniversityGrid');
   const locale = useLocale();
   const isAr = locale === 'ar';
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedUni, setSelectedUni] = useState<{ id: string, name: string } | null>(null);
+
+  const handleRequestInfo = (id: string, name: string) => {
+    setSelectedUni({ id, name });
+    setModalOpen(true);
+  };
 
   const l = (item: { en: string; ar: string }) => isAr ? item.ar : item.en;
 
@@ -113,19 +123,38 @@ export default function UniversityGrid() {
                 {l(uni.overview)}
               </p>
 
-              {/* Button */}
-              <Link
-                href={`/${locale}/universities/${uni.id}`}
-                className={`inline-flex items-center gap-2 bg-[#0B2545] text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors hover:bg-[#1a365d] ${isAr ? 'self-end flex-row-reverse' : 'self-start'}`}
-              >
-                {t('viewBtn')}
-                {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-              </Link>
+              {/* Actions */}
+              <div className={`flex flex-col xl:flex-row gap-3 w-full mt-auto ${isAr ? 'xl:flex-row-reverse' : ''}`}>
+                <Link
+                  href={`/${locale}/universities/${uni.id}`}
+                  className={`flex-1 inline-flex justify-center items-center gap-2 bg-[#0B2545] text-white px-4 py-2.5 rounded-full text-sm font-medium transition-colors hover:bg-[#1a365d] ${isAr ? 'flex-row-reverse' : ''}`}
+                >
+                  {t('viewBtn')}
+                  {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                </Link>
+                <button
+                  onClick={() => handleRequestInfo(uni.id, uni.name)}
+                  className={`flex-1 inline-flex justify-center items-center gap-2 bg-gray-100 text-[#0B2545] px-4 py-2.5 rounded-full text-sm font-medium transition-colors hover:bg-gray-200 ${isAr ? 'flex-row-reverse' : ''}`}
+                >
+                  {isAr ? 'طلب معلومات' : 'Request Info'}
+                  <Info className="w-4 h-4" />
+                </button>
+              </div>
             </motion.div>
           ))}
         </motion.div>
 
       </div>
+
+      {/* Modal */}
+      {selectedUni && (
+        <RequestInfoModal 
+          isOpen={modalOpen} 
+          onClose={() => setModalOpen(false)} 
+          universityId={selectedUni.id} 
+          universityName={selectedUni.name} 
+        />
+      )}
     </section>
   );
 }

@@ -77,6 +77,12 @@ export async function POST(req: Request) {
         <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #D4AF37; margin: 20px 0;">
           <h3 style="margin: 0; color: #0B2545;">${program_id}</h3>
         </div>
+        <div style="background: #ffffff; border: 1px solid #eeeeee; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h4 style="margin-top: 0; color: #0B2545;">${isAr ? 'تفاصيل الدفع' : 'Payment Details'}</h4>
+          <p style="margin: 5px 0; color: #555555;">${isAr ? 'الرسوم الأساسية' : 'Base Program Fee'}: 1500 SAR</p>
+          <p style="margin: 5px 0; color: #555555;">${isAr ? 'ضريبة القيمة المضافة (15%)' : '15% VAT'}: 225 SAR</p>
+          <p style="margin: 5px 0; font-weight: bold; color: #0B2545;">${isAr ? 'الإجمالي المدفوع' : 'Total Paid'}: 1725 SAR</p>
+        </div>
         <p>${isAr ? 'سيقوم فريق القبول لدينا بمراجعة طلبك والرد عليك قريباً.' : 'Our admissions team will review your application and get back to you shortly.'}</p>
       `);
 
@@ -91,7 +97,9 @@ export async function POST(req: Request) {
           <tr><th>Age</th><td>${data.age}</td></tr>
           <tr><th>School</th><td>${data.school}</td></tr>
           <tr><th>Program</th><td><strong>${program_id}</strong></td></tr>
+          <tr><th>Payment</th><td>Base: 1500 SAR + 15% VAT: 225 SAR = <strong>Total Paid: 1725 SAR</strong></td></tr>
           <tr><th>Motivation</th><td>${data.motivation}</td></tr>
+          <tr><th>PDPL Consent</th><td>Yes, agreed to share data with target university</td></tr>
         </table>
       `);
     } else if (type === 'contact') {
@@ -134,6 +142,27 @@ export async function POST(req: Request) {
         <p>A new user has just subscribed to the newsletter.</p>
         <table class="data-table">
           <tr><th>Email</th><td><a href="mailto:${email}">${email}</a></td></tr>
+        </table>
+      `);
+    } else if (type === 'request-info') {
+      const { full_name, email, phone, university_name } = data;
+
+      userSubject = isAr ? `طلب معلومات: ${university_name}` : `Information Request: ${university_name}`;
+      userHtml = getEmailWrapper(`
+        <h2>${isAr ? 'مرحباً' : 'Hello'} ${full_name},</h2>
+        <p>${isAr ? 'شكراً لاهتمامك بجامعة' : 'Thank you for your interest in'} <strong>${university_name}</strong>.</p>
+        <p>${isAr ? 'لقد تم تسجيل طلبك للحصول على معلومات، وسيتواصل معك أحد مستشارينا قريباً.' : 'We have received your information request and one of our advisors will reach out to you shortly.'}</p>
+      `);
+
+      clientSubject = `New University Lead: ${university_name}`;
+      clientHtml = getEmailWrapper(`
+        <h2>New University Lead 🎓</h2>
+        <p>A new lead has requested information about <strong>${university_name}</strong>.</p>
+        <table class="data-table">
+          <tr><th>Full Name</th><td>${full_name}</td></tr>
+          <tr><th>Email</th><td><a href="mailto:${email}">${email}</a></td></tr>
+          <tr><th>Phone</th><td>${phone}</td></tr>
+          <tr><th>Target University</th><td>${university_name}</td></tr>
         </table>
       `);
     } else {
