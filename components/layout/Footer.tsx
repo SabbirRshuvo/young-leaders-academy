@@ -107,11 +107,11 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <span>Dhaka, Bangladesh</span>
+                <span>Riyadh, Saudi Arabia</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <Link href="tel:+8801234567890">+880 1234 567890</Link>
+                <Link href="tel:+966112345678" dir="ltr">+966 11 234 5678</Link>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
