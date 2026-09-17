@@ -35,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.015em;
 }
 
-p, li, a, button {
+p, li, a, button, input, span {
   font-family: var(--font-sans), sans-serif;
   letter-spacing: 0.01em;
   line-height: 1.6;
