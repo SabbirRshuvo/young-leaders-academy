@@ -100,6 +100,30 @@ function ApplyFormContent() {
         throw new Error(data.error || 'Checkout failed');
       }
 
+      // Trigger Email Automation
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'apply',
+            locale,
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName,
+              email: formData.email,
+              phone: formData.phone,
+              age: formData.age,
+              school: formData.school,
+              program_id: programTitle,
+              motivation: formData.motivation
+            }
+          })
+        });
+      } catch (emailErr) {
+        console.error("Failed to trigger email automation:", emailErr);
+      }
+
       // Redirect to the success URL returned by the mock API
       if (data.redirectUrl) {
         router.push(data.redirectUrl);
