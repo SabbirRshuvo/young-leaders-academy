@@ -31,7 +31,7 @@ export default function YlaJourney() {
   };
 
   return (
-    <section className="relative w-full py-20 md:py-32 bg-[#0B2545] overflow-hidden" dir={isAr ? 'rtl' : 'ltr'}>
+    <section className="relative w-full py-20 md:py-32 bg-[#0B2545] overflow-hidden">
       {/* Background glowing elements */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -101,7 +101,7 @@ export default function YlaJourney() {
                 </div>
 
                 {/* Content */}
-                <div className="text-center bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl w-full h-full group-hover:bg-white/10 transition-colors duration-500 shadow-xl">
+                <div className={`text-center md:text-left bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl w-full h-full group-hover:bg-white/10 transition-colors duration-500 shadow-xl ${isAr ? 'md:text-right' : ''}`}>
                   <h3 className="text-xl font-bold text-white mb-3 font-serif">
                     {step.title}
                   </h3>
@@ -112,12 +112,8 @@ export default function YlaJourney() {
 
                 {/* Connector Arrow for desktop */}
                 {!isLast && (
-                  <div className={`hidden lg:block absolute top-12 ${isAr ? '-left-6' : '-right-6'} w-12 h-12 flex items-center justify-center text-[#D4AF37]/50 z-20`}>
-                    {isAr ? (
-                      <ArrowLeft className="w-6 h-6 animate-pulse" />
-                    ) : (
-                      <ArrowRight className="w-6 h-6 animate-pulse" />
-                    )}
+                  <div className="hidden lg:block absolute top-12 -right-6 w-12 h-12 flex items-center justify-center text-[#D4AF37]/50 z-20">
+                    <ArrowRight className="w-6 h-6 animate-pulse" />
                   </div>
                 )}
               </motion.div>

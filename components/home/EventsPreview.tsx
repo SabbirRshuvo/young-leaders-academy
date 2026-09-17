@@ -48,9 +48,9 @@ export default function EventsPreview() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#0B2545]/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
-        
+
         {/* Header */}
-        <div className={`flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 ${isAr ? "md:flex-row-reverse" : ""}`}>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="flex flex-col items-center md:items-start max-w-2xl text-center md:text-left">
             <div className="flex items-center gap-3 mb-4 self-center md:self-start">
               <span className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.4em] text-[#B8902E]">
@@ -58,19 +58,19 @@ export default function EventsPreview() {
               </span>
               <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
             </div>
-            
+
             <h2 className="m-0 font-serif text-[36px] md:text-[46px] leading-[1.1] tracking-tight text-[#0B2545]">
               <span className="font-normal italic text-[#0B2545]/90">{t("title1")}</span>{' '}
               <span className="font-bold">{t("title2")}</span>
             </h2>
           </div>
-          
+
           <Link
             href={`/${locale}/events`}
-            className={`hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors ${isAr ? "flex-row-reverse" : ""}`}
+            className="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors"
           >
             {t("viewAllBtn")}
-            {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
@@ -83,13 +83,12 @@ export default function EventsPreview() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${isAr ? "text-right" : "text-left"}`}
+              className={`bg-white rounded-2xl shadow-sm border border-gray-300 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${isAr ? "text-right" : "text-left"}`}
             >
-              <div className={`flex justify-between items-start mb-6 ${isAr ? "flex-row-reverse" : ""}`}>
+              <div className="flex justify-between items-start mb-6">
                 <div className="flex flex-col gap-2">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-max ${
-                    event.type === 'virtual' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
-                  } ${isAr ? 'flex-row-reverse' : ''}`}>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-max ${event.type === 'virtual' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
+                    }`}>
                     <event.icon className="w-3.5 h-3.5" />
                     {event.typeLabel}
                   </span>
@@ -99,16 +98,16 @@ export default function EventsPreview() {
                 </div>
               </div>
 
-              <h3 className="font-serif text-xl font-bold text-[#0B2545] mb-4 line-clamp-2 min-h-[56px]" dir={isAr ? 'rtl' : 'ltr'}>
+              <h3 className="font-serif text-xl font-bold text-[#0B2545] mb-4 line-clamp-2 min-h-[56px]">
                 {event.title}
               </h3>
 
               <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-gray-100">
-                <div className={`flex items-center gap-2 text-sm text-gray-600 ${isAr ? "flex-row-reverse" : ""}`}>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <span>{event.date}</span>
                 </div>
-                <div className={`flex items-center gap-2 text-sm text-gray-600 ${isAr ? "flex-row-reverse" : ""}`}>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
                   <MapPin className="w-4 h-4 text-gray-400" />
                   <span>{event.location}</span>
                 </div>
@@ -116,7 +115,7 @@ export default function EventsPreview() {
 
               <Link
                 href={`/${locale}/events/${event.id}`}
-                className={`mt-6 inline-flex justify-center items-center gap-2 w-full py-3 rounded-xl bg-[#0B2545] text-white text-sm font-bold hover:bg-[#133055] transition-colors ${isAr ? "flex-row-reverse" : ""}`}
+                className="mt-6 inline-flex justify-center items-center gap-2 w-full py-3 rounded-xl bg-[#0B2545] text-white text-sm font-bold hover:bg-[#133055] transition-colors"
               >
                 {t("registerBtn")}
               </Link>
@@ -128,10 +127,10 @@ export default function EventsPreview() {
         <div className="mt-8 flex justify-center md:hidden">
           <Link
             href={`/${locale}/events`}
-            className={`inline-flex items-center justify-center gap-2 px-6 py-3 w-full max-w-xs rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors ${isAr ? "flex-row-reverse" : ""}`}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 w-full max-w-xs rounded-full border-2 border-[#0B2545] text-[#0B2545] font-bold hover:bg-[#0B2545] hover:text-white transition-colors"
           >
             {t("viewAllBtn")}
-            {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+            <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
