@@ -8,7 +8,6 @@ import Link from 'next/link';
 import { programsData } from '@/data/programs';
 import { universitiesData } from '@/data/universities';
 import { CheckCircle2, ChevronRight, ChevronLeft, User, GraduationCap, FileText, Send, AlertCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 
 function ApplyFormContent() {
   const t = useTranslations('ApplyPage');
@@ -36,9 +35,15 @@ function ApplyFormContent() {
 
   // Pre-fill program from URL if present
   useEffect(() => {
-    const progId = searchParams.get('program');
-    if (progId) {
-      setFormData(prev => ({ ...prev, program: progId }));
+    const programId =
+      searchParams.get('program') ||
+      searchParams.get('university');
+
+    if (programId) {
+      setFormData(prev => ({
+        ...prev,
+        program: programId,
+      }));
     }
   }, [searchParams]);
 
@@ -65,77 +70,169 @@ function ApplyFormContent() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isStep1Valid || !isStep2Valid || !isStep3Valid) {
+      setErrorMsg(
+        isAr
+          ? 'يرجى إكمال جميع الحقول المطلوبة والموافقة على سياسة الخصوصية.'
+          : 'Please complete all required fields and give your consent.'
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMsg(null);
 
     try {
-      // Find the program title to send to checkout
-      let programTitle = formData.program; // fallback
-      const foundProgram = programsData.find(p => p.id === formData.program);
-      if (foundProgram) {
-        programTitle = isAr ? foundProgram.title.ar : foundProgram.title.en;
-      } else {
-        const foundUni = universitiesData.find(u => u.id === formData.program);
-        if (foundUni) programTitle = foundUni.name;
+      // ----------------------------------------
+      // Get selected program/university ID
+      // ----------------------------------------
+
+      const programId = formData.program.trim();
+
+      if (!programId) {
+        throw new Error('Please select a program or university.');
       }
+
+      // ----------------------------------------
+      // Find program/university display title
+      // ----------------------------------------
+
+      let programTitle = programId;
+
+      const foundProgram = programsData.find(
+        (p) => p.id === programId
+      );
+
+      if (foundProgram) {
+        programTitle = isAr
+          ? foundProgram.title.ar
+          : foundProgram.title.en;
+      } else {
+        const foundUni = universitiesData.find(
+          (u) => u.id === programId
+        );
+
+        if (foundUni) {
+          programTitle = foundUni.name;
+        }
+      }
+
+      // ----------------------------------------
+      // Complete application data
+      // ----------------------------------------
+
+      const applicationPayload = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        age: formData.age.trim(),
+        school: formData.school.trim(),
+        programId,
+        programTitle,
+        motivation: formData.motivation.trim(),
+        locale,
+        baseAmount: 1500,
+      };
+
+      // ----------------------------------------
+      // 1. Create payment + save application
+      // ----------------------------------------
 
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          programId: formData.program,
-          programTitle,
-          locale
-        })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(applicationPayload),
       });
 
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Checkout failed');
+        throw new Error(
+          data.error || 'Checkout failed'
+        );
       }
 
-      // Trigger Email Automation
+      // ----------------------------------------
+      // 2. Send application emails
+      // ----------------------------------------
+
       try {
-        await fetch('/api/send-email', {
+        const emailRes = await fetch('/api/send-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             type: 'apply',
             locale,
             data: {
-              first_name: formData.firstName,
-              last_name: formData.lastName,
-              email: formData.email,
-              phone: formData.phone,
-              age: formData.age,
-              school: formData.school,
-              program_id: programTitle,
-              motivation: formData.motivation
-            }
-          })
+              first_name: applicationPayload.firstName,
+              last_name: applicationPayload.lastName,
+              email: applicationPayload.email,
+              phone: applicationPayload.phone,
+              age: applicationPayload.age,
+              school: applicationPayload.school,
+              program_id: applicationPayload.programTitle,
+              motivation: applicationPayload.motivation,
+            },
+          }),
         });
-      } catch (emailErr) {
-        console.error("Failed to trigger email automation:", emailErr);
+
+        const emailData = await emailRes.json();
+
+        if (!emailRes.ok || !emailData.success) {
+          console.error(
+            'Email API error:',
+            emailData
+          );
+        } else {
+          console.log(
+            'Application emails sent successfully.'
+          );
+        }
+      } catch (emailError) {
+        console.error(
+          'Failed to trigger email automation:',
+          emailError
+        );
       }
 
-      // Redirect to the success URL returned by the mock API
+      // ----------------------------------------
+      // 3. Redirect to success page
+      // ----------------------------------------
+
       if (data.redirectUrl) {
         router.push(data.redirectUrl);
+        return;
       }
 
+      setIsSubmitting(false);
+
     } catch (err: any) {
-      console.error("Error starting checkout:", err);
-      setErrorMsg(isAr ? "حدث خطأ أثناء الانتقال للدفع. يرجى المحاولة مرة أخرى." : "An error occurred while proceeding to payment. Please try again.");
-      setIsSubmitting(false); // only set false on error, so spinner stays during redirect
+      console.error(
+        'Error starting checkout:',
+        err
+      );
+
+      setErrorMsg(
+        isAr
+          ? 'حدث خطأ أثناء الانتقال للدفع. يرجى المحاولة مرة أخرى.'
+          : err?.message ||
+          'An error occurred while proceeding to payment. Please try again.'
+      );
+
+      setIsSubmitting(false);
     }
   };
+
 
   const l = (item: { en: string; ar: string }) => isAr ? item.ar : item.en;
 
