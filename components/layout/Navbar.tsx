@@ -43,11 +43,11 @@ export default function Navbar() {
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select(`
-        role_id,
-        roles (
-          name
-        )
-      `)
+          role_id,
+          roles (
+            name
+          )
+        `)
         .eq("user_id", userId)
         .single();
 
@@ -87,19 +87,15 @@ export default function Navbar() {
       }
     };
 
+    /*
+    |--------------------------------------------------------------------------
+    | Get initial session
+    |--------------------------------------------------------------------------
+    */
+
     const getInitialSession = async () => {
       try {
         setRoleLoading(true);
-
-        /*
-        |----------------------------------------------------------------------
-        | Get the current Supabase session
-        |----------------------------------------------------------------------
-        |
-        | If the visitor is logged out, session will simply be null.
-        | This is NOT an error.
-        |
-        */
 
         const {
           data: { session },
@@ -122,9 +118,9 @@ export default function Navbar() {
         }
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | No session = logged out
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         if (!session?.user) {
@@ -138,9 +134,9 @@ export default function Navbar() {
         }
 
         /*
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         | Session exists
-        |----------------------------------------------------------------------
+        |--------------------------------------------------------------------------
         */
 
         if (mounted) {
@@ -148,6 +144,7 @@ export default function Navbar() {
         }
 
         await getUserRole(session.user.id);
+
       } catch (error) {
         console.error(
           "Failed to fetch navbar session/role:",
@@ -158,6 +155,7 @@ export default function Navbar() {
           setUser(null);
           setUserRole(null);
         }
+
       } finally {
         if (mounted) {
           setRoleLoading(false);
@@ -166,17 +164,17 @@ export default function Navbar() {
     };
 
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | Initial session check
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
 
     getInitialSession();
 
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | Listen for authentication changes
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
 
     const {
@@ -185,9 +183,9 @@ export default function Navbar() {
       if (!mounted) return;
 
       /*
-      |--------------------------------------------------------------------
+      |--------------------------------------------------------------------------
       | User logged out
-      |--------------------------------------------------------------------
+      |--------------------------------------------------------------------------
       */
 
       if (!session?.user) {
@@ -199,16 +197,18 @@ export default function Navbar() {
       }
 
       /*
-      |--------------------------------------------------------------------
+      |--------------------------------------------------------------------------
       | User logged in / session restored
-      |--------------------------------------------------------------------
+      |--------------------------------------------------------------------------
       */
 
       setUser(session.user);
       setRoleLoading(true);
 
       /*
+      |--------------------------------------------------------------------------
       | Fetch role
+      |--------------------------------------------------------------------------
       */
 
       setTimeout(async () => {
@@ -223,9 +223,9 @@ export default function Navbar() {
     });
 
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | Cleanup
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
 
     return () => {
@@ -323,20 +323,16 @@ export default function Navbar() {
   |--------------------------------------------------------------------------
   | Parent navigation
   |--------------------------------------------------------------------------
+  |
+  | Parents do NOT get Programs or Universities here because
+  | they should not apply to programs from the parent portal.
+  |
   */
 
   const parentNavLinks = [
     {
       name: "Dashboard",
       href: "/parent/dashboard",
-    },
-    {
-      name: "Programs",
-      href: "/programs",
-    },
-    {
-      name: "Universities",
-      href: "/universities",
     },
     {
       name: "My Children",
@@ -393,9 +389,36 @@ export default function Navbar() {
   */
 
   const getNavLinks = () => {
+    /*
+    |--------------------------------------------------------------------------
+    | Logged out
+    |--------------------------------------------------------------------------
+    */
+
     if (!user) {
       return publicNavLinks;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | User exists but role is still loading
+    |--------------------------------------------------------------------------
+    |
+    | Do not show role-specific navigation until the role is known.
+    | This prevents the navbar from temporarily showing the wrong
+    | navigation immediately after login.
+    |
+    */
+
+    if (roleLoading) {
+      return publicNavLinks;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Role-based navigation
+    |--------------------------------------------------------------------------
+    */
 
     switch (userRole) {
       case "student":
@@ -450,9 +473,11 @@ export default function Navbar() {
         return "/admin/profile";
 
       default:
-        return "/profile";
+        return null;
     }
   };
+
+  const profilePath = getProfilePath();
 
   /*
   |--------------------------------------------------------------------------
@@ -555,19 +580,21 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={`/${locale}${link.href === "/" ? "" : link.href}`}
-              className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href)
-                ? "text-gold"
-                : ""
-                }`}
+              className={`relative transition-colors hover:text-gold py-1 group ${
+                isActive(link.href)
+                  ? "text-gold"
+                  : ""
+              }`}
             >
 
               {link.name}
 
               <span
-                className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${isActive(link.href)
-                  ? "w-full"
-                  : "w-0 group-hover:w-full"
-                  }`}
+                className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${
+                  isActive(link.href)
+                    ? "w-full"
+                    : "w-0 group-hover:w-full"
+                }`}
               />
 
             </Link>
@@ -592,10 +619,11 @@ export default function Navbar() {
             <Globe className="w-[18px] h-[18px] text-navy" />
 
             <span
-              className={`text-sm ${locale === "en"
-                ? "text-navy font-bold"
-                : "text-gray-400 font-medium"
-                }`}
+              className={`text-sm ${
+                locale === "en"
+                  ? "text-navy font-bold"
+                  : "text-gray-400 font-medium"
+              }`}
             >
               EN
             </span>
@@ -605,10 +633,11 @@ export default function Navbar() {
             </span>
 
             <span
-              className={`font-arabic text-[15px] ${locale === "ar"
-                ? "text-navy font-bold"
-                : "text-gray-400 font-medium"
-                }`}
+              className={`font-arabic text-[15px] ${
+                locale === "ar"
+                  ? "text-navy font-bold"
+                  : "text-gray-400 font-medium"
+              }`}
             >
               ع
             </span>
@@ -623,98 +652,129 @@ export default function Navbar() {
 
             <div className="relative">
 
-              <button
-                onClick={() =>
-                  setIsProfileMenuOpen((prev) => !prev)
-                }
-                className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors"
-              >
+              {roleLoading ? (
 
-                {profileImage ? (
+                /*
+                |--------------------------------------------------------------------------
+                | Role loading state
+                |--------------------------------------------------------------------------
+                */
 
-                  <Image
-                    src={profileImage}
-                    alt="Profile"
-                    width={30}
-                    height={30}
-                    className="rounded-full"
-                  />
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-full border border-gray-100">
 
-                ) : (
+                  <div className="w-7 h-7 rounded-full bg-gray-200 animate-pulse" />
 
-                  <div className="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
-                    {userName[0]?.toUpperCase() || "U"}
-                  </div>
+                  <div className="w-20 h-4 rounded bg-gray-200 animate-pulse" />
 
-                )}
-
-                <span className="font-bold text-navy text-sm">
-                  {userName}
-                </span>
-
-                <ChevronDown
-                  className={`w-4 h-4 text-navy transition-transform ${isProfileMenuOpen
-                    ? "rotate-180"
-                    : ""
-                    }`}
-                />
-
-              </button>
-
-              {/* Profile dropdown */}
-
-              {isProfileMenuOpen && (
-
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-xl overflow-hidden">
-
-                  <div className="px-4 py-3 border-b border-gray-100">
-
-                    <p className="text-sm font-bold text-navy">
-                      {userName}
-                    </p>
-
-                    <p className="text-xs text-gray-500 truncate">
-                      {user.email}
-                    </p>
-
-                    {userRole && (
-                      <p className="text-xs text-gold font-semibold mt-1 capitalize">
-                        {userRole}
-                      </p>
-                    )}
-
-                  </div>
-
-                  <Link
-                    href={`/${locale}${getProfilePath()}`}
-                    onClick={() =>
-                      setIsProfileMenuOpen(false)
-                    }
-                    className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
-                  >
-                    My Profile
-                  </Link>
-
-                  <Link
-                    href={`/${locale}/settings`}
-                    onClick={() =>
-                      setIsProfileMenuOpen(false)
-                    }
-                    className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
-                  >
-                    Settings
-                  </Link>
-
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold border-t border-gray-100"
-                  >
-                    Logout
-                  </button>
+                  <div className="w-4 h-4 rounded bg-gray-200 animate-pulse" />
 
                 </div>
 
+              ) : (
+
+                /*
+                |--------------------------------------------------------------------------
+                | Role loaded
+                |--------------------------------------------------------------------------
+                */
+
+                <button
+                  onClick={() =>
+                    setIsProfileMenuOpen((prev) => !prev)
+                  }
+                  className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-full border border-gray-100 hover:bg-gray-100 transition-colors"
+                >
+
+                  {profileImage ? (
+
+                    <Image
+                      src={profileImage}
+                      alt="Profile"
+                      width={30}
+                      height={30}
+                      className="rounded-full"
+                    />
+
+                  ) : (
+
+                    <div className="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
+                      {userName[0]?.toUpperCase() || "U"}
+                    </div>
+
+                  )}
+
+                  <span className="font-bold text-navy text-sm">
+                    {userName}
+                  </span>
+
+                  <ChevronDown
+                    className={`w-4 h-4 text-navy transition-transform ${
+                      isProfileMenuOpen
+                        ? "rotate-180"
+                        : ""
+                    }`}
+                  />
+
+                </button>
+
               )}
+
+              {/* Profile dropdown */}
+
+              {isProfileMenuOpen &&
+                !roleLoading &&
+                profilePath && (
+
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-xl overflow-hidden">
+
+                    <div className="px-4 py-3 border-b border-gray-100">
+
+                      <p className="text-sm font-bold text-navy">
+                        {userName}
+                      </p>
+
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.email}
+                      </p>
+
+                      {userRole && (
+                        <p className="text-xs text-gold font-semibold mt-1 capitalize">
+                          {userRole}
+                        </p>
+                      )}
+
+                    </div>
+
+                    <Link
+                      href={`/${locale}${profilePath}`}
+                      onClick={() =>
+                        setIsProfileMenuOpen(false)
+                      }
+                      className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
+                    >
+                      My Profile
+                    </Link>
+
+                    <Link
+                      href={`/${locale}/settings`}
+                      onClick={() =>
+                        setIsProfileMenuOpen(false)
+                      }
+                      className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
+                    >
+                      Settings
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold border-t border-gray-100"
+                    >
+                      Logout
+                    </button>
+
+                  </div>
+
+                )}
 
             </div>
 
@@ -766,9 +826,7 @@ export default function Navbar() {
 
           <button
             onClick={() =>
-              setIsMobileMenuOpen(
-                !isMobileMenuOpen
-              )
+              setIsMobileMenuOpen(!isMobileMenuOpen)
             }
             className="flex items-center justify-center w-10 h-10 text-navy bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Toggle menu"
@@ -791,10 +849,11 @@ export default function Navbar() {
       ============================================================== */}
 
       <div
-        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
-          ? "max-h-[700px] opacity-100 py-4"
-          : "max-h-0 opacity-0 py-0 border-t-0"
-          }`}
+        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${
+          isMobileMenuOpen
+            ? "max-h-[700px] opacity-100 py-4"
+            : "max-h-0 opacity-0 py-0 border-t-0"
+        }`}
       >
 
         <div className="px-4 flex flex-col gap-4">
@@ -808,20 +867,22 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={`/${locale}${link.href === "/" ? "" : link.href}`}
-                className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${isActive(link.href)
-                  ? "text-gold bg-gray-50"
-                  : "text-navy"
-                  }`}
+                className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${
+                  isActive(link.href)
+                    ? "text-gold bg-gray-50"
+                    : "text-navy"
+                }`}
                 onClick={() =>
                   setIsMobileMenuOpen(false)
                 }
               >
 
                 <span
-                  className={`w-2 h-2 rounded-full mr-3 shrink-0 ${isActive(link.href)
-                    ? "bg-gold"
-                    : "bg-transparent"
-                    }`}
+                  className={`w-2 h-2 rounded-full mr-3 shrink-0 ${
+                    isActive(link.href)
+                      ? "bg-gold"
+                      : "bg-transparent"
+                  }`}
                 />
 
                 {link.name}
@@ -838,20 +899,22 @@ export default function Navbar() {
 
             <button
               onClick={switchLocale}
-              className={`flex-1 py-3 rounded-full border ${locale === "en"
-                ? "border-navy bg-navy/5 text-navy font-bold"
-                : "border-gray-200 text-gray-500"
-                }`}
+              className={`flex-1 py-3 rounded-full border ${
+                locale === "en"
+                  ? "border-navy bg-navy/5 text-navy font-bold"
+                  : "border-gray-200 text-gray-500"
+              }`}
             >
               English
             </button>
 
             <button
               onClick={switchLocale}
-              className={`flex-1 py-3 rounded-full border ${locale === "ar"
-                ? "border-navy bg-navy/5 text-navy font-bold"
-                : "border-gray-200 text-gray-500"
-                }`}
+              className={`flex-1 py-3 rounded-full border ${
+                locale === "ar"
+                  ? "border-navy bg-navy/5 text-navy font-bold"
+                  : "border-gray-200 text-gray-500"
+              }`}
             >
               العربية
             </button>
@@ -866,66 +929,102 @@ export default function Navbar() {
 
             <div className="flex flex-col gap-2">
 
-              <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
+              {roleLoading ? (
 
-                {profileImage ? (
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
 
-                  <Image
-                    src={profileImage}
-                    alt="Profile"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
+                  <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
 
-                ) : (
+                  <div className="flex flex-col gap-2">
 
-                  <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
-                    {userName[0]?.toUpperCase() || "U"}
+                    <div className="w-24 h-3 rounded bg-gray-200 animate-pulse" />
+
+                    <div className="w-16 h-2 rounded bg-gray-200 animate-pulse" />
+
                   </div>
 
-                )}
-
-                <div>
-                  <p className="text-sm font-bold text-navy">
-                    {userName}
-                  </p>
-
-                  {userRole && (
-                    <p className="text-xs text-gold capitalize">
-                      {userRole}
-                    </p>
-                  )}
                 </div>
 
-              </div>
+              ) : (
 
-              <Link
-                href={`/${locale}${getProfilePath()}`}
-                onClick={() =>
-                  setIsMobileMenuOpen(false)
-                }
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
-              >
-                My Profile
-              </Link>
+                <>
 
-              <Link
-                href={`/${locale}/settings`}
-                onClick={() =>
-                  setIsMobileMenuOpen(false)
-                }
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
-              >
-                Settings
-              </Link>
+                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
 
-              <button
-                onClick={handleLogout}
-                className="w-full rounded-full bg-gray-100 text-navy h-[48px] font-semibold border border-gray-200"
-              >
-                Logout ({userName})
-              </button>
+                    {profileImage ? (
+
+                      <Image
+                        src={profileImage}
+                        alt="Profile"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+
+                    ) : (
+
+                      <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
+                        {userName[0]?.toUpperCase() || "U"}
+                      </div>
+
+                    )}
+
+                    <div>
+
+                      <p className="text-sm font-bold text-navy">
+                        {userName}
+                      </p>
+
+                      {userRole && (
+                        <p className="text-xs text-gold capitalize">
+                          {userRole}
+                        </p>
+                      )}
+
+                    </div>
+
+                  </div>
+
+                  {/* My Profile */}
+
+                  {profilePath && (
+
+                    <Link
+                      href={`/${locale}${profilePath}`}
+                      onClick={() =>
+                        setIsMobileMenuOpen(false)
+                      }
+                      className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
+                    >
+                      My Profile
+                    </Link>
+
+                  )}
+
+                  {/* Settings */}
+
+                  <Link
+                    href={`/${locale}/settings`}
+                    onClick={() =>
+                      setIsMobileMenuOpen(false)
+                    }
+                    className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
+                  >
+                    Settings
+                  </Link>
+
+                  {/* Logout */}
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full rounded-full bg-gray-100 text-navy h-[48px] font-semibold border border-gray-200"
+                  >
+                    Logout ({userName})
+                  </button>
+
+                </>
+
+              )}
 
             </div>
 
