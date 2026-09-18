@@ -1,0 +1,561 @@
+"use client";
+
+import Link from "next/link";
+import {
+    ArrowRight,
+    CalendarDays,
+    CheckCircle2,
+    ChevronRight,
+    Clock3,
+    FileText,
+    GraduationCap,
+    Mail,
+    Users,
+} from "lucide-react";
+
+type Child = {
+    id: string;
+    name: string;
+    age: number;
+    school: string;
+    program: string;
+    applicationStatus: "Under Review" | "Submitted" | "Accepted" | "Rejected";
+};
+
+type UpcomingEvent = {
+    id: string;
+    title: string;
+    date: string;
+    time: string;
+    type: string;
+};
+
+const children: Child[] = [
+    {
+        id: "child-1",
+        name: "Alex Johnson",
+        age: 17,
+        school: "Lincoln High School",
+        program: "Young Leaders Program",
+        applicationStatus: "Under Review",
+    },
+    {
+        id: "child-2",
+        name: "Emma Johnson",
+        age: 15,
+        school: "Lincoln High School",
+        program: "Global Scholars",
+        applicationStatus: "Submitted",
+    },
+];
+
+const upcomingEvents: UpcomingEvent[] = [
+    {
+        id: "event-1",
+        title: "Young Leaders Orientation",
+        date: "September 20, 2026",
+        time: "10:00 AM",
+        type: "Orientation",
+    },
+    {
+        id: "event-2",
+        title: "Parent Information Session",
+        date: "September 24, 2026",
+        time: "6:00 PM",
+        type: "Parent Session",
+    },
+    {
+        id: "event-3",
+        title: "Global Opportunities Webinar",
+        date: "September 28, 2026",
+        time: "5:30 PM",
+        type: "Webinar",
+    },
+];
+
+export default function Page() {
+    const totalChildren = children.length;
+
+    const activeApplications = children.filter(
+        (child) =>
+            child.applicationStatus === "Submitted" ||
+            child.applicationStatus === "Under Review"
+    ).length;
+
+    const acceptedApplications = children.filter(
+        (child) => child.applicationStatus === "Accepted"
+    ).length;
+
+    return (
+        <main className="min-h-screen bg-gray-50/60">
+            <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+
+                {/* =====================================================
+                    WELCOME HEADER
+                ====================================================== */}
+
+                <section className="rounded-2xl bg-[#0B2545] px-6 py-7 text-white shadow-sm sm:px-8">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+                        <div>
+                            <p className="mb-2 text-sm font-medium text-white/70">
+                                Parent Dashboard
+                            </p>
+
+                            <h1 className="text-2xl font-bold sm:text-3xl">
+                                Welcome back!
+                            </h1>
+
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
+                                Keep track of your children's applications,
+                                programs, events, and opportunities at Young
+                                Leaders Academy.
+                            </p>
+                        </div>
+
+                        <Link
+                            href="/parent/children"
+                            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e2c45a]"
+                        >
+                            <Users className="h-4 w-4" />
+                            View My Children
+                        </Link>
+
+                    </div>
+                </section>
+
+                {/* =====================================================
+                    QUICK STATS
+                ====================================================== */}
+
+                <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+                    <DashboardStat
+                        icon={Users}
+                        label="My Children"
+                        value={totalChildren}
+                        description="Children connected to your account"
+                    />
+
+                    <DashboardStat
+                        icon={FileText}
+                        label="Active Applications"
+                        value={activeApplications}
+                        description="Applications being processed"
+                    />
+
+                    <DashboardStat
+                        icon={CheckCircle2}
+                        label="Accepted"
+                        value={acceptedApplications}
+                        description="Accepted applications"
+                    />
+
+                    <DashboardStat
+                        icon={CalendarDays}
+                        label="Upcoming Events"
+                        value={upcomingEvents.length}
+                        description="Events coming up"
+                    />
+
+                </section>
+
+                {/* =====================================================
+                    MAIN GRID
+                ====================================================== */}
+
+                <section className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+                    {/* =================================================
+                        CHILDREN
+                    ================================================== */}
+
+                    <div className="lg:col-span-2">
+
+                        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+
+                            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-5 sm:px-6">
+
+                                <div>
+                                    <h2 className="text-lg font-bold text-[#0B2545]">
+                                        My Children
+                                    </h2>
+
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        Monitor your children's progress.
+                                    </p>
+                                </div>
+
+                                <Link
+                                    href="/parent/children"
+                                    className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
+                                >
+                                    View All
+                                    <ChevronRight className="h-4 w-4" />
+                                </Link>
+
+                            </div>
+
+                            <div className="divide-y divide-gray-100">
+
+                                {children.map((child) => (
+                                    <div
+                                        key={child.id}
+                                        className="p-5 sm:p-6"
+                                    >
+                                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
+                                            <div className="flex min-w-0 items-center gap-4">
+
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0B2545]/10">
+                                                    <GraduationCap className="h-6 w-6 text-[#0B2545]" />
+                                                </div>
+
+                                                <div className="min-w-0">
+                                                    <h3 className="truncate text-base font-bold text-[#0B2545]">
+                                                        {child.name}
+                                                    </h3>
+
+                                                    <p className="mt-1 text-sm text-gray-500">
+                                                        Age {child.age} ·{" "}
+                                                        {child.school}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+
+                                            <div className="flex flex-col items-start gap-2 sm:items-end">
+
+                                                <StatusBadge
+                                                    status={
+                                                        child.applicationStatus
+                                                    }
+                                                />
+
+                                                <p className="text-xs text-gray-400">
+                                                    {child.program}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+
+                                            <Link
+                                                href={`/parent/children/${child.id}`}
+                                                className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
+                                            >
+                                                View Profile
+                                                <ChevronRight className="h-4 w-4" />
+                                            </Link>
+
+                                            <Link
+                                                href="/parent/applications"
+                                                className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
+                                            >
+                                                View Applications
+                                                <FileText className="h-4 w-4" />
+                                            </Link>
+
+                                        </div>
+
+                                    </div>
+                                ))}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {/* =================================================
+                        UPCOMING EVENTS
+                    ================================================== */}
+
+                    <div className="lg:col-span-1">
+
+                        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+
+                            <div className="border-b border-gray-100 px-5 py-5">
+
+                                <h2 className="text-lg font-bold text-[#0B2545]">
+                                    Upcoming Events
+                                </h2>
+
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Stay informed about academy events.
+                                </p>
+
+                            </div>
+
+                            <div className="divide-y divide-gray-100">
+
+                                {upcomingEvents.map((event) => (
+                                    <div
+                                        key={event.id}
+                                        className="p-5"
+                                    >
+                                        <div className="flex gap-3">
+
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D4AF37]/15">
+                                                <CalendarDays className="h-5 w-5 text-[#0B2545]" />
+                                            </div>
+
+                                            <div className="min-w-0">
+
+                                                <p className="text-xs font-semibold uppercase tracking-wider text-[#D4AF37]">
+                                                    {event.type}
+                                                </p>
+
+                                                <h3 className="mt-1 text-sm font-bold text-[#0B2545]">
+                                                    {event.title}
+                                                </h3>
+
+                                                <div className="mt-2 flex flex-col gap-1 text-xs text-gray-500">
+
+                                                    <span className="flex items-center gap-1.5">
+                                                        <CalendarDays className="h-3.5 w-3.5" />
+                                                        {event.date}
+                                                    </span>
+
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Clock3 className="h-3.5 w-3.5" />
+                                                        {event.time}
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                ))}
+
+                            </div>
+
+                            <div className="border-t border-gray-100 p-4">
+
+                                <Link
+                                    href="/events"
+                                    className="flex h-10 items-center justify-center gap-2 rounded-full border border-[#0B2545] text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
+                                >
+                                    View All Events
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                {/* =====================================================
+                    QUICK ACTIONS
+                ====================================================== */}
+
+                <section className="mt-6">
+
+                    <div className="mb-4">
+                        <h2 className="text-xl font-bold text-[#0B2545]">
+                            Quick Actions
+                        </h2>
+
+                        <p className="mt-1 text-sm text-gray-500">
+                            Quickly access the things you may need.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+                        <QuickAction
+                            href="/parent/children"
+                            icon={Users}
+                            title="My Children"
+                            description="View your children's profiles"
+                        />
+
+                        <QuickAction
+                            href="/parent/applications"
+                            icon={FileText}
+                            title="Applications"
+                            description="Review application activity"
+                        />
+
+                        <QuickAction
+                            href="/events"
+                            icon={CalendarDays}
+                            title="Events"
+                            description="Explore upcoming events"
+                        />
+
+                        <QuickAction
+                            href="/parent/profile"
+                            icon={Mail}
+                            title="My Profile"
+                            description="Manage your account details"
+                        />
+
+                    </div>
+
+                </section>
+
+                {/* =====================================================
+                    INFORMATION BANNER
+                ====================================================== */}
+
+                <section className="mt-6 rounded-2xl border border-[#D4AF37]/30 bg-[#D4AF37]/10 p-5 sm:p-6">
+
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div className="flex gap-4">
+
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white">
+                                <Mail className="h-5 w-5 text-[#0B2545]" />
+                            </div>
+
+                            <div>
+                                <h3 className="font-bold text-[#0B2545]">
+                                    Need help?
+                                </h3>
+
+                                <p className="mt-1 text-sm text-gray-600">
+                                    If you have questions about your child's
+                                    application or program, our team is here
+                                    to help.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <Link
+                            href="/contact"
+                            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
+                        >
+                            Contact Us
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+
+                    </div>
+
+                </section>
+
+            </div>
+        </main>
+    );
+}
+
+
+/* =========================================================
+   DASHBOARD STAT
+========================================================= */
+
+function DashboardStat({
+    icon: Icon,
+    label,
+    value,
+    description,
+}: {
+    icon: React.ElementType;
+    label: string;
+    value: number;
+    description: string;
+}) {
+    return (
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex items-start justify-between gap-4">
+
+                <div>
+                    <p className="text-sm font-medium text-gray-500">
+                        {label}
+                    </p>
+
+                    <p className="mt-2 text-2xl font-bold text-[#0B2545]">
+                        {value}
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-400">
+                        {description}
+                    </p>
+                </div>
+
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B2545]/10">
+                    <Icon className="h-5 w-5 text-[#0B2545]" />
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+function StatusBadge({
+    status,
+}: {
+    status: Child["applicationStatus"];
+}) {
+    const styles: Record<Child["applicationStatus"], string> = {
+        Submitted: "border-blue-100 bg-blue-50 text-blue-700",
+        "Under Review": "border-amber-100 bg-amber-50 text-amber-700",
+        Accepted: "border-green-100 bg-green-50 text-green-700",
+        Rejected: "border-red-100 bg-red-50 text-red-700",
+    };
+
+    return (
+        <span
+            className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}
+        >
+            {status}
+        </span>
+    );
+}
+
+
+/* =========================================================
+   QUICK ACTION
+========================================================= */
+
+function QuickAction({
+    href,
+    icon: Icon,
+    title,
+    description,
+}: {
+    href: string;
+    icon: React.ElementType;
+    title: string;
+    description: string;
+}) {
+    return (
+        <Link
+            href={href}
+            className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#D4AF37] hover:shadow-md"
+        >
+            <div className="flex items-start justify-between gap-4">
+
+                <div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B2545]/10">
+                        <Icon className="h-5 w-5 text-[#0B2545]" />
+                    </div>
+
+                    <h3 className="mt-4 font-bold text-[#0B2545]">
+                        {title}
+                    </h3>
+
+                    <p className="mt-1 text-sm leading-5 text-gray-500">
+                        {description}
+                    </p>
+                </div>
+
+                <ChevronRight className="h-5 w-5 text-gray-300 transition-transform group-hover:translate-x-1 group-hover:text-[#0B2545]" />
+
+            </div>
+        </Link>
+    );
+}
