@@ -1,15 +1,18 @@
 import Link from 'next/link';
 import { CheckCircle2, Receipt, ArrowRight } from 'lucide-react';
 
-export default function ApplySuccessPage({
+export default async function ApplySuccessPage({
   searchParams,
   params
 }: {
-  searchParams: { id?: string };
-  params: { locale: string };
+  searchParams: Promise<{ id?: string }>;
+  params: Promise<{ locale: string }>;
 }) {
-  const paymentId = searchParams.id;
-  const isAr = params.locale === 'ar';
+  const resolvedSearchParams = await searchParams;
+  const resolvedParams = await params;
+
+  const paymentId = resolvedSearchParams.id;
+  const isAr = resolvedParams.locale === 'ar';
 
   return (
     <div className="w-full min-h-screen bg-[#FCFAF6] py-16 md:py-24 flex items-center justify-center px-4">
@@ -17,14 +20,14 @@ export default function ApplySuccessPage({
         <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-12 h-12 text-green-500" />
         </div>
-        
+
         <h1 className="text-3xl md:text-4xl font-extrabold text-[#0B2545] mb-4">
           {isAr ? 'تم استلام طلبك والدفع بنجاح!' : 'Application & Payment Successful!'}
         </h1>
-        
+
         <p className="text-gray-600 text-lg mb-8 max-w-md">
-          {isAr 
-            ? 'شكراً لك. لقد استلمنا طلبك بنجاح وسنقوم بمراجعته قريباً. تم تأكيد الدفع.' 
+          {isAr
+            ? 'شكراً لك. لقد استلمنا طلبك بنجاح وسنقوم بمراجعته قريباً. تم تأكيد الدفع.'
             : 'Thank you. Your application has been received and your payment is confirmed. We will review it shortly.'}
         </p>
 
@@ -34,7 +37,7 @@ export default function ApplySuccessPage({
               <Receipt className="w-5 h-5" />
               <span>{isAr ? 'تفاصيل المعاملة' : 'Transaction Details'}</span>
             </div>
-            
+
             <div className="flex justify-between items-center text-sm md:text-base">
               <span className="text-gray-500">{isAr ? 'رقم الطلب' : 'Order ID'}:</span>
               <span className="font-mono font-medium text-[#0B2545] text-xs md:text-sm">{paymentId}</span>
@@ -53,7 +56,7 @@ export default function ApplySuccessPage({
         )}
 
         <Link
-          href={`/${params.locale}`}
+          href={`/${resolvedParams.locale}`}
           className="inline-flex items-center justify-center gap-2 bg-[#0B2545] text-white px-8 py-4 rounded-full font-bold transition-all hover:bg-[#1a365d] shadow-lg hover:shadow-xl hover:-translate-y-1"
         >
           {isAr ? 'العودة للصفحة الرئيسية' : 'Return to Home'}
