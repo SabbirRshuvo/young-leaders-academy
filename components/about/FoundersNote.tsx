@@ -18,7 +18,7 @@ export default function FoundersNote() {
             {/* Image Container */}
             <div className="relative rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-white aspect-[4/5] sm:aspect-square lg:aspect-[4/5] z-10">
               <Image
-                src="/card1.png" // Placeholder, replace with actual founders image
+                src="/enjoy.png" // Placeholder, replace with actual founders image
                 alt="Founders of Young Leaders Academy"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"

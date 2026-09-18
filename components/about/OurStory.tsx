@@ -3,23 +3,15 @@ import { useTranslations } from 'next-intl';
 
 export default function OurStory() {
   const t = useTranslations('OurStory');
-  const values = [
-    t('val1'),
-    t('val2'),
-    t('val3'),
-    t('val4'),
-    t('val5')
-  ];
 
   return (
-    <section className="w-full bg-[#FCFAF6] py-16 md:py-24 overflow-hidden" id="our-journey">
+    <section className="w-full bg-[#FCFAF6] py-16 md:py-24 overflow-hidden" id="our-story">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
 
           {/* Left Column - Text Content */}
           <div className="lg:col-span-5 flex flex-col items-start animate-fade-in-left">
             <div className="flex items-center gap-4 mb-4 md:mb-6">
-              <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
               <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
                 {t('badge')}
               </span>
@@ -71,14 +63,9 @@ export default function OurStory() {
                 <Gem className="w-8 h-8 text-[#0B2545]" strokeWidth={1.5} />
               </div>
               <h3 className="text-[#0B2545] font-serif font-bold text-xl mb-4">{t('card3Title')}</h3>
-              <ul className="space-y-3 flex-1 flex flex-col justify-center">
-                {values.map((value, idx) => (
-                  <li key={idx} className="flex items-center text-gray-600 text-sm font-medium">
-                    <span className="w-2 h-2 rounded-full bg-[#D4AF37] mr-3 shrink-0"></span>
-                    {value}
-                  </li>
-                ))}
-              </ul>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {t('card3Desc')}
+              </p>
             </div>
 
           </div>

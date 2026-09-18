@@ -71,7 +71,7 @@ export default function ContactCta() {
     <section className="relative w-full overflow-hidden flex items-center min-h-[400px] md:min-h-[450px]">
 
       <Image
-        src="/enjoy.png"
+        src="/about-banner.png"
         alt="Hikers on a mountain summit"
         fill
         sizes="100vw"
@@ -80,7 +80,7 @@ export default function ContactCta() {
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 "></div>
+      <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Content Container */}
       <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-16 md:py-20 relative z-20">

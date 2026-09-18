@@ -230,6 +230,7 @@ END:VCALENDAR`;
                           required 
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none transition-all bg-gray-50/50 focus:bg-white text-left"
                           dir="ltr"
+                          placeholder="+966 5X XXX XXXX"
                         />
                       </div>
                     </div>
