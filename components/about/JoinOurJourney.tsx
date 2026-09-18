@@ -12,7 +12,7 @@ export default function JoinOurJourney() {
 
       {/* Background Image */}
       <Image
-        src="/enjoy.png" // Placeholder for hikers image
+        src="/universities-discuss.png" // Placeholder for hikers image
         alt="Hikers on a mountain summit"
         fill
         sizes="100vw"
@@ -21,7 +21,7 @@ export default function JoinOurJourney() {
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 "></div>
+      <div className="absolute inset-0 bg-black/40 "></div>
 
       {/* Content Container aligned with site max-width */}
       <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-20">

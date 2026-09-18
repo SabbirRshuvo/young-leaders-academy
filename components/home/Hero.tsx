@@ -13,9 +13,9 @@ export default function Hero() {
       {/* Background Image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-left bg-no-repeat"
-        style={{ backgroundImage: `url('/main-banner.png')` }}
+        style={{ backgroundImage: `url('/home-banner.png')` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/60 to-transparent "></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B2545] via-[#0B2545]/95 to-transparent "></div>
       </div>
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10">

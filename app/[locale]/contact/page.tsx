@@ -14,8 +14,8 @@ export default function ContactPage() {
     <main className="flex min-h-screen flex-col items-center justify-start w-full bg-white">
       <ContactHero />
       <ContactFormSection />
-      <GlobalPresence />
       <ContactImageBanner />
+      <GlobalPresence />
       <ContactCta />
     </main>
   );
