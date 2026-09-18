@@ -28,7 +28,6 @@ export default function Partners() {
     <section className="w-full py-16 md:py-24 bg-[#FAFAFA]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px] text-center">
 
-        {/* ================= HEADER ================= */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
