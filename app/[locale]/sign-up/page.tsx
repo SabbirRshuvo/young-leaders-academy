@@ -4,9 +4,10 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, GraduationCap, Users } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { supabase } from "@/lib/supabase";
 
 export default function Page() {
@@ -15,6 +16,8 @@ export default function Page() {
         "student" | "parent" | null
     >(null);
     const router = useRouter();
+    const t = useTranslations("Auth");
+    const locale = useLocale();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -72,79 +75,79 @@ export default function Page() {
 
         // Role validation
         if (!selectedRole) {
-            toast.error("Please select a role.");
+            toast.error(t("selectRoleError"));
             return;
         }
 
         // First name validation
         if (!formData.first_name.trim()) {
-            toast.error("Please enter your first name.");
+            toast.error(t("firstNameError"));
             return;
         }
 
         // Last name validation
         if (!formData.last_name.trim()) {
-            toast.error("Please enter your last name.");
+            toast.error(t("lastNameError"));
             return;
         }
 
         // Email validation
         if (!formData.email.trim()) {
-            toast.error("Please enter your email address.");
+            toast.error(t("emailError"));
             return;
         }
 
         // Student-specific validation
         if (selectedRole === "student" && !formData.date_of_birth) {
-            toast.error("Please enter your date of birth.");
+            toast.error(t("dobError"));
             return;
         }
 
         // Parent-specific validation
         if (selectedRole === "parent" && !formData.phone.trim()) {
-            toast.error("Please enter your phone number.");
+            toast.error(t("phoneError"));
             return;
         }
 
         // Country validation
         if (!formData.country) {
-            toast.error("Please select your country.");
+            toast.error(t("countryError"));
             return;
         }
 
         // Preferred language validation
         if (!formData.preferred_language) {
-            toast.error("Please select your preferred language.");
+            toast.error(t("langError"));
             return;
         }
 
         // Password validation
         if (!formData.password) {
-            toast.error("Please enter a password.");
+            toast.error(t("passwordError"));
             return;
         }
 
         // Confirm password validation
         if (!formData.confirm_password) {
-            toast.error("Please confirm your password.");
+            toast.error(t("confirmPasswordError"));
             return;
         }
 
         // Password match validation
         if (formData.password !== formData.confirm_password) {
-            toast.error("Passwords do not match.");
+            toast.error(t("passwordMatchError"));
             return;
         }
 
         // Terms validation
         if (!formData.terms) {
-            toast.error("You must agree to the Terms & Conditions.");
+            toast.error(t("termsError"));
             return;
         }
 
         // Privacy validation
         if (!formData.privacy) {
-            toast.error("You must acknowledge the Privacy Policy.");
+            toast.error(t("privacyError"));
             return;
         }
 
@@ -174,7 +177,7 @@ export default function Page() {
             }
 
             if (!data.user) {
-                toast.error("Unable to create account.");
+                toast.error(t("unableCreate"));
                 return;
             }
 
@@ -210,7 +213,7 @@ export default function Page() {
                 console.error("Profile creation error:", profileError);
 
                 toast.error(
-                    "Account created, but profile setup failed."
+                    t("setupFailedProfile")
                 );
 
                 return;
@@ -235,7 +238,7 @@ export default function Page() {
                 console.error("Role lookup error:", roleError);
 
                 toast.error(
-                    "Account created, but role setup failed."
+                    t("setupFailedRole")
                 );
 
                 return;
@@ -243,7 +246,7 @@ export default function Page() {
 
             if (!roleData) {
                 toast.error(
-                    "Account created, but the selected role was not found."
+                    t("roleNotFound")
                 );
 
                 return;
@@ -269,7 +272,7 @@ export default function Page() {
                 );
 
                 toast.error(
-                    "Account created, but role assignment failed."
+                    t("roleAssignFailed")
                 );
 
                 return;
@@ -281,19 +284,19 @@ export default function Page() {
             // 5. SUCCESS
             // ==========================================
 
-            router.push("/en")
+            router.push(locale === "en" ? "/" : `/${locale}`)
 
             toast.success(
                 selectedRole === "student"
-                    ? "Student account created successfully!"
-                    : "Parent account created successfully!"
+                    ? t("studentSuccess")
+                    : t("parentSuccess")
             );
 
         } catch (error) {
             console.error("Registration error:", error);
 
             toast.error(
-                "Something went wrong. Please try again."
+                t("signupError")
             );
         } finally {
             setIsLoading(false);
@@ -323,7 +326,7 @@ export default function Page() {
 
                                 {/* Logo */}
 
-                                <div className="flex-1 flex items-center justify-start">
+                                <div className="flex-1 flex items-center justify-center">
                                     <Link
                                         href="/"
                                         className="flex items-center gap-0"
@@ -356,9 +359,7 @@ export default function Page() {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-center text-3xl">
-                                        Please let us know your identity!
-                                    </h2>
+                                    <h2 className="text-center text-3xl">{t("selectRoleTitle")}</h2>
                                 </div>
 
                                 <div className="flex items-center justify-center space-x-6">
@@ -369,17 +370,13 @@ export default function Page() {
                                         onClick={() =>
                                             handleSelectedRole("student")
                                         }
-                                        className={`py-4 px-5 shadow-lg border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "student"
+                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-5 shadow-lg border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "student"
                                             ? "border-gold scale-110"
                                             : "border-navy"
                                             }`}
                                     >
-                                        <Image
-                                            src="/students.png"
-                                            alt="Student"
-                                            width={60}
-                                            height={60}
-                                        />
+                                        <GraduationCap className="w-[60px] h-[60px] text-navy" />
+                                        <span className="text-navy font-semibold">{t("student")}</span>
                                     </div>
 
                                     {/* Parent */}
@@ -388,17 +385,13 @@ export default function Page() {
                                         onClick={() =>
                                             handleSelectedRole("parent")
                                         }
-                                        className={`py-4 px-5 border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "parent"
+                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-5 border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "parent"
                                             ? "border-gold scale-110"
                                             : "border-navy"
                                             }`}
                                     >
-                                        <Image
-                                            src="/parents.png"
-                                            alt="Parent"
-                                            width={60}
-                                            height={60}
-                                        />
+                                        <Users className="w-[60px] h-[60px] text-navy" />
+                                        <span className="text-navy font-semibold">{t("parent")}</span>
                                     </div>
 
                                 </div>
@@ -408,7 +401,7 @@ export default function Page() {
                                     onClick={() => {
                                         if (selectedRole === null) {
                                             toast.error(
-                                                "Please select at least one role!"
+                                                t("selectOneRole")
                                             );
                                             return;
                                         }
@@ -416,10 +409,7 @@ export default function Page() {
                                         nextStep();
                                     }}
                                     className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-[#0B2545] px-6 text-[13px] font-semibold text-white hover:bg-[#0B2545]/90 transition-colors w-full"
-                                >
-                                    Next
-
-                                    <ArrowRight className="w-4 h-4 text-white" />
+                                >{t("next")}<ArrowRight className="w-4 h-4 text-white" />
                                 </button>
 
                             </div>
@@ -443,7 +433,7 @@ export default function Page() {
 
                                 {/* Logo */}
 
-                                <div className="flex items-center justify-start">
+                                <div className="flex items-center justify-center">
                                     <Link
                                         href="/"
                                         className="flex items-center gap-0"
@@ -480,13 +470,11 @@ export default function Page() {
                                 <div>
                                     <h3 className="text-navy text-center text-2xl font-bold">
                                         {selectedRole === "student"
-                                            ? "Create your Student Account"
-                                            : "Create your Parent Account"}
+                                            ? t("createStudentTitle")
+                                            : t("createParentTitle")}
                                     </h3>
 
-                                    <p className="mt-2 text-gray-600 text-center text-sm">
-                                        Enter your information below.
-                                    </p>
+                                    <p className="mt-2 text-gray-600 text-center text-sm">{t("enterInfo")}</p>
                                 </div>
 
                                 {/* FORM */}
@@ -503,16 +491,14 @@ export default function Page() {
                                         {/* First Name */}
 
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                First Name
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("firstName")}</span>
 
                                             <input
                                                 type="text"
                                                 name="first_name"
                                                 id="first_name"
                                                 title="First Name"
-                                                placeholder="Enter first name"
+                                                placeholder={t("firstNamePlaceholder")}
                                                 value={formData.first_name}
                                                 onChange={handleInputChange}
                                                 required
@@ -523,16 +509,14 @@ export default function Page() {
                                         {/* Last Name */}
 
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                Last Name
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("lastName")}</span>
 
                                             <input
                                                 type="text"
                                                 name="last_name"
                                                 id="last_name"
                                                 title="Last Name"
-                                                placeholder="Enter last name"
+                                                placeholder={t("lastNamePlaceholder")}
                                                 value={formData.last_name}
                                                 onChange={handleInputChange}
                                                 required
@@ -545,16 +529,14 @@ export default function Page() {
                                     {/* Email */}
 
                                     <label className="flex flex-col space-y-2">
-                                        <span className="text-sm font-medium text-navy">
-                                            Email
-                                        </span>
+                                        <span className="text-sm font-medium text-navy">{t("email")}</span>
 
                                         <input
                                             type="email"
                                             name="email"
                                             id="email"
                                             title="Email"
-                                            placeholder="Enter your email address"
+                                            placeholder={t("emailPlaceholderSignUp")}
                                             value={formData.email}
                                             onChange={handleInputChange}
                                             required
@@ -566,9 +548,7 @@ export default function Page() {
 
                                     {selectedRole === "student" && (
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                Date of Birth
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("dob")}</span>
 
                                             <input
                                                 type="date"
@@ -589,16 +569,14 @@ export default function Page() {
 
                                     {selectedRole === "parent" && (
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                Phone Number
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("phone")}</span>
 
                                             <input
                                                 type="tel"
                                                 name="phone"
                                                 id="phone"
                                                 title="Phone Number"
-                                                placeholder="Enter your phone number"
+                                                placeholder={t("phonePlaceholder")}
                                                 value={formData.phone}
                                                 onChange={handleInputChange}
                                                 required
@@ -614,9 +592,7 @@ export default function Page() {
                                         {/* Country */}
 
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                Country
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("country")}</span>
 
                                             <select
                                                 name="country"
@@ -628,27 +604,27 @@ export default function Page() {
                                                 className="w-full px-3 py-2.5 outline-none border-2 border-gray-300 rounded-lg bg-white text-gray-700 focus:border-gold transition-colors"
                                             >
                                                 <option value="" disabled>
-                                                    Select country
+                                                    {t("selectCountry")}
                                                 </option>
 
                                                 <option value="usa">
-                                                    United States
+                                                    {t("unitedStates")}
                                                 </option>
 
                                                 <option value="canada">
-                                                    Canada
+                                                    {t("canada")}
                                                 </option>
 
                                                 <option value="uk">
-                                                    United Kingdom
+                                                    {t("unitedKingdom")}
                                                 </option>
 
                                                 <option value="australia">
-                                                    Australia
+                                                    {t("australia")}
                                                 </option>
 
                                                 <option value="bangladesh">
-                                                    Bangladesh
+                                                    {t("bangladesh")}
                                                 </option>
                                             </select>
                                         </label>
@@ -656,9 +632,7 @@ export default function Page() {
                                         {/* Preferred Language */}
 
                                         <label className="flex flex-col space-y-2">
-                                            <span className="text-sm font-medium text-navy">
-                                                Preferred Language
-                                            </span>
+                                            <span className="text-sm font-medium text-navy">{t("preferredLanguage")}</span>
 
                                             <select
                                                 name="preferred_language"
@@ -672,11 +646,11 @@ export default function Page() {
                                                 className="w-full px-3 py-2.5 outline-none border-2 border-gray-300 rounded-lg bg-white text-gray-700 focus:border-gold transition-colors"
                                             >
                                                 <option value="english">
-                                                    English
+                                                    {t("englishLang")}
                                                 </option>
 
                                                 <option value="arabic">
-                                                    Arabic
+                                                    {t("arabicLang")}
                                                 </option>
                                             </select>
                                         </label>
@@ -686,9 +660,7 @@ export default function Page() {
                                     {/* Password */}
 
                                     <label className="flex flex-col space-y-2">
-                                        <span className="text-sm font-medium text-navy">
-                                            Password
-                                        </span>
+                                        <span className="text-sm font-medium text-navy">{t("password")}</span>
 
                                         <div className="relative">
                                             <input
@@ -733,9 +705,7 @@ export default function Page() {
                                     {/* Confirm Password */}
 
                                     <label className="flex flex-col space-y-2">
-                                        <span className="text-sm font-medium text-navy">
-                                            Confirm Password
-                                        </span>
+                                        <span className="text-sm font-medium text-navy">{t("confirmPassword")}</span>
 
                                         <div className="relative">
                                             <input
@@ -747,7 +717,7 @@ export default function Page() {
                                                 name="confirm_password"
                                                 id="confirm_password"
                                                 title="Confirm Password"
-                                                placeholder="Confirm your password"
+                                                placeholder={t("confirmPasswordPlaceholder")}
                                                 value={
                                                     formData.confirm_password
                                                 }
@@ -797,12 +767,12 @@ export default function Page() {
                                             />
 
                                             <span className="text-sm text-gray-600">
-                                                I agree to the{" "}
+                                                {t("termsText1")}{" "}
                                                 <Link
                                                     href="/terms"
                                                     className="text-navy font-semibold hover:text-gold transition-colors"
                                                 >
-                                                    Terms & Conditions
+                                                    {t("termsText2")}
                                                 </Link>
                                             </span>
                                         </label>
@@ -821,12 +791,12 @@ export default function Page() {
                                             />
 
                                             <span className="text-sm text-gray-600">
-                                                I acknowledge the{" "}
+                                                {t("privacyText1")}{" "}
                                                 <Link
                                                     href="/privacy"
                                                     className="text-navy font-semibold hover:text-gold transition-colors"
                                                 >
-                                                    Privacy Policy
+                                                    {t("privacyText2")}
                                                 </Link>
                                             </span>
                                         </label>
@@ -841,9 +811,7 @@ export default function Page() {
                                             type="button"
                                             onClick={previousStep}
                                             className="flex-1 h-[44px] rounded-full border-2 border-navy text-navy text-sm font-semibold hover:bg-navy hover:text-white transition-colors"
-                                        >
-                                            Back
-                                        </button>
+                                        >{t("back")}</button>
 
                                         <button
                                             type="submit"
@@ -855,13 +823,13 @@ export default function Page() {
                                                     <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
 
                                                     {selectedRole === "student"
-                                                        ? "Creating Student Account..."
-                                                        : "Creating Parent Account..."}
+                                                        ? t("creatingStudentAccount")
+                                                        : t("creatingParentAccount")}
                                                 </>
                                             ) : (
                                                 selectedRole === "student"
-                                                    ? "Create Student Account"
-                                                    : "Create Parent Account"
+                                                    ? t("createStudentAccountBtn")
+                                                    : t("createParentAccountBtn")
                                             )}
                                         </button>
 
@@ -870,12 +838,12 @@ export default function Page() {
                                     {/* Login */}
 
                                     <p className="text-center text-sm text-gray-600 pt-1">
-                                        Already have an account?{" "}
+                                        {t("alreadyHaveAccount")}{" "}
                                         <Link
-                                            href="/en/login"
+                                            href={locale === "en" ? `/login` : `/${locale}/login`}
                                             className="font-semibold text-navy hover:text-gold transition-colors"
                                         >
-                                            Log in
+                                            {t("logInText")}
                                         </Link>
                                     </p>
                                 </form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   User,
   Mail,
@@ -60,6 +61,7 @@ type EditForm = {
 
 export default function StudentProfilePage() {
   const router = useRouter();
+  const t = useTranslations("Profile");
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [studentProfile, setStudentProfile] =
@@ -131,7 +133,7 @@ export default function StudentProfilePage() {
 
         if (profileError) {
           console.error("Profile lookup error:", profileError);
-          toast.error("Unable to load your profile.");
+          toast.error(t("unableLoadProfile"));
           return;
         }
 
@@ -237,7 +239,7 @@ export default function StudentProfilePage() {
   */
 
   const formatCountry = (country: string | null) => {
-    if (!country) return "Not provided";
+    if (!country) return t("notProvided");
 
     const countries: Record<string, string> = {
       usa: "United States",
@@ -251,7 +253,7 @@ export default function StudentProfilePage() {
   };
 
   const formatLanguage = (language: string | null) => {
-    if (!language) return "Not provided";
+    if (!language) return t("notProvided");
 
     const languages: Record<string, string> = {
       english: "English",
@@ -262,7 +264,7 @@ export default function StudentProfilePage() {
   };
 
   const formatDate = (date: string | null) => {
-    if (!date) return "Not provided";
+    if (!date) return t("notProvided");
 
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -272,7 +274,7 @@ export default function StudentProfilePage() {
   };
 
   const formatGender = (gender: string | null) => {
-    if (!gender) return "Not provided";
+    if (!gender) return t("notProvided");
 
     const genders: Record<string, string> = {
       male: "Male",
@@ -285,7 +287,7 @@ export default function StudentProfilePage() {
   };
 
   const formatGradeLevel = (grade: string | null) => {
-    if (!grade) return "Not provided";
+    if (!grade) return t("notProvided");
 
     const grades: Record<string, string> = {
       grade_6: "Grade 6",
@@ -603,8 +605,8 @@ export default function StudentProfilePage() {
           <Loader2 className="w-5 h-5 animate-spin" />
 
           <span className="font-semibold">
-            Loading your profile...
-          </span>
+      {t("loadingProfile")}
+    </span>
         </div>
       </main>
     );
@@ -621,19 +623,19 @@ export default function StudentProfilePage() {
       <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-navy">
-            Profile not found
-          </h2>
+      {t("profileNotFound")}
+    </h2>
 
           <p className="mt-2 text-gray-500">
-            We couldn't find your profile information.
-          </p>
+      {t("profileNotFoundDesc")}
+    </p>
 
           <button
             onClick={() => router.push("/en")}
             className="mt-6 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy/90 transition-colors"
           >
-            Back to Home
-          </button>
+      {t("backToHome")}
+    </button>
         </div>
       </main>
     );
@@ -665,8 +667,8 @@ export default function StudentProfilePage() {
           className="flex items-center gap-2 text-sm font-semibold text-navy hover:text-gold transition-colors mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
-        </button>
+      {t("back")}
+    </button>
 
         {/* ============================================================
             Header
@@ -683,8 +685,8 @@ export default function StudentProfilePage() {
 
               <div>
                 <p className="text-sm font-semibold text-gold uppercase tracking-wider">
-                  Student Profile
-                </p>
+      {t("studentProfile")}
+    </p>
 
                 <h1 className="mt-1 text-3xl sm:text-4xl font-bold">
                   {fullName}
@@ -702,8 +704,8 @@ export default function StudentProfilePage() {
               className="inline-flex items-center justify-center gap-2 rounded-full bg-gold text-navy px-5 py-3 text-sm font-bold hover:brightness-95 transition-all shadow-sm"
             >
               <Pencil className="w-4 h-4" />
-              Edit Profile
-            </button>
+      {t("editProfile")}
+    </button>
 
           </div>
         </div>
@@ -727,24 +729,24 @@ export default function StudentProfilePage() {
 
               <div>
                 <h2 className="font-bold text-navy text-lg">
-                  Personal Information
-                </h2>
+      {t("personalInfo")}
+    </h2>
 
                 <p className="text-sm text-gray-500">
-                  Your basic account information
-                </p>
+      {t("personalInfoDesc")}
+    </p>
               </div>
             </div>
 
             <div className="space-y-5">
 
               <ProfileItem
-                label="First Name"
+                label={t("firstName")}
                 value={profile.first_name}
               />
 
               <ProfileItem
-                label="Last Name"
+                label={t("lastName")}
                 value={profile.last_name}
               />
 
@@ -761,7 +763,7 @@ export default function StudentProfilePage() {
               />
 
               <ProfileItem
-                label="Date of Birth"
+                label={t("dateOfBirth")}
                 value={formatDate(
                   studentProfile?.date_of_birth ||
                   profile.date_of_birth
@@ -770,7 +772,7 @@ export default function StudentProfilePage() {
               />
 
               <ProfileItem
-                label="Gender"
+                label={t("gender")}
                 value={formatGender(
                   studentProfile?.gender || null
                 )}
@@ -793,13 +795,11 @@ export default function StudentProfilePage() {
               </div>
 
               <div>
-                <h2 className="font-bold text-navy text-lg">
-                  Location & Language
-                </h2>
+                <h2 className="font-bold text-navy text-lg">{t("locationLanguage")}</h2>
 
                 <p className="text-sm text-gray-500">
-                  Your location and language preferences
-                </p>
+      {t("locationLanguageDesc")}
+    </p>
               </div>
 
             </div>
@@ -807,7 +807,7 @@ export default function StudentProfilePage() {
             <div className="space-y-5">
 
               <ProfileItem
-                label="Country"
+                label={t("country")}
                 value={formatCountry(
                   studentProfile?.country ||
                   profile.country
@@ -816,13 +816,13 @@ export default function StudentProfilePage() {
               />
 
               <ProfileItem
-                label="City"
+                label={t("city")}
                 value={studentProfile?.city || null}
                 icon={<MapPin className="w-4 h-4" />}
               />
 
               <ProfileItem
-                label="Preferred Language"
+                label={t("preferredLanguage")}
                 value={formatLanguage(
                   profile.preferred_language
                 )}
@@ -846,12 +846,12 @@ export default function StudentProfilePage() {
 
               <div>
                 <h2 className="font-bold text-navy text-lg">
-                  Education
-                </h2>
+      {t("education")}
+    </h2>
 
                 <p className="text-sm text-gray-500">
-                  Your current academic information
-                </p>
+      {t("educationDesc")}
+    </p>
               </div>
 
             </div>
@@ -865,7 +865,7 @@ export default function StudentProfilePage() {
               />
 
               <ProfileItem
-                label="Grade Level"
+                label={t("gradeLevel")}
                 value={formatGradeLevel(
                   studentProfile?.grade_level || null
                 )}
@@ -891,12 +891,12 @@ export default function StudentProfilePage() {
 
               <div>
                 <h2 className="font-bold text-navy text-lg">
-                  Parent Consent
-                </h2>
+      {t("parentConsent")}
+    </h2>
 
                 <p className="text-sm text-gray-500">
-                  Your account consent status
-                </p>
+      {t("parentConsentDesc")}
+    </p>
               </div>
 
             </div>
@@ -905,8 +905,8 @@ export default function StudentProfilePage() {
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                  Current Status
-                </p>
+      {t("currentStatus")}
+    </p>
 
                 <p className="mt-1 text-sm font-semibold text-navy">
                   {formatConsentStatus(consentStatus)}
@@ -933,17 +933,17 @@ export default function StudentProfilePage() {
 
             <div>
               <h2 className="font-bold text-navy">
-                Account Type
-              </h2>
+      {t("accountType")}
+    </h2>
 
               <p className="text-sm text-gray-500 mt-1">
-                Your Young Leaders Academy account
-              </p>
+      {t("accountTypeDesc")}
+    </p>
             </div>
 
             <span className="inline-flex items-center justify-center rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white">
-              Student
-            </span>
+      {t("student")}
+    </span>
 
           </div>
 
@@ -968,12 +968,12 @@ export default function StudentProfilePage() {
 
               <div>
                 <p className="text-xs font-bold text-gold uppercase tracking-wider">
-                  Student Account
-                </p>
+      {t("studentAccount")}
+    </p>
 
                 <h2 className="text-2xl font-bold text-navy mt-1">
-                  Edit Profile
-                </h2>
+      {t("editProfile")}
+    </h2>
               </div>
 
               <button
@@ -1006,12 +1006,12 @@ export default function StudentProfilePage() {
 
                   <div>
                     <h3 className="font-bold text-navy">
-                      Basic Information
-                    </h3>
+      {t("basicInfo")}
+    </h3>
 
                     <p className="text-xs text-gray-500">
-                      Update your personal details
-                    </p>
+      {t("basicInfoDesc")}
+    </p>
                   </div>
 
                 </div>
@@ -1019,7 +1019,7 @@ export default function StudentProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                   <FormField
-                    label="First Name"
+                    label={t("firstName")}
                     value={form.first_name}
                     onChange={(value) =>
                       handleChange(
@@ -1030,7 +1030,7 @@ export default function StudentProfilePage() {
                   />
 
                   <FormField
-                    label="Last Name"
+                    label={t("lastName")}
                     value={form.last_name}
                     onChange={(value) =>
                       handleChange(
@@ -1059,7 +1059,7 @@ export default function StudentProfilePage() {
                   />
 
                   <FormField
-                    label="Date of Birth"
+                    label={t("dateOfBirth")}
                     type="date"
                     value={form.date_of_birth}
                     onChange={(value) =>
@@ -1071,7 +1071,7 @@ export default function StudentProfilePage() {
                   />
 
                   <SelectField
-                    label="Gender"
+                    label={t("gender")}
                     value={form.gender}
                     onChange={(value) =>
                       handleChange(
@@ -1115,13 +1115,9 @@ export default function StudentProfilePage() {
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-navy">
-                      Location & Language
-                    </h3>
+                    <h3 className="font-bold text-navy">{t("locationLanguage")}</h3>
 
-                    <p className="text-xs text-gray-500">
-                      Manage your location and language preferences
-                    </p>
+                    <p className="text-xs text-gray-500">{t("locationLanguageDescParent")}</p>
                   </div>
 
                 </div>
@@ -1129,7 +1125,7 @@ export default function StudentProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                   <FormField
-                    label="City"
+                    label={t("city")}
                     value={form.city}
                     onChange={(value) =>
                       handleChange(
@@ -1140,7 +1136,7 @@ export default function StudentProfilePage() {
                   />
 
                   <SelectField
-                    label="Country"
+                    label={t("country")}
                     value={form.country}
                     onChange={(value) =>
                       handleChange(
@@ -1173,7 +1169,7 @@ export default function StudentProfilePage() {
                   />
 
                   <SelectField
-                    label="Preferred Language"
+                    label={t("preferredLanguage")}
                     value={form.preferred_language}
                     onChange={(value) =>
                       handleChange(
@@ -1210,12 +1206,10 @@ export default function StudentProfilePage() {
 
                   <div>
                     <h3 className="font-bold text-navy">
-                      Education
-                    </h3>
+      {t("education")}
+    </h3>
 
-                    <p className="text-xs text-gray-500">
-                      Tell us about your current education
-                    </p>
+                    <p className="text-xs text-gray-500">{t("educationSection")}</p>
                   </div>
 
                 </div>
@@ -1223,7 +1217,7 @@ export default function StudentProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                   <FormField
-                    label="School Name"
+                    label={t("schoolName")}
                     value={form.school_name}
                     onChange={(value) =>
                       handleChange(
@@ -1234,7 +1228,7 @@ export default function StudentProfilePage() {
                   />
 
                   <SelectField
-                    label="Grade Level"
+                    label={t("gradeLevel")}
                     value={form.grade_level}
                     onChange={(value) =>
                       handleChange(
@@ -1298,13 +1292,11 @@ export default function StudentProfilePage() {
                   <div>
 
                     <p className="text-sm font-bold text-navy">
-                      Parent Consent
-                    </p>
+      {t("parentConsent")}
+    </p>
 
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Your parent consent status is managed by
-                      the consent process and cannot be changed
-                      from your profile.
+                      {t("parentConsentNotice")}
                     </p>
 
                     <p className="text-sm font-semibold text-navy mt-2">
@@ -1331,9 +1323,7 @@ export default function StudentProfilePage() {
                 onClick={() => setIsEditing(false)}
                 disabled={saving}
                 className="w-full sm:w-auto px-6 py-3 rounded-full border border-gray-200 text-navy font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
+              >{t("cancel")}</button>
 
               <button
                 onClick={handleSave}
@@ -1343,14 +1333,10 @@ export default function StudentProfilePage() {
 
                 {saving ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Saving...
-                  </>
+                    <Loader2 className="w-4 h-4 animate-spin" />{t("saving")}</>
                 ) : (
                   <>
-                    <Save className="w-4 h-4" />
-                    Save Changes
-                  </>
+                    <Save className="w-4 h-4" />{t("saveChanges")}</>
                 )}
 
               </button>
@@ -1379,6 +1365,7 @@ function ProfileItem({
   value: string | null | undefined;
   icon?: React.ReactNode;
 }) {
+  const t = useTranslations("Profile");
   return (
     <div>
 
@@ -1395,7 +1382,7 @@ function ProfileItem({
         )}
 
         <span>
-          {value || "Not provided"}
+          {value || t("notProvided")}
         </span>
 
       </div>

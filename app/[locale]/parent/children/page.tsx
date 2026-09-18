@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
     ArrowRight,
     CalendarDays,
@@ -66,6 +67,7 @@ const children: Child[] = [
 ];
 
 export default function Page() {
+  const t = useTranslations("Parent");
     const [searchQuery, setSearchQuery] = useState("");
 
     const filteredChildren = children.filter((child) => {
@@ -100,17 +102,15 @@ export default function Page() {
 
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <Users className="h-4 w-4 text-[#D4AF37]" />
-                                Parent Portal
-                            </div>
+      {t("parentPortal")}
+    </div>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                My Children
-                            </h1>
+      {t("myChildren")}
+    </h1>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                View your children's information, track their
-                                programs, and monitor their application
-                                progress.
+                                {t("viewChildrenInfo")}
                             </p>
 
                         </div>
@@ -145,7 +145,7 @@ export default function Page() {
                             (total, child) => total + child.applications,
                             0
                         )}
-                        description="Total submitted applications"
+                        description={t("totalApplications")}
                     />
 
                     <SummaryCard
@@ -158,7 +158,7 @@ export default function Page() {
                                     child.applicationStatus !== "Rejected"
                             ).length
                         }
-                        description="Children with active progress"
+                        description={t("activeProgress")}
                     />
 
                 </section>
@@ -181,7 +181,7 @@ export default function Page() {
                                 onChange={(e) =>
                                     setSearchQuery(e.target.value)
                                 }
-                                placeholder="Search by name, school, or program..."
+                                placeholder={t("searchPlaceholder")}
                                 className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm text-gray-700 outline-none transition-colors focus:border-[#D4AF37] focus:bg-white"
                             />
 
@@ -201,8 +201,8 @@ export default function Page() {
 
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545]">
-                                Your Children
-                            </h2>
+      {t("yourChildren")}
+    </h2>
 
                             <p className="mt-1 text-sm text-gray-500">
                                 {filteredChildren.length}{" "}
@@ -217,8 +217,8 @@ export default function Page() {
                             href="/parent/profile"
                             className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
                         >
-                            Parent Profile
-                            <ChevronRight className="h-4 w-4" />
+      {t("parentDashboard")}
+    <ChevronRight className="h-4 w-4" />
                         </Link>
 
                     </div>
@@ -259,6 +259,7 @@ function ChildCard({
 }: {
     child: Child;
 }) {
+  const t = useTranslations("Parent");
     return (
         <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
 
@@ -350,16 +351,16 @@ function ChildCard({
                     href={`/parent/children/${child.id}`}
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                 >
-                    View Profile
-                    <ChevronRight className="h-4 w-4" />
+      {t("viewProfile")}
+    <ChevronRight className="h-4 w-4" />
                 </Link>
 
                 <Link
                     href="/parent/applications"
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                 >
-                    Applications
-                    <FileText className="h-4 w-4" />
+      {t("applications")}
+    <FileText className="h-4 w-4" />
                 </Link>
 
             </div>
@@ -382,6 +383,7 @@ function InfoItem({
     label: string;
     value: string;
 }) {
+  const t = useTranslations("Parent");
     return (
         <div className="flex min-w-0 items-start gap-3">
 
@@ -421,6 +423,7 @@ function SummaryCard({
     value: number;
     description: string;
 }) {
+  const t = useTranslations("Parent");
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
 
@@ -462,6 +465,7 @@ function StatusBadge({
 }: {
     status: ApplicationStatus;
 }) {
+  const t = useTranslations("Parent");
     const styles: Record<ApplicationStatus, string> = {
         Submitted: "border-blue-100 bg-blue-50 text-blue-700",
         "Under Review": "border-amber-100 bg-amber-50 text-amber-700",
@@ -484,6 +488,7 @@ function StatusBadge({
 ========================================================= */
 
 function EmptyChildren() {
+  const t = useTranslations("Parent");
     return (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
 
@@ -492,21 +497,19 @@ function EmptyChildren() {
             </div>
 
             <h3 className="mt-5 text-lg font-bold text-[#0B2545]">
-                No children found
-            </h3>
+      {t("noChildrenFound")}
+    </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-                We couldn't find any children matching your search. Once a
-                child is connected to your account, their information will
-                appear here.
+                {t("noChildrenDesc")}
             </p>
 
             <Link
                 href="/contact"
                 className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
             >
-                Contact Support
-                <ArrowRight className="h-4 w-4" />
+      {t("contactSupport")}
+    <ArrowRight className="h-4 w-4" />
             </Link>
 
         </div>

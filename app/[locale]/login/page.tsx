@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import {
     Eye,
     EyeOff,
@@ -16,6 +17,8 @@ import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
     const router = useRouter();
+    const t = useTranslations("Auth");
+    const locale = useLocale();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,7 +30,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         if (!email.trim() || !password) {
-            toast.error("Please enter your email and password.");
+            toast.error(t("enterEmailPass"));
             return;
         }
 
@@ -54,10 +57,10 @@ export default function LoginPage() {
                 const message = authError.message.toLowerCase();
 
                 if (message.includes("invalid login credentials")) {
-                    toast.error("Incorrect email or password.");
+                    toast.error(t("incorrectCredentials"));
                 } else if (message.includes("email not confirmed")) {
                     toast.error(
-                        "Please confirm your email address before logging in."
+                        t("emailNotConfirmed")
                     );
                 } else {
                     toast.error(authError.message);
@@ -70,7 +73,7 @@ export default function LoginPage() {
 
             if (!user) {
                 toast.error(
-                    "Unable to sign you in. Please try again."
+                    t("unableToSignIn")
                 );
 
                 return;
@@ -115,7 +118,7 @@ export default function LoginPage() {
                 );
 
                 toast.error(
-                    "We couldn't verify your account."
+                    t("unableToSignIn")
                 );
 
                 await supabase.auth.signOut();
@@ -131,7 +134,7 @@ export default function LoginPage() {
 
             if (profile && profile.is_active === false) {
                 toast.error(
-                    "Your account is currently inactive. Please contact support."
+                    t("accountInactive")
                 );
 
                 await supabase.auth.signOut();
@@ -171,7 +174,7 @@ export default function LoginPage() {
                 );
 
                 toast.error(
-                    "We couldn't determine your account type."
+                    t("noRoleError")
                 );
 
                 await supabase.auth.signOut();
@@ -190,7 +193,7 @@ export default function LoginPage() {
                 );
 
                 toast.error(
-                    "Your account does not have an assigned role. Please contact support."
+                    t("unsupportedRole")
                 );
 
                 await supabase.auth.signOut();
@@ -217,7 +220,7 @@ export default function LoginPage() {
 
             if (roleIds.length === 0) {
                 toast.error(
-                    "Your account does not have a valid assigned role."
+                    t("unsupportedRole")
                 );
 
                 await supabase.auth.signOut();
@@ -240,7 +243,7 @@ export default function LoginPage() {
                 );
 
                 toast.error(
-                    "We couldn't determine your account type."
+                    t("noRoleError")
                 );
 
                 await supabase.auth.signOut();
@@ -255,7 +258,7 @@ export default function LoginPage() {
                 );
 
                 toast.error(
-                    "Your assigned account role could not be found."
+                    t("invalidRole")
                 );
 
                 await supabase.auth.signOut();
@@ -303,17 +306,17 @@ export default function LoginPage() {
              */
 
             if (studentRole) {
-                toast.success("Welcome back!");
+                toast.success(t("welcomeBackSuccess"));
 
-                router.push("/en/student/profile");
+                router.push(locale === "en" ? `/student/profile` : `/${locale}/student/profile`);
 
                 return;
             }
 
             if (parentRole) {
-                toast.success("Welcome back!");
+                toast.success(t("welcomeBackSuccess"));
 
-                router.push("/en/parent/profile");
+                router.push(locale === "en" ? `/parent/profile` : `/${locale}/parent/profile`);
 
                 return;
             }
@@ -330,7 +333,7 @@ export default function LoginPage() {
             );
 
             toast.error(
-                "Your account role is not supported. Please contact support."
+                t("unsupportedRole")
             );
 
             await supabase.auth.signOut();
@@ -342,7 +345,7 @@ export default function LoginPage() {
             );
 
             toast.error(
-                "Something went wrong while logging in. Please try again."
+                t("generalError")
             );
         } finally {
             setLoading(false);
@@ -350,7 +353,7 @@ export default function LoginPage() {
     };
 
     const handleForgotPassword = () => {
-        router.push("/en/forgot-password");
+        router.push(locale === "en" ? `/forgot-password` : `/${locale}/forgot-password`);
     };
 
     return (
@@ -371,16 +374,12 @@ export default function LoginPage() {
                     </div>
 
                     <p className="mt-5 text-sm font-bold text-gold uppercase tracking-wider">
-                        Young Leaders Academy
+                        {t("brandName")}
                     </p>
 
-                    <h1 className="mt-2 text-3xl sm:text-4xl font-bold text-navy">
-                        Welcome Back
-                    </h1>
+                    <h1 className="mt-2 text-3xl sm:text-4xl font-bold text-navy">{t("welcomeBack")}</h1>
 
-                    <p className="mt-3 text-gray-500 text-sm sm:text-base">
-                        Sign in to access your account.
-                    </p>
+                    <p className="mt-3 text-gray-500 text-sm sm:text-base">{t("signInText")}</p>
 
                 </div>
 
@@ -402,9 +401,7 @@ export default function LoginPage() {
                             <label
                                 htmlFor="email"
                                 className="block text-sm font-semibold text-navy mb-2"
-                            >
-                                Email Address
-                            </label>
+                            >{t("emailLabel")}</label>
 
                             <div className="relative">
 
@@ -414,7 +411,7 @@ export default function LoginPage() {
                                     id="email"
                                     type="email"
                                     autoComplete="email"
-                                    placeholder="Enter your email"
+                                    placeholder={t("emailPlaceholder")}
                                     value={email}
                                     onChange={(e) =>
                                         setEmail(e.target.value)
@@ -436,18 +433,14 @@ export default function LoginPage() {
                                 <label
                                     htmlFor="password"
                                     className="block text-sm font-semibold text-navy"
-                                >
-                                    Password
-                                </label>
+                                >{t("passwordLabel")}</label>
 
                                 <button
                                     type="button"
                                     onClick={handleForgotPassword}
                                     disabled={loading}
                                     className="text-xs font-semibold text-navy hover:text-gold transition-colors"
-                                >
-                                    Forgot password?
-                                </button>
+                                >{t("forgotPassword")}</button>
 
                             </div>
 
@@ -463,7 +456,7 @@ export default function LoginPage() {
                                             : "password"
                                     }
                                     autoComplete="current-password"
-                                    placeholder="Enter your password"
+                                    placeholder={t("passwordPlaceholder")}
                                     value={password}
                                     onChange={(e) =>
                                         setPassword(e.target.value)
@@ -510,13 +503,9 @@ export default function LoginPage() {
 
                             {loading ? (
                                 <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Signing in...
-                                </>
+                                    <Loader2 className="w-5 h-5 animate-spin" />{t("signingIn")}</>
                             ) : (
-                                <>
-                                    Sign In
-                                    <ArrowRight className="w-4 h-4" />
+                                <>{t("signInButton")}<ArrowRight className="w-4 h-4" />
                                 </>
                             )}
 
@@ -530,9 +519,7 @@ export default function LoginPage() {
 
                         <div className="h-px flex-1 bg-gray-200" />
 
-                        <span className="text-xs text-gray-400 font-medium text-center">
-                            New to Young Leaders Academy?
-                        </span>
+                        <span className="text-xs text-gray-400 font-medium text-center">{t("newTo")}</span>
 
                         <div className="h-px flex-1 bg-gray-200" />
 
@@ -543,21 +530,16 @@ export default function LoginPage() {
                     <button
                         type="button"
                         onClick={() =>
-                            router.push("/en/sign-up")
+                            router.push(locale === "en" ? `/sign-up` : `/${locale}/sign-up`)
                         }
                         className="w-full h-12 rounded-full border border-navy text-navy font-bold text-sm hover:bg-navy hover:text-white transition-all"
-                    >
-                        Create an Account
-                    </button>
+                    >{t("createAccount")}</button>
 
                 </div>
 
                 {/* Footer */}
 
-                <p className="text-center text-xs text-gray-400 mt-6">
-                    Secure account access powered by
-                    Young Leaders Academy.
-                </p>
+                <p className="text-center text-xs text-gray-400 mt-6">{t("secureAccess")}</p>
 
             </div>
 

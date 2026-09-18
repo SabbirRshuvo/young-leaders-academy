@@ -29,6 +29,7 @@ export default function Navbar() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("Navigation");
+  const tExtra = useTranslations("NavbarExtra");
 
   /*
   |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ export default function Navbar() {
           )
         `)
         .eq("user_id", userId)
-        .single();
+        .maybeSingle();
 
       if (roleError) {
         console.error("Navbar role lookup error:", roleError);
@@ -240,14 +241,29 @@ export default function Navbar() {
   |--------------------------------------------------------------------------
   */
 
-  const switchLocale = () => {
-    const nextLocale = locale === "en" ? "ar" : "en";
+  const switchLocale = (targetLocale?: string) => {
+    const nextLocale = typeof targetLocale === "string" ? targetLocale : (locale === "en" ? "ar" : "en");
 
-    const newPath =
-      pathname?.replace(`/${locale}`, `/${nextLocale}`) ||
-      `/${nextLocale}`;
+    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000`;
 
-    router.push(newPath);
+    let rawPath = pathname || "/";
+    if (rawPath === `/${locale}`) {
+      rawPath = "/";
+    } else if (rawPath.startsWith(`/${locale}/`)) {
+      rawPath = rawPath.replace(`/${locale}/`, "/");
+    }
+
+    let newPath = rawPath;
+    if (nextLocale !== "en") {
+      newPath = `/${nextLocale}${rawPath === "/" ? "" : rawPath}`;
+    }
+
+    window.location.href = newPath;
+  };
+
+  const getLocalizedHref = (href: string) => {
+    if (locale === "en") return href;
+    return `/${locale}${href === "/" ? "" : href}`;
   };
 
   /*
@@ -257,11 +273,12 @@ export default function Navbar() {
   */
 
   const isActive = (href: string) => {
-    const fullHref = `/${locale}${href === "/" ? "" : href}`;
+    const fullHref = getLocalizedHref(href);
 
     return (
       pathname === fullHref ||
-      (href !== "/" && pathname?.startsWith(fullHref))
+      (href !== "/" && pathname?.startsWith(fullHref + "/")) ||
+      (href !== "/" && pathname === fullHref)
     );
   };
 
@@ -499,7 +516,7 @@ export default function Navbar() {
     setUser(null);
     setUserRole(null);
 
-    router.push(`/${locale}`);
+    router.push(getLocalizedHref("/"));
     router.refresh();
   };
 
@@ -532,7 +549,7 @@ export default function Navbar() {
         <div className="flex-1 flex items-center justify-start">
 
           <Link
-            href={`/${locale}`}
+            href={getLocalizedHref("/")}
             className="flex items-center gap-0"
           >
 
@@ -579,22 +596,20 @@ export default function Navbar() {
 
             <Link
               key={link.name}
-              href={`/${locale}${link.href === "/" ? "" : link.href}`}
-              className={`relative transition-colors hover:text-gold py-1 group ${
-                isActive(link.href)
-                  ? "text-gold"
-                  : ""
-              }`}
+              href={getLocalizedHref(link.href)}
+              className={`relative transition-colors hover:text-gold py-1 group ${isActive(link.href)
+                ? "text-gold"
+                : ""
+                }`}
             >
 
               {link.name}
 
               <span
-                className={`absolute left-0 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 ${
-                  isActive(link.href)
-                    ? "w-full"
-                    : "w-0 group-hover:w-full"
-                }`}
+                className={`absolute left-1/2 bottom-[-4px] h-[3px] bg-gold rounded-full transition-all duration-300 -translate-x-1/2 ${isActive(link.href)
+                  ? "w-full"
+                  : "w-0 group-hover:w-full"
+                  }`}
               />
 
             </Link>
@@ -612,18 +627,17 @@ export default function Navbar() {
           {/* Language */}
 
           <button
-            onClick={switchLocale}
-            className="flex items-center justify-center gap-2 px-4 py-[10px] rounded-full border border-gray-200/80 shadow-sm hover:bg-gray-50 transition-colors"
+            onClick={() => switchLocale()}
+            className="flex items-center justify-center gap-2 px-4 py-[10px] rounded-full border border-gray-200/80 shadow-sm hover:bg-gray-50 transition-colors cursor-pointer"
           >
 
             <Globe className="w-[18px] h-[18px] text-navy" />
 
             <span
-              className={`text-sm ${
-                locale === "en"
-                  ? "text-navy font-bold"
-                  : "text-gray-400 font-medium"
-              }`}
+              className={`text-sm ${locale === "en"
+                ? "text-navy font-bold"
+                : "text-gray-400 font-medium"
+                }`}
             >
               EN
             </span>
@@ -633,11 +647,10 @@ export default function Navbar() {
             </span>
 
             <span
-              className={`font-arabic text-[15px] ${
-                locale === "ar"
-                  ? "text-navy font-bold"
-                  : "text-gray-400 font-medium"
-              }`}
+              className={`font-arabic text-[15px] ${locale === "ar"
+                ? "text-navy font-bold"
+                : "text-gray-400 font-medium"
+                }`}
             >
               ع
             </span>
@@ -708,11 +721,10 @@ export default function Navbar() {
                   </span>
 
                   <ChevronDown
-                    className={`w-4 h-4 text-navy transition-transform ${
-                      isProfileMenuOpen
-                        ? "rotate-180"
-                        : ""
-                    }`}
+                    className={`w-4 h-4 text-navy transition-transform ${isProfileMenuOpen
+                      ? "rotate-180"
+                      : ""
+                      }`}
                   />
 
                 </button>
@@ -746,7 +758,7 @@ export default function Navbar() {
                     </div>
 
                     <Link
-                      href={`/${locale}${profilePath}`}
+                      href={getLocalizedHref(profilePath || "")}
                       onClick={() =>
                         setIsProfileMenuOpen(false)
                       }
@@ -756,7 +768,7 @@ export default function Navbar() {
                     </Link>
 
                     <Link
-                      href={`/${locale}/settings`}
+                      href={getLocalizedHref("/settings")}
                       onClick={() =>
                         setIsProfileMenuOpen(false)
                       }
@@ -786,14 +798,14 @@ export default function Navbar() {
 
             <button
               onClick={() =>
-                router.push(`/${locale}/sign-up`)
+                router.push(getLocalizedHref("/sign-up"))
               }
-              className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-md"
+              className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-md cursor-pointer"
             >
 
               <User className="w-[18px] h-[18px]" />
 
-              Login / Register
+              {tExtra("login")}
 
             </button>
 
@@ -808,7 +820,7 @@ export default function Navbar() {
         <div className="lg:hidden flex flex-1 items-center justify-end gap-3">
 
           <button
-            onClick={switchLocale}
+            onClick={() => switchLocale()}
             className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-navy hover:bg-gray-50 transition-colors"
           >
 
@@ -849,11 +861,10 @@ export default function Navbar() {
       ============================================================== */}
 
       <div
-        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen
-            ? "max-h-[700px] opacity-100 py-4"
-            : "max-h-0 opacity-0 py-0 border-t-0"
-        }`}
+        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
+          ? "max-h-[700px] opacity-100 py-4"
+          : "max-h-0 opacity-0 py-0 border-t-0"
+          }`}
       >
 
         <div className="px-4 flex flex-col gap-4">
@@ -866,23 +877,21 @@ export default function Navbar() {
 
               <Link
                 key={link.name}
-                href={`/${locale}${link.href === "/" ? "" : link.href}`}
-                className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${
-                  isActive(link.href)
-                    ? "text-gold bg-gray-50"
-                    : "text-navy"
-                }`}
+                href={getLocalizedHref(link.href)}
+                className={`font-bold hover:bg-gray-50 hover:text-gold transition-colors px-4 py-3 rounded-lg flex items-center ${isActive(link.href)
+                  ? "text-gold bg-gray-50"
+                  : "text-navy"
+                  }`}
                 onClick={() =>
                   setIsMobileMenuOpen(false)
                 }
               >
 
                 <span
-                  className={`w-2 h-2 rounded-full mr-3 shrink-0 ${
-                    isActive(link.href)
-                      ? "bg-gold"
-                      : "bg-transparent"
-                  }`}
+                  className={`w-2 h-2 rounded-full mr-3 shrink-0 ${isActive(link.href)
+                    ? "bg-gold"
+                    : "bg-transparent"
+                    }`}
                 />
 
                 {link.name}
@@ -898,23 +907,21 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
 
             <button
-              onClick={switchLocale}
-              className={`flex-1 py-3 rounded-full border ${
-                locale === "en"
-                  ? "border-navy bg-navy/5 text-navy font-bold"
-                  : "border-gray-200 text-gray-500"
-              }`}
+              onClick={() => switchLocale("en")}
+              className={`flex-1 py-3 rounded-full border ${locale === "en"
+                ? "border-navy bg-navy/5 text-navy font-bold"
+                : "border-gray-200 text-gray-500"
+                }`}
             >
               English
             </button>
 
             <button
-              onClick={switchLocale}
-              className={`flex-1 py-3 rounded-full border ${
-                locale === "ar"
-                  ? "border-navy bg-navy/5 text-navy font-bold"
-                  : "border-gray-200 text-gray-500"
-              }`}
+              onClick={() => switchLocale("ar")}
+              className={`flex-1 py-3 rounded-full border ${locale === "ar"
+                ? "border-navy bg-navy/5 text-navy font-bold"
+                : "border-gray-200 text-gray-500"
+                }`}
             >
               العربية
             </button>
@@ -990,7 +997,7 @@ export default function Navbar() {
                   {profilePath && (
 
                     <Link
-                      href={`/${locale}${profilePath}`}
+                      href={getLocalizedHref(profilePath || "")}
                       onClick={() =>
                         setIsMobileMenuOpen(false)
                       }
@@ -1004,7 +1011,7 @@ export default function Navbar() {
                   {/* Settings */}
 
                   <Link
-                    href={`/${locale}/settings`}
+                    href={getLocalizedHref("/settings")}
                     onClick={() =>
                       setIsMobileMenuOpen(false)
                     }
@@ -1032,14 +1039,14 @@ export default function Navbar() {
 
             <button
               onClick={() =>
-                router.push(`/${locale}/sign-up`)
+                router.push(getLocalizedHref("/sign-up"))
               }
               className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white h-[48px] font-semibold shadow-md"
             >
 
               <User className="w-[18px] h-[18px]" />
 
-              Login / Register
+              {tExtra("login")}
 
             </button>
 

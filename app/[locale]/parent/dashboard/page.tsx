@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
     ArrowRight,
     CalendarDays,
@@ -74,6 +75,7 @@ const upcomingEvents: UpcomingEvent[] = [
 ];
 
 export default function Page() {
+  const t = useTranslations("Parent");
     const totalChildren = children.length;
 
     const activeApplications = children.filter(
@@ -99,17 +101,15 @@ export default function Page() {
 
                         <div>
                             <p className="mb-2 text-sm font-medium text-white/70">
-                                Parent Dashboard
-                            </p>
+      {t("parentDashboard")}
+    </p>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                Welcome back!
-                            </h1>
+      {t("welcomeBack")}
+    </h1>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                Keep track of your children's applications,
-                                programs, events, and opportunities at Young
-                                Leaders Academy.
+                                {t("keepTrack")}
                             </p>
                         </div>
 
@@ -118,8 +118,8 @@ export default function Page() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e2c45a]"
                         >
                             <Users className="h-4 w-4" />
-                            View My Children
-                        </Link>
+      {t("viewMyChildren")}
+    </Link>
 
                     </div>
                 </section>
@@ -178,20 +178,20 @@ export default function Page() {
 
                                 <div>
                                     <h2 className="text-lg font-bold text-[#0B2545]">
-                                        My Children
-                                    </h2>
+      {t("myChildren")}
+    </h2>
 
                                     <p className="mt-1 text-sm text-gray-500">
-                                        Monitor your children's progress.
-                                    </p>
+      {t("monitorProgress")}
+    </p>
                                 </div>
 
                                 <Link
                                     href="/parent/children"
                                     className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
                                 >
-                                    View All
-                                    <ChevronRight className="h-4 w-4" />
+      {t("viewAll")}
+    <ChevronRight className="h-4 w-4" />
                                 </Link>
 
                             </div>
@@ -246,16 +246,16 @@ export default function Page() {
                                                 href={`/parent/children/${child.id}`}
                                                 className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                                             >
-                                                View Profile
-                                                <ChevronRight className="h-4 w-4" />
+      {t("viewProfile")}
+    <ChevronRight className="h-4 w-4" />
                                             </Link>
 
                                             <Link
                                                 href="/parent/applications"
                                                 className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                                             >
-                                                View Applications
-                                                <FileText className="h-4 w-4" />
+      {t("viewApplications")}
+    <FileText className="h-4 w-4" />
                                             </Link>
 
                                         </div>
@@ -280,12 +280,12 @@ export default function Page() {
                             <div className="border-b border-gray-100 px-5 py-5">
 
                                 <h2 className="text-lg font-bold text-[#0B2545]">
-                                    Upcoming Events
-                                </h2>
+      {t("upcomingEvents")}
+    </h2>
 
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Stay informed about academy events.
-                                </p>
+      {t("stayInformed")}
+    </p>
 
                             </div>
 
@@ -340,8 +340,8 @@ export default function Page() {
                                     href="/events"
                                     className="flex h-10 items-center justify-center gap-2 rounded-full border border-[#0B2545] text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                                 >
-                                    View All Events
-                                    <ArrowRight className="h-4 w-4" />
+      {t("viewAllEvents")}
+    <ArrowRight className="h-4 w-4" />
                                 </Link>
 
                             </div>
@@ -360,12 +360,12 @@ export default function Page() {
 
                     <div className="mb-4">
                         <h2 className="text-xl font-bold text-[#0B2545]">
-                            Quick Actions
-                        </h2>
+      {t("quickActions")}
+    </h2>
 
                         <p className="mt-1 text-sm text-gray-500">
-                            Quickly access the things you may need.
-                        </p>
+      {t("quickAccess")}
+    </p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -418,13 +418,11 @@ export default function Page() {
 
                             <div>
                                 <h3 className="font-bold text-[#0B2545]">
-                                    Need help?
-                                </h3>
+      {t("needHelp")}
+    </h3>
 
                                 <p className="mt-1 text-sm text-gray-600">
-                                    If you have questions about your child's
-                                    application or program, our team is here
-                                    to help.
+                                    {t("ifYouHaveQuestions")}
                                 </p>
                             </div>
 
@@ -434,8 +432,8 @@ export default function Page() {
                             href="/contact"
                             className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                         >
-                            Contact Us
-                            <ArrowRight className="h-4 w-4" />
+      {t("contactUs")}
+    <ArrowRight className="h-4 w-4" />
                         </Link>
 
                     </div>
@@ -463,6 +461,7 @@ function DashboardStat({
     value: number;
     description: string;
 }) {
+  const t = useTranslations("Parent");
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-4">
@@ -500,6 +499,7 @@ function StatusBadge({
 }: {
     status: Child["applicationStatus"];
 }) {
+  const t = useTranslations("Parent");
     const styles: Record<Child["applicationStatus"], string> = {
         Submitted: "border-blue-100 bg-blue-50 text-blue-700",
         "Under Review": "border-amber-100 bg-amber-50 text-amber-700",
@@ -532,6 +532,7 @@ function QuickAction({
     title: string;
     description: string;
 }) {
+  const t = useTranslations("Parent");
     return (
         <Link
             href={href}
