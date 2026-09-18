@@ -77,7 +77,6 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
 
   const handleClose = () => {
     onClose();
-    // Reset after animation
     setTimeout(() => {
       setStatus('idle');
       setFormData({
@@ -92,7 +91,6 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
     }, 300);
   };
 
-  // Determine Titles based on group
   let titleKey = "";
   let subtitleKey = "";
   let showInstitution = false;
@@ -254,11 +252,10 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className={`mt-4 w-full flex items-center justify-center gap-2 min-h-[44px] px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-md ${
-                      status === 'submitting'
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] hover:from-[#e3be47] hover:to-[#d6a931]'
-                    }`}
+                    className={`mt-4 w-full flex items-center justify-center gap-2 min-h-[44px] px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-md ${status === 'submitting'
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] hover:from-[#e3be47] hover:to-[#d6a931]'
+                      }`}
                   >
                     {status === 'submitting' ? (
                       <div className="w-4 h-4 border-2 border-[#0B2545]/20 border-t-[#0B2545] rounded-full animate-spin"></div>
