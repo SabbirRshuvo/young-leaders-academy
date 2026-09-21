@@ -8,7 +8,7 @@ export default function AboutHero() {
   return (
     <section className="relative w-full min-h-[50vh] md:min-h-[60vh] flex items-center bg-[url('/about-banner.png')] bg-cover bg-center bg-no-repeat overflow-hidden">
       {/* Overlay - Solid dark tint on mobile, gradient on desktop */}
-      <div className="absolute inset-0 bg-[#0B2545]/80 md:bg-transparent md:bg-gradient-to-r rtl:md:bg-gradient-to-l md:from-[#0B2545]/95 md:from-40% md:to-transparent md:to-80%" />
+      <div className="absolute inset-0 bg-[#0B2545]/80 md:bg-transparent md:bg-gradient-to-r md:from-[#0B2545]/95 md:from-40% md:to-transparent md:to-80%" />
 
       {/* Content Container */}
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px]">
