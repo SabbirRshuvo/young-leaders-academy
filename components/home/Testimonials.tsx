@@ -49,7 +49,7 @@ export default function Testimonials() {
           </div>
 
           <h2 className="m-0 font-serif text-[36px] md:text-[46px] leading-[1.1] tracking-tight text-[#0B2545]">
-            <span className="font-normal italic text-[#0B2545]/90">{t("title1")}</span>{' '}
+            <span className="font-bold text-[#0B2545]/90">{t("title1")}</span>{' '}
             <span className="font-bold">{t("title2")}</span>
           </h2>
         </div>
@@ -67,7 +67,7 @@ export default function Testimonials() {
             >
               <Quote className="absolute top-8 right-8 w-12 h-12 text-[#D4AF37]/10" fill="currentColor" />
 
-              <p className="text-[#0B2545]/80 text-lg md:text-xl leading-relaxed italic mb-10 flex-grow font-serif relative z-10">
+              <p className="text-[#0B2545]/80 text-lg md:text-xl leading-relaxed mb-10 flex-grow font-serif relative z-10">
                 "{testimonial.text}"
               </p>
 

@@ -36,7 +36,7 @@ export default function EventsPreview() {
             </div>
 
             <h2 className="m-0 font-serif text-[36px] md:text-[46px] leading-[1.1] tracking-tight text-[#0B2545]">
-              <span className="font-normal italic text-[#0B2545]/90">{t("title1")}</span>{' '}
+              <span className="font-bold text-[#0B2545]/90">{t("title1")}</span>{' '}
               <span className="font-bold">{t("title2")}</span>
             </h2>
           </div>

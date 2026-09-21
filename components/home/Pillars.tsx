@@ -55,7 +55,7 @@ export default function Pillars() {
 
           <h2 className="m-0 max-w-[800px] font-serif text-[36px] sm:text-[46px] md:text-[56px] leading-[1.1] tracking-tight text-[#0B2545] mb-5">
             <span className="font-bold">{t('title1')}</span> <br className="hidden md:block" />
-            <span className="font-normal italic text-[#0B2545]/90">{t('title2')}</span>{' '}
+            <span className="font-bold text-[#0B2545]/90">{t('title2')}</span>{' '}
             <span className="font-bold">{t('title3')}</span>
           </h2>
 

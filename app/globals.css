@@ -1,9 +1,20 @@
 @import "tailwindcss";
+
 @plugin "@tailwindcss/typography";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background-color: white;
+  /* color: #0B2545; */
 }
 
 @theme inline {
@@ -13,13 +24,6 @@
   --font-serif: var(--font-serif), serif;
   --color-navy: #0B2545;
   --color-gold: #D4AF37;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
