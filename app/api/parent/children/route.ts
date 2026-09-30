@@ -140,10 +140,31 @@ export async function POST(req: Request) {
             .eq("student_id", studentUser.id);
 
         if (existingRequests && existingRequests.length > 0) {
-            return NextResponse.json({ error: "A request has already been sent to this student" }, { status: 400 });
+            const req = existingRequests[0];
+            
+            if (req.status === "pending" || req.status === "accepted") {
+                return NextResponse.json({ error: "A connection or pending request already exists for this student" }, { status: 400 });
+            }
+            
+            if (req.status === "rejected") {
+                // If previously rejected, update it to pending so they can try again
+                const { data: updatedRequest, error: updateError } = await supabaseAdmin
+                    .from("parent_child_requests")
+                    .update({ status: "pending", created_at: new Date().toISOString() })
+                    .eq("id", req.id)
+                    .select()
+                    .single();
+                    
+                if (updateError) {
+                    console.error("Error updating rejected request:", updateError);
+                    return NextResponse.json({ error: "Failed to send request" }, { status: 500 });
+                }
+                
+                return NextResponse.json({ success: true, request: updatedRequest });
+            }
         }
 
-        // Create the request
+        // Create a brand new request
         const { data: newRequest, error: insertError } = await supabaseAdmin
             .from("parent_child_requests")
             .insert([
@@ -158,7 +179,7 @@ export async function POST(req: Request) {
 
         if (insertError) {
             console.error("Error inserting request:", insertError);
-            return NextResponse.json({ error: "Failed to create request" }, { status: 500 });
+            return NextResponse.json({ error: "Failed to create request", details: insertError }, { status: 500 });
         }
 
         return NextResponse.json({ success: true, request: newRequest });

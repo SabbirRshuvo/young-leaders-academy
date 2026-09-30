@@ -89,6 +89,7 @@ export async function PATCH(req: Request) {
             .eq("id", requestId);
 
         if (updateError) {
+            require('fs').appendFileSync('.error.log', JSON.stringify({ point: 'updateError', details: updateError }) + '\n');
             return NextResponse.json({ error: "Failed to update request", details: updateError }, { status: 500 });
         }
 
@@ -117,6 +118,7 @@ export async function PATCH(req: Request) {
                         }
                     ]);
                 if (insertError) {
+                    require('fs').appendFileSync('.error.log', JSON.stringify({ point: 'insertError', details: insertError }) + '\n');
                     return NextResponse.json({ error: "Failed to create relationship", details: insertError }, { status: 500 });
                 }
             }
@@ -125,6 +127,7 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ success: true, status });
     } catch (error: any) {
         console.error("PATCH /api/student/requests error:", error);
+        require('fs').appendFileSync('.error.log', JSON.stringify({ point: 'catchError', message: error?.message, stack: error?.stack }) + '\n');
         return NextResponse.json({ error: "Internal server error", details: error?.message || String(error) }, { status: 500 });
     }
 }
