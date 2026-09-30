@@ -14,8 +14,12 @@ import {
     School,
     UserRound,
     Users,
+    Plus,
+    Loader2
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AddChildModal from "@/components/parent/AddChildModal";
+import { supabase } from "@/lib/supabase";
 
 type ApplicationStatus =
     | "Under Review"
@@ -27,48 +31,79 @@ type Child = {
     id: string;
     first_name: string;
     last_name: string;
-    age: number;
-    email: string;
-    phone: string;
+    age?: number;
+    email?: string;
+    phone?: string;
     school: string;
-    program: string;
-    applicationStatus: ApplicationStatus;
+    program?: string;
+    applicationStatus?: ApplicationStatus;
     applications: number;
     joined: string;
+    status?: "pending" | "approved" | "rejected";
+    request_id?: string;
 };
 
-const children: Child[] = [
-    {
-        id: "child-1",
-        first_name: "Alex",
-        last_name: "Johnson",
-        age: 17,
-        email: "alex@example.com",
-        phone: "+1 555 123 4567",
-        school: "Lincoln High School",
-        program: "Young Leaders Program",
-        applicationStatus: "Under Review",
-        applications: 2,
-        joined: "September 2026",
-    },
-    {
-        id: "child-2",
-        first_name: "Emma",
-        last_name: "Johnson",
-        age: 15,
-        email: "emma@example.com",
-        phone: "+1 555 987 6543",
-        school: "Lincoln High School",
-        program: "Global Scholars",
-        applicationStatus: "Submitted",
-        applications: 1,
-        joined: "August 2026",
-    },
-];
-
 export default function Page() {
-  const t = useTranslations("Parent");
+    const t = useTranslations("Parent");
     const [searchQuery, setSearchQuery] = useState("");
+    
+    const [children, setChildren] = useState<Child[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    const fetchChildren = async () => {
+        try {
+            setLoading(true);
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            
+            const res = await fetch("/api/parent/children", {
+                headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                }
+            });
+            if (!res.ok) throw new Error("Failed to load children");
+            
+            const data = await res.json();
+            
+            const formattedChildren: Child[] = [];
+            
+            // Format all requests (pending, rejected, approved)
+            data.requests?.forEach((req: {
+                status: string;
+                student: any;
+                student_id: string;
+                id: string;
+                created_at: string;
+            }) => {
+                const profile = req.student || {};
+                const studentEmail = data.users?.find((u: any) => u.id === req.student_id)?.email || "";
+                
+                formattedChildren.push({
+                    id: req.student_id,
+                    request_id: req.id,
+                    first_name: profile.first_name || "Unknown",
+                    last_name: profile.last_name || "",
+                    email: studentEmail,
+                    phone: profile.phone || "N/A",
+                    school: data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || "N/A",
+                    applications: data.studentApplications?.filter((a: any) => a.email === studentEmail).length || 0,
+                    joined: new Date(req.created_at).toLocaleDateString(),
+                    status: req.status
+                });
+            });
+
+            setChildren(formattedChildren);
+        } catch (error) {
+            console.error("Error loading children:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchChildren();
+    }, []);
 
     const filteredChildren = children.filter((child) => {
         const search = searchQuery.toLowerCase().trim();
@@ -81,8 +116,7 @@ export default function Page() {
             `${child.first_name} ${child.last_name}`
                 .toLowerCase()
                 .includes(search) ||
-            child.school.toLowerCase().includes(search) ||
-            child.program.toLowerCase().includes(search)
+            child.school.toLowerCase().includes(search)
         );
     });
 
@@ -102,12 +136,12 @@ export default function Page() {
 
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <Users className="h-4 w-4 text-[#D4AF37]" />
-      {t("parentPortal")}
-    </div>
+                                {t("parentPortal")}
+                            </div>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-      {t("myChildren")}
-    </h1>
+                                {t("myChildren")}
+                            </h1>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
                                 {t("viewChildrenInfo")}
@@ -115,10 +149,14 @@ export default function Page() {
 
                         </div>
 
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10">
-
-                            <Users className="h-6 w-6 text-[#D4AF37]" />
-
+                        <div className="flex shrink-0 items-center gap-4">
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-6 text-sm font-bold text-[#0B2545] transition-all hover:bg-[#e6c045] hover:shadow-lg active:scale-95"
+                            >
+                                <Plus className="h-5 w-5" />
+                                Add Child
+                            </button>
                         </div>
 
                     </div>
@@ -140,25 +178,16 @@ export default function Page() {
 
                     <SummaryCard
                         icon={FileText}
-                        label="Applications"
-                        value={children.reduce(
-                            (total, child) => total + child.applications,
-                            0
-                        )}
-                        description={t("totalApplications")}
+                        label="Pending Requests"
+                        value={children.filter((child) => child.status === "pending").length}
+                        description="Awaiting student approval"
                     />
 
                     <SummaryCard
-                        icon={GraduationCap}
-                        label="Active Programs"
-                        value={
-                            children.filter(
-                                (child) =>
-                                    child.program &&
-                                    child.applicationStatus !== "Rejected"
-                            ).length
-                        }
-                        description={t("activeProgress")}
+                        icon={CheckCircle2Icon}
+                        label="Approved Connections"
+                        value={children.filter((child) => child.status === "approved").length}
+                        description="Successfully connected"
                     />
 
                 </section>
@@ -201,8 +230,8 @@ export default function Page() {
 
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545]">
-      {t("yourChildren")}
-    </h2>
+                                {t("yourChildren")}
+                            </h2>
 
                             <p className="mt-1 text-sm text-gray-500">
                                 {filteredChildren.length}{" "}
@@ -217,8 +246,8 @@ export default function Page() {
                             href="/parent/profile"
                             className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
                         >
-      {t("parentDashboard")}
-    <ChevronRight className="h-4 w-4" />
+                            {t("parentDashboard")}
+                            <ChevronRight className="h-4 w-4" />
                         </Link>
 
                     </div>
@@ -227,28 +256,57 @@ export default function Page() {
                         CHILDREN CARDS
                     ================================================== */}
 
-                    {filteredChildren.length > 0 ? (
+                    {loading ? (
+                        <div className="flex h-64 items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-sm">
+                            <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
+                        </div>
+                    ) : filteredChildren.length > 0 ? (
                         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
 
                             {filteredChildren.map((child) => (
                                 <ChildCard
-                                    key={child.id}
+                                    key={child.request_id || child.id}
                                     child={child}
                                 />
                             ))}
 
                         </div>
                     ) : (
-                        <EmptyChildren />
+                        <EmptyChildren onAddChild={() => setIsAddModalOpen(true)} />
                     )}
 
                 </section>
 
             </div>
+
+            <AddChildModal 
+                isOpen={isAddModalOpen} 
+                onClose={() => setIsAddModalOpen(false)} 
+                onSuccess={fetchChildren} 
+            />
         </main>
     );
 }
 
+function CheckCircle2Icon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+    );
+}
 
 /* =========================================================
    CHILD CARD
@@ -259,7 +317,7 @@ function ChildCard({
 }: {
     child: Child;
 }) {
-  const t = useTranslations("Parent");
+    const t = useTranslations("Parent");
     return (
         <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
 
@@ -282,7 +340,7 @@ function ChildCard({
                             </h3>
 
                             <p className="mt-1 text-sm text-gray-500">
-                                Age {child.age}
+                                {child.email || "No email provided"}
                             </p>
 
                         </div>
@@ -290,7 +348,7 @@ function ChildCard({
                     </div>
 
                     <StatusBadge
-                        status={child.applicationStatus}
+                        status={child.status || "approved"}
                     />
 
                 </div>
@@ -308,21 +366,9 @@ function ChildCard({
                 />
 
                 <InfoItem
-                    icon={GraduationCap}
-                    label="Program"
-                    value={child.program}
-                />
-
-                <InfoItem
-                    icon={Mail}
-                    label="Email"
-                    value={child.email}
-                />
-
-                <InfoItem
                     icon={Phone}
                     label="Phone"
-                    value={child.phone}
+                    value={child.phone || "N/A"}
                 />
 
                 <InfoItem
@@ -337,7 +383,7 @@ function ChildCard({
 
                 <InfoItem
                     icon={CalendarDays}
-                    label="Joined"
+                    label="Request Date"
                     value={child.joined}
                 />
 
@@ -351,16 +397,16 @@ function ChildCard({
                     href={`/parent/children/${child.id}`}
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                 >
-      {t("viewProfile")}
-    <ChevronRight className="h-4 w-4" />
+                    {t("viewProfile")}
+                    <ChevronRight className="h-4 w-4" />
                 </Link>
 
                 <Link
                     href="/parent/applications"
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                 >
-      {t("applications")}
-    <FileText className="h-4 w-4" />
+                    {t("applications")}
+                    <FileText className="h-4 w-4" />
                 </Link>
 
             </div>
@@ -383,7 +429,6 @@ function InfoItem({
     label: string;
     value: string;
 }) {
-  const t = useTranslations("Parent");
     return (
         <div className="flex min-w-0 items-start gap-3">
 
@@ -423,7 +468,6 @@ function SummaryCard({
     value: number;
     description: string;
 }) {
-  const t = useTranslations("Parent");
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
 
@@ -463,21 +507,25 @@ function SummaryCard({
 function StatusBadge({
     status,
 }: {
-    status: ApplicationStatus;
+    status: string;
 }) {
-  const t = useTranslations("Parent");
-    const styles: Record<ApplicationStatus, string> = {
-        Submitted: "border-blue-100 bg-blue-50 text-blue-700",
-        "Under Review": "border-amber-100 bg-amber-50 text-amber-700",
-        Accepted: "border-green-100 bg-green-50 text-green-700",
-        Rejected: "border-red-100 bg-red-50 text-red-700",
+    const styles: Record<string, string> = {
+        approved: "border-green-200 bg-green-50 text-green-700",
+        pending: "border-amber-200 bg-amber-50 text-amber-700",
+        rejected: "border-red-200 bg-red-50 text-red-700",
+    };
+
+    const labels: Record<string, string> = {
+        approved: "Approved",
+        pending: "Pending",
+        rejected: "Rejected",
     };
 
     return (
         <span
-            className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${styles[status]}`}
+            className={`shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.pending}`}
         >
-            {status}
+            {labels[status] || status}
         </span>
     );
 }
@@ -487,30 +535,30 @@ function StatusBadge({
    EMPTY STATE
 ========================================================= */
 
-function EmptyChildren() {
-  const t = useTranslations("Parent");
+function EmptyChildren({ onAddChild }: { onAddChild: () => void }) {
+    const t = useTranslations("Parent");
     return (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
 
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B2545]/10">
-                <UserRound className="h-7 w-7 text-[#0B2545]" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#0B2545]/10">
+                <Users className="h-8 w-8 text-[#0B2545]" />
             </div>
 
             <h3 className="mt-5 text-lg font-bold text-[#0B2545]">
-      {t("noChildrenFound")}
-    </h3>
+                {t("noChildrenFound")}
+            </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
                 {t("noChildrenDesc")}
             </p>
 
-            <Link
-                href="/contact"
-                className="mt-6 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
+            <button
+                onClick={onAddChild}
+                className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 text-sm font-bold text-white transition-all hover:bg-[#0B2545]/90 hover:shadow-md active:scale-95"
             >
-      {t("contactSupport")}
-    <ArrowRight className="h-4 w-4" />
-            </Link>
+                <Plus className="h-5 w-5" />
+                Add Your Child
+            </button>
 
         </div>
     );

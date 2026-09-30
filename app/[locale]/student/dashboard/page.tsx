@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import toast from "react-hot-toast";
 
 type Profile = {
     id: string;
@@ -84,6 +85,20 @@ type DashboardData = {
     payments: Payment[];
 };
 
+type ParentRequest = {
+    id: string;
+    parent_id: string;
+    status: string;
+    created_at: string;
+    parent?: {
+        first_name: string;
+        last_name: string;
+        email?: string;
+        phone?: string;
+        avatar_url?: string;
+    };
+};
+
 export default function Page() {
     const [dashboard, setDashboard] = useState<DashboardData>({
         profile: null,
@@ -94,6 +109,8 @@ export default function Page() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [parentRequests, setParentRequests] = useState<ParentRequest[]>([]);
+    const [processingRequest, setProcessingRequest] = useState<string | null>(null);
 
     useEffect(() => {
         fetchDashboard();
@@ -103,6 +120,28 @@ export default function Page() {
         try {
             setLoading(true);
             setError(null);
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
+            // Fetch parent requests
+            try {
+                const res = await fetch("/api/student/requests", {
+                    headers: {
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    }
+                });
+                if (res.ok) {
+                    const reqData = await res.json();
+                    const requestsWithEmail = reqData.requests?.map((req: { parent_id: string; parent: any }) => {
+                        const email = reqData.parentUsers?.find((u: { id: string; email: string }) => u.id === req.parent_id)?.email;
+                        return { ...req, parent: { ...req.parent, email } };
+                    }) || [];
+                    setParentRequests(requestsWithEmail);
+                }
+            } catch (e) {
+                console.error("Failed to fetch parent requests", e);
+            }
 
             /* =====================================================
                GET CURRENT USER
@@ -267,6 +306,41 @@ export default function Page() {
             );
         } finally {
             setLoading(false);
+        }
+    };
+
+    /* =========================================================
+       ACTIONS
+    ========================================================= */
+
+    const handleRequestAction = async (requestId: string, status: "approved" | "rejected") => {
+        try {
+            setProcessingRequest(requestId);
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            
+            const res = await fetch("/api/student/requests", {
+                method: "PATCH",
+                headers: { 
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ requestId, status })
+            });
+            
+            if (res.ok) {
+                setParentRequests(prev => prev.filter(r => r.id !== requestId));
+                toast.success(`Request ${status} successfully.`);
+            } else {
+                const data = await res.json();
+                toast.error(data.error || "Failed to update request.");
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error("Error updating request.");
+        } finally {
+            setProcessingRequest(null);
         }
     };
 
@@ -641,6 +715,65 @@ export default function Page() {
                     />
 
                 </section>
+
+                {/* =====================================================
+                    PARENT REQUESTS
+                ====================================================== */}
+                {parentRequests.length > 0 && (
+                    <section className="mt-6 rounded-2xl border border-[#D4AF37]/30 bg-[#D4AF37]/5 p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-[#0B2545]">
+                                    Parent Connection Requests
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Parents are requesting to connect to your account to track your progress.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            {parentRequests.map((req) => (
+                                <div key={req.id} className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between rounded-xl border border-[#D4AF37]/20 bg-white p-5 shadow-sm">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0B2545]/10">
+                                            {req.parent?.avatar_url ? (
+                                                <img src={req.parent.avatar_url} alt="Parent" className="h-full w-full rounded-full object-cover" />
+                                            ) : (
+                                                <UserRound className="h-6 w-6 text-[#0B2545]" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-[#0B2545]">
+                                                {req.parent?.first_name} {req.parent?.last_name}
+                                            </h3>
+                                            <p className="text-sm text-gray-500">
+                                                {req.parent?.email || "Parent"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => handleRequestAction(req.id, "rejected")}
+                                            disabled={processingRequest === req.id}
+                                            className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+                                        >
+                                            Reject
+                                        </button>
+                                        <button
+                                            onClick={() => handleRequestAction(req.id, "approved")}
+                                            disabled={processingRequest === req.id}
+                                            className="flex h-10 items-center gap-2 rounded-lg bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90 disabled:opacity-50"
+                                        >
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            Approve
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* =====================================================
                     MAIN CONTENT

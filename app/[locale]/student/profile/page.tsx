@@ -19,6 +19,8 @@ import {
   ShieldCheck,
   X,
   Save,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
@@ -46,6 +48,23 @@ type StudentProfile = {
   updated_at: string | null;
 };
 
+type ParentRequest = {
+  id: string;
+  parent_id: string;
+  student_id: string;
+  status: string;
+  created_at: string;
+  parent: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    avatar_url: string;
+    phone: string;
+    country: string;
+    email?: string;
+  };
+};
+
 type EditForm = {
   first_name: string;
   last_name: string;
@@ -71,6 +90,9 @@ export default function StudentProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  
+  const [parentRequests, setParentRequests] = useState<ParentRequest[]>([]);
+  const [processingRequest, setProcessingRequest] = useState<string | null>(null);
 
   const [form, setForm] = useState<EditForm>({
     first_name: "",
@@ -181,6 +203,32 @@ export default function StudentProfilePage() {
 
         /*
          * ---------------------------------------------------------------
+         * Fetch Parent Requests
+         * ---------------------------------------------------------------
+         */
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            
+            const res = await fetch("/api/student/requests", {
+                headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                }
+            });
+            if (res.ok) {
+                const reqData = await res.json();
+                const requestsWithEmail = reqData.requests?.map((req: any) => {
+                    const parentEmail = reqData.parentUsers?.find((u: any) => u.id === req.parent_id)?.email;
+                    return { ...req, parent: { ...req.parent, email: parentEmail } };
+                }) || [];
+                setParentRequests(requestsWithEmail);
+            }
+        } catch (e) {
+            console.error("Failed to fetch parent requests", e);
+        }
+
+        /*
+         * ---------------------------------------------------------------
          * Prepare edit form
          * ---------------------------------------------------------------
          */
@@ -237,6 +285,37 @@ export default function StudentProfilePage() {
   | Formatting Helpers
   |--------------------------------------------------------------------------
   */
+
+  const handleRequestAction = async (requestId: string, status: "accepted" | "rejected") => {
+    try {
+        setProcessingRequest(requestId);
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        
+        const res = await fetch("/api/student/requests", {
+            method: "PATCH",
+            headers: { 
+                "Content-Type": "application/json",
+                ...(token ? { Authorization: `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({ requestId, status })
+        });
+        
+        if (res.ok) {
+            setParentRequests(prev => prev.map(r => r.id === requestId ? { ...r, status } : r));
+            toast.success(`Request ${status} successfully.`);
+        } else {
+            const data = await res.json();
+            toast.error(data.error || "Failed to update request.");
+        }
+    } catch (e) {
+        console.error(e);
+        toast.error("Error updating request.");
+    } finally {
+        setProcessingRequest(null);
+    }
+  };
 
   const formatCountry = (country: string | null) => {
     if (!country) return t("notProvided");
@@ -922,6 +1001,79 @@ export default function StudentProfilePage() {
           </section>
 
         </div>
+
+        {/* ============================================================
+            Parent Connections / Requests
+        ============================================================ */}
+
+        {parentRequests.length > 0 && (
+          <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-navy/5 flex items-center justify-center">
+                <User className="w-5 h-5 text-navy" />
+              </div>
+              <div>
+                <h2 className="font-bold text-navy text-lg">Parent Connections</h2>
+                <p className="text-sm text-gray-500">
+                  Manage your parent connection requests
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {parentRequests.map((req) => (
+                <div key={req.id} className="flex flex-col gap-4 border border-gray-200 rounded-xl p-4 bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center overflow-hidden">
+                      {req.parent?.avatar_url ? (
+                        <img src={req.parent.avatar_url} alt="Parent" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-6 h-6 text-navy" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-navy text-sm">
+                        {req.parent?.first_name} {req.parent?.last_name}
+                      </h3>
+                      <p className="text-xs text-gray-500">{req.parent?.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+                    <span className={`text-xs font-bold uppercase ${
+                      req.status === 'accepted' ? 'text-green-600' :
+                      req.status === 'rejected' ? 'text-red-600' :
+                      'text-orange-500'
+                    }`}>
+                      {req.status}
+                    </span>
+
+                    {req.status === "pending" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleRequestAction(req.id, "rejected")}
+                          disabled={processingRequest === req.id}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-100 text-red-600 text-xs font-semibold hover:bg-red-200 transition-colors disabled:opacity-50"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          Reject
+                        </button>
+                        <button
+                          onClick={() => handleRequestAction(req.id, "accepted")}
+                          disabled={processingRequest === req.id}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-semibold hover:bg-navy/90 transition-colors disabled:opacity-50"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Accept
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ============================================================
             Account Type
