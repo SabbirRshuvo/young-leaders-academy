@@ -70,7 +70,7 @@ export default function Page() {
             
             // Format all requests (pending, rejected, approved)
             data.requests?.forEach((req: {
-                status: string;
+                status: "pending" | "approved" | "rejected";
                 student: any;
                 student_id: string;
                 id: string;

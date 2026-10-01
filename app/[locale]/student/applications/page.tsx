@@ -24,6 +24,7 @@ type Application = {
     school: string | null;
     program_id: string | null;
     motivation: string | null;
+    created_at: string | null;
 };
 
 export default function Page() {
@@ -71,11 +72,12 @@ export default function Page() {
                     age,
                     school,
                     program_id,
-                    motivation
+                    motivation,
+                    created_at
                     `
                 )
-                .eq("email", user.email)
-                .order("id", { ascending: false });
+                .ilike("email", user.email || "")
+                .order("created_at", { ascending: false });
 
 
             if (applicationsError) {
@@ -458,13 +460,24 @@ function ApplicationCard({
                         </span>
                     </div>
 
-                    <Link
-                        href={`/student/applications/${application.id}`}
-                        className="inline-flex h-10 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
-                    >
-                        View Details
-                        <ChevronRight className="h-4 w-4" />
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        {application.program_id && (
+                            <Link
+                                href={`/student/course/${application.program_id}`}
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e3be47] shadow-sm"
+                            >
+                                Continue Program
+                                <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        )}
+                        <Link
+                            href={`/student/applications/${application.id}`}
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
+                        >
+                            View Details
+                            <ChevronRight className="h-4 w-4" />
+                        </Link>
+                    </div>
 
                 </div>
 
@@ -473,11 +486,6 @@ function ApplicationCard({
         </article>
     );
 }
-
-
-/* =========================================================
-   INFO ITEM
-========================================================= */
 
 function InfoItem({
     icon: Icon,

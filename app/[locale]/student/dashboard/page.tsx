@@ -22,6 +22,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
+import { programsData } from "@/data/programs";
 
 type Profile = {
     id: string;
@@ -78,11 +79,23 @@ type Payment = {
     updated_at: string | null;
 };
 
+type CourseProgress = {
+    id: string;
+    student_id: string;
+    program_id: string;
+    completed_lessons: string[];
+    current_lesson: string | null;
+    is_completed: boolean;
+    created_at: string;
+    updated_at: string;
+};
+
 type DashboardData = {
     profile: Profile | null;
     studentProfile: StudentProfile | null;
     applications: Application[];
     payments: Payment[];
+    progress: CourseProgress[];
 };
 
 type ParentRequest = {
@@ -105,6 +118,7 @@ export default function Page() {
         studentProfile: null,
         applications: [],
         payments: [],
+        progress: [],
     });
 
     const [loading, setLoading] = useState(true);
@@ -120,7 +134,7 @@ export default function Page() {
         try {
             setLoading(true);
             setError(null);
-            
+
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
@@ -142,11 +156,6 @@ export default function Page() {
             } catch (e) {
                 console.error("Failed to fetch parent requests", e);
             }
-
-            /* =====================================================
-               GET CURRENT USER
-            ====================================================== */
-
             const {
                 data: { user },
                 error: userError,
@@ -160,11 +169,6 @@ export default function Page() {
                 setError("You must be logged in to view your dashboard.");
                 return;
             }
-
-            /* =====================================================
-               FETCH PROFILE
-            ====================================================== */
-
             const { data: profile, error: profileError } =
                 await supabase
                     .from("profiles")
@@ -188,11 +192,6 @@ export default function Page() {
             if (profileError) {
                 throw profileError;
             }
-
-            /* =====================================================
-               FETCH STUDENT PROFILE
-            ====================================================== */
-
             const { data: studentProfile, error: studentProfileError } =
                 await supabase
                     .from("student_profiles")
@@ -215,11 +214,6 @@ export default function Page() {
                 throw studentProfileError;
             }
 
-            /* =====================================================
-               FETCH APPLICATIONS
-               Applications are currently associated by email.
-            ====================================================== */
-
             const { data: applications, error: applicationsError } =
                 await supabase
                     .from("applications")
@@ -237,17 +231,12 @@ export default function Page() {
                         created_at
                         `
                     )
-                    .eq("email", user.email)
+                    .ilike("email", user.email || "")
                     .order("created_at", { ascending: false });
 
             if (applicationsError) {
                 throw applicationsError;
             }
-
-            /* =====================================================
-               FETCH PAYMENTS
-               Payments are currently associated by parent_email.
-            ====================================================== */
 
             const { data: payments, error: paymentsError } =
                 await supabase
@@ -271,22 +260,28 @@ export default function Page() {
                         updated_at
                         `
                     )
-                    .eq("parent_email", user.email)
+                    .ilike("parent_email", user.email || "")
                     .order("created_at", { ascending: false });
 
             if (paymentsError) {
                 throw paymentsError;
             }
 
-            /* =====================================================
-               STORE DASHBOARD DATA
-            ====================================================== */
+            const { data: progress, error: progressError } = await supabase
+                .from("course_progress")
+                .select("*")
+                .eq("student_id", user.id);
+
+            if (progressError) {
+                console.error("Failed to fetch course progress:", progressError);
+            }
 
             setDashboard({
                 profile,
                 studentProfile,
                 applications: applications ?? [],
                 payments: payments ?? [],
+                progress: progress ?? [],
             });
 
             console.log("Student dashboard data:", {
@@ -309,26 +304,22 @@ export default function Page() {
         }
     };
 
-    /* =========================================================
-       ACTIONS
-    ========================================================= */
-
     const handleRequestAction = async (requestId: string, status: "approved" | "rejected") => {
         try {
             setProcessingRequest(requestId);
-            
+
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
-            
+
             const res = await fetch("/api/student/requests", {
                 method: "PATCH",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 },
                 body: JSON.stringify({ requestId, status })
             });
-            
+
             if (res.ok) {
                 setParentRequests(prev => prev.filter(r => r.id !== requestId));
                 toast.success(`Request ${status} successfully.`);
@@ -343,10 +334,6 @@ export default function Page() {
             setProcessingRequest(null);
         }
     };
-
-    /* =========================================================
-       DERIVED DATA
-    ========================================================= */
 
     const fullName = useMemo(() => {
         const profile = dashboard.profile;
@@ -395,9 +382,6 @@ export default function Page() {
 
     const paidPaymentCount = paidPayments.length;
 
-    /* =========================================================
-       PROFILE COMPLETION
-    ========================================================= */
 
     const profileCompletion = useMemo(() => {
         const profile = dashboard.profile;
@@ -435,10 +419,6 @@ export default function Page() {
         );
     }, [dashboard.profile, dashboard.studentProfile]);
 
-    /* =========================================================
-       JOURNEY
-       Derived from real available data.
-    ========================================================= */
 
     const journey = useMemo(() => {
         const hasProfile = Boolean(
@@ -494,8 +474,8 @@ export default function Page() {
                 item.completed
                     ? "completed"
                     : index === currentStage
-                      ? "current"
-                      : "upcoming",
+                        ? "current"
+                        : "upcoming",
         }));
     }, [
         dashboard.profile,
@@ -504,15 +484,8 @@ export default function Page() {
         paidPaymentCount,
     ]);
 
-    /* =========================================================
-       RECENT ACTIVITY
-    ========================================================= */
 
     const recentApplications = dashboard.applications.slice(0, 3);
-
-    /* =========================================================
-       LOADING
-    ========================================================= */
 
     if (loading) {
         return (
@@ -530,9 +503,6 @@ export default function Page() {
         );
     }
 
-    /* =========================================================
-       ERROR
-    ========================================================= */
 
     if (error) {
         return (
@@ -662,7 +632,7 @@ export default function Page() {
                                 label="Email"
                                 value={dashboard.profile?.first_name
                                     ? dashboard.applications[0]?.email ||
-                                      "Account email"
+                                    "Account email"
                                     : "Account email"}
                             />
 
@@ -731,7 +701,7 @@ export default function Page() {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                             {parentRequests.map((req) => (
                                 <div key={req.id} className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between rounded-xl border border-[#D4AF37]/20 bg-white p-5 shadow-sm">
@@ -818,13 +788,12 @@ export default function Page() {
                                     )}
 
                                     <div
-                                        className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 ${
-                                            item.status === "completed"
-                                                ? "border-[#0B2545] bg-[#0B2545] text-white"
-                                                : item.status === "current"
-                                                  ? "border-[#D4AF37] bg-[#D4AF37] text-[#0B2545]"
-                                                  : "border-gray-200 bg-white text-gray-400"
-                                        }`}
+                                        className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 ${item.status === "completed"
+                                            ? "border-[#0B2545] bg-[#0B2545] text-white"
+                                            : item.status === "current"
+                                                ? "border-[#D4AF37] bg-[#D4AF37] text-[#0B2545]"
+                                                : "border-gray-200 bg-white text-gray-400"
+                                            }`}
                                     >
                                         {item.status === "completed" ? (
                                             <CheckCircle2 className="h-4 w-4" />
@@ -925,116 +894,9 @@ export default function Page() {
 
                 </div>
 
-                {/* =====================================================
-                    RECENT APPLICATIONS + QUICK ACTIONS
-                ====================================================== */}
 
-                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-                    {/* Recent Applications */}
-
-                    <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
-
-                        <div className="flex items-center justify-between">
-
-                            <div>
-                                <h2 className="text-xl font-bold text-[#0B2545]">
-                                    Recent Applications
-                                </h2>
-
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Your latest submitted applications.
-                                </p>
-                            </div>
-
-                            <Link
-                                href="/student/applications"
-                                className="text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
-                            >
-                                View all
-                            </Link>
-
-                        </div>
-
-                        <div className="mt-5">
-
-                            {recentApplications.length === 0 ? (
-                                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center">
-
-                                    <FileText className="mx-auto h-8 w-8 text-gray-400" />
-
-                                    <p className="mt-3 text-sm font-medium text-gray-600">
-                                        No applications yet
-                                    </p>
-
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Start an application to begin your
-                                        journey.
-                                    </p>
-
-                                    <Link
-                                        href="/apply"
-                                        className="mt-4 inline-flex h-9 items-center justify-center rounded-full bg-[#0B2545] px-4 text-xs font-semibold text-white"
-                                    >
-                                        Start Application
-                                    </Link>
-
-                                </div>
-                            ) : (
-                                <div className="divide-y divide-gray-100">
-
-                                    {recentApplications.map(
-                                        (application) => (
-                                            <div
-                                                key={application.id}
-                                                className="flex items-center gap-4 py-4 first:pt-0 last:pb-0"
-                                            >
-
-                                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0B2545]/10">
-                                                    <GraduationCap className="h-5 w-5 text-[#0B2545]" />
-                                                </div>
-
-                                                <div className="min-w-0 flex-1">
-
-                                                    <p className="text-sm font-semibold text-[#0B2545]">
-                                                        {application.program_id ||
-                                                            "Program not specified"}
-                                                    </p>
-
-                                                    <p className="mt-1 text-xs text-gray-500">
-                                                        Application #
-                                                        {application.id}
-                                                    </p>
-
-                                                    {application.created_at && (
-                                                        <p className="mt-1 text-xs text-gray-400">
-                                                            Submitted{" "}
-                                                            {new Date(
-                                                                application.created_at
-                                                            ).toLocaleDateString()}
-                                                        </p>
-                                                    )}
-
-                                                </div>
-
-                                                <Link
-                                                    href={`/student/applications/${application.id}`}
-                                                    className="inline-flex h-9 shrink-0 items-center gap-1 rounded-full border border-[#0B2545] px-3 text-xs font-semibold text-[#0B2545] hover:bg-[#0B2545] hover:text-white"
-                                                >
-                                                    View
-                                                    <ChevronRight className="h-3.5 w-3.5" />
-                                                </Link>
-
-                                            </div>
-                                        )
-                                    )}
-
-                                </div>
-                            )}
-
-                        </div>
-
-                    </section>
+                <div className="mt-6">
 
                     {/* Quick Actions */}
 
@@ -1051,14 +913,20 @@ export default function Page() {
                         <div className="mt-5 space-y-2.5">
 
                             <QuickAction
+                                href="/student/enrolled-programs"
+                                icon={BookOpen}
+                                title="Enrolled Programs"
+                                description={`${paidPaymentCount} active ${paidPaymentCount === 1 ? "course" : "courses"}`}
+                            />
+                            
+                            <QuickAction
                                 href="/student/applications"
                                 icon={FileText}
                                 title="Applications"
-                                description={`${applicationCount} ${
-                                    applicationCount === 1
-                                        ? "application"
-                                        : "applications"
-                                } submitted`}
+                                description={`${applicationCount} ${applicationCount === 1
+                                    ? "application"
+                                    : "applications"
+                                    } submitted`}
                             />
 
                             <QuickAction

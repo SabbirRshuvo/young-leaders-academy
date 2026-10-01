@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { programsData } from '@/data/programs';
 import { universitiesData } from '@/data/universities';
 import { CheckCircle2, ChevronRight, ChevronLeft, User, GraduationCap, FileText, Send, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 function ApplyFormContent() {
   const t = useTranslations('ApplyPage');
@@ -45,6 +46,28 @@ function ApplyFormContent() {
         program: programId,
       }));
     }
+    
+    // Fetch logged-in user profile if exists
+    const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, phone')
+          .eq('id', user.id)
+          .single();
+          
+        setFormData(prev => ({
+          ...prev,
+          email: user.email || prev.email,
+          firstName: profile?.first_name || prev.firstName,
+          lastName: profile?.last_name || prev.lastName,
+          phone: profile?.phone || prev.phone,
+        }));
+      }
+    };
+    
+    fetchUserProfile();
   }, [searchParams]);
 
   const handleNext = () => {

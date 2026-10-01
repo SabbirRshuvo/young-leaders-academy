@@ -261,7 +261,7 @@ export default function Page() {
 
                                                     <ConnectionBadge status={child.status} />
 
-                                                    {child.status === "accepted" && (
+                                                    {child.status === "approved" && (
                                                         <p className="text-xs text-gray-400">
                                                             Active Connection
                                                         </p>
@@ -271,7 +271,7 @@ export default function Page() {
 
                                             </div>
 
-                                            {child.status === "accepted" && (
+                                            {child.status === "approved" && (
                                                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                                                     <Link
                                                         href={`/parent/children/${child.id}`}
