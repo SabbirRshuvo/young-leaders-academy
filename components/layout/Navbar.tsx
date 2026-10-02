@@ -323,6 +323,10 @@ export default function Navbar() {
       href: "/student/dashboard",
     },
     {
+      name: "Enrolled Programs",
+      href: "/student/enrolled-programs",
+    },
+    {
       name: "Programs",
       href: "/programs",
     },

@@ -145,11 +145,15 @@ function ApplyFormContent() {
         }
       }
 
+      // Fetch user to attach to enrollment
+      const { data: { user } } = await supabase.auth.getUser();
+
       // ----------------------------------------
       // Complete application data
       // ----------------------------------------
 
       const applicationPayload = {
+        userId: user?.id || null,
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),

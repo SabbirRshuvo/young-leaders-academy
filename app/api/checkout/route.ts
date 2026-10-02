@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       motivation,
       locale = 'en',
       baseAmount = 1500,
+      userId,
     } = body;
 
     // ----------------------------------------
@@ -173,7 +174,30 @@ export async function POST(req: Request) {
     console.log('Application saved successfully:', application);
 
     // ----------------------------------------
-    // 5. Return success
+    // 5. Enroll user into course
+    // ----------------------------------------
+
+    if (userId) {
+      const { error: enrollError } = await supabase
+        .from('course_enrollments')
+        .insert([
+          {
+            user_id: userId,
+            course_id: programId,
+          }
+        ]);
+        
+      if (enrollError) {
+        console.error('Supabase enrollment insert error:', enrollError);
+        // We do not fail the whole request because they already paid and applied.
+        // It can be retried or fixed by admin later, but log heavily.
+      } else {
+        console.log(`User ${userId} successfully enrolled in ${programId}`);
+      }
+    }
+
+    // ----------------------------------------
+    // 6. Return success
     // ----------------------------------------
 
     return NextResponse.json({
