@@ -29,7 +29,6 @@ type CourseProgressData = {
 export default function EnrolledProgramsPage() {
 
     const [enrolledCourses, setEnrolledCourses] = useState<CourseProgressData[]>([]);
-    const [debugLogs, setDebugLogs] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -61,8 +60,6 @@ export default function EnrolledProgramsPage() {
 
 
 
-            const logs: string[] = [];
-
             // Fetch enrolled courses from the dedicated enrollment table, joined with courses
             const { data: enrollments, error: enrollError } = await supabase
                 .from("course_enrollments")
@@ -78,9 +75,6 @@ export default function EnrolledProgramsPage() {
 
             if (enrollError) {
                 console.warn("[DEBUG] Could not fetch course_enrollments:", enrollError);
-                logs.push(`enrollError: ${enrollError.message}`);
-            } else {
-                logs.push(`enrollments length: ${enrollments?.length}`);
             }
 
             console.log("[DEBUG] Fetched Enrollments:", enrollments);
@@ -100,10 +94,8 @@ export default function EnrolledProgramsPage() {
             }) as any[];
 
             const courseIds = Array.from(new Set(coursesData.map(c => c.id).filter(Boolean)));
-            logs.push(`courseIds: ${JSON.stringify(courseIds)}`);
 
             if (courseIds.length > 0) {
-                logs.push(`coursesData length: ${coursesData?.length}`);
 
                 if (coursesData && coursesData.length > 0) {
                     const fetchedCourseIds = coursesData.map(c => c.id);
@@ -144,7 +136,7 @@ export default function EnrolledProgramsPage() {
                         const courseLessons = lessonsData.filter(l => courseModuleIds.has(l.module_id));
 
                         const fallbackProgram = programsData.find(p => p.courseDbId === course.id || p.id === course.id);
-                        
+
                         // 4.5 Fallback for missing curriculum (consistent with CoursePlayerPage)
                         let totalLessonsCount = courseLessons.length;
                         if (totalLessonsCount === 0) {
@@ -173,13 +165,8 @@ export default function EnrolledProgramsPage() {
                         };
                     });
 
-                    setDebugLogs(logs);
                     setEnrolledCourses(courseStats);
-                } else {
-                    setDebugLogs(logs);
                 }
-            } else {
-                setDebugLogs(logs);
             }
         } catch (err) {
             console.error("Error fetching data:", err);
@@ -266,15 +253,6 @@ export default function EnrolledProgramsPage() {
         );
     }
 
-    // DEBUG UI
-    const debugInfo = (
-        <div className="p-4 bg-gray-200 text-xs mb-4 rounded-xl">
-            <strong>Debug Info:</strong><br />
-            Enrolled Courses Array Length: {enrolledCourses.length}<br />
-            Logs: {debugLogs.join(" | ")}
-        </div>
-    );
-
     return (
         <main className="min-h-screen bg-gray-50/60 relative">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -296,8 +274,6 @@ export default function EnrolledProgramsPage() {
                         </div>
                     </div>
                 </section>
-
-                {debugInfo}
 
                 {/* ENROLLED COURSES */}
                 <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm mb-6">
