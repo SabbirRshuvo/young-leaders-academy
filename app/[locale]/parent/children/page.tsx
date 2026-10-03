@@ -46,7 +46,7 @@ type Child = {
 export default function Page() {
     const t = useTranslations("Parent");
     const [searchQuery, setSearchQuery] = useState("");
-    
+
     const [children, setChildren] = useState<Child[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -56,19 +56,18 @@ export default function Page() {
             setLoading(true);
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
-            
+
             const res = await fetch("/api/parent/children", {
                 headers: {
                     ...(token ? { Authorization: `Bearer ${token}` } : {})
                 }
             });
             if (!res.ok) throw new Error("Failed to load children");
-            
+
             const data = await res.json();
-            
+
             const formattedChildren: Child[] = [];
-            
-            // Format all requests (pending, rejected, approved)
+
             data.requests?.forEach((req: {
                 status: "pending" | "approved" | "rejected";
                 student: any;
@@ -78,7 +77,7 @@ export default function Page() {
             }) => {
                 const profile = req.student || {};
                 const studentEmail = data.users?.find((u: any) => u.id === req.student_id)?.email || "";
-                
+
                 formattedChildren.push({
                     id: req.student_id,
                     request_id: req.id,
@@ -123,11 +122,6 @@ export default function Page() {
     return (
         <main className="min-h-screen bg-gray-50/60">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-
-                {/* =====================================================
-                    HEADER
-                ====================================================== */}
-
                 <section className="rounded-2xl bg-[#0B2545] px-6 py-7 text-white shadow-sm sm:px-8">
 
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -279,10 +273,10 @@ export default function Page() {
 
             </div>
 
-            <AddChildModal 
-                isOpen={isAddModalOpen} 
-                onClose={() => setIsAddModalOpen(false)} 
-                onSuccess={fetchChildren} 
+            <AddChildModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSuccess={fetchChildren}
             />
         </main>
     );
@@ -374,11 +368,10 @@ function ChildCard({
                 <InfoItem
                     icon={FileText}
                     label="Applications"
-                    value={`${child.applications} ${
-                        child.applications === 1
-                            ? "application"
-                            : "applications"
-                    }`}
+                    value={`${child.applications} ${child.applications === 1
+                        ? "application"
+                        : "applications"
+                        }`}
                 />
 
                 <InfoItem
