@@ -9,6 +9,7 @@ import { programsData } from '@/data/programs';
 import { universitiesData } from '@/data/universities';
 import { CheckCircle2, ChevronRight, ChevronLeft, User, GraduationCap, FileText, Send, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import toast from 'react-hot-toast';
 
 function ApplyFormContent() {
   const t = useTranslations('ApplyPage');
@@ -33,18 +34,19 @@ function ApplyFormContent() {
     program: '',
     motivation: ''
   });
+  const [applicationType, setApplicationType] = useState<'program' | 'university' | null>(null);
 
   // Pre-fill program from URL if present
   useEffect(() => {
-    const programId =
-      searchParams.get('program') ||
-      searchParams.get('university');
-
-    if (programId) {
-      setFormData(prev => ({
-        ...prev,
-        program: programId,
-      }));
+    const isProgram = searchParams.get('program');
+    const isUniversity = searchParams.get('university');
+    
+    if (isProgram) {
+      setApplicationType('program');
+      setFormData(prev => ({ ...prev, program: isProgram }));
+    } else if (isUniversity) {
+      setApplicationType('university');
+      setFormData(prev => ({ ...prev, program: isUniversity }));
     }
     
     // Fetch logged-in user profile if exists
@@ -126,20 +128,16 @@ function ApplyFormContent() {
       // ----------------------------------------
 
       let programTitle = programId;
+      let courseDbId: string | undefined;
 
-      const foundProgram = programsData.find(
-        (p) => p.id === programId
-      );
-
-      if (foundProgram) {
-        programTitle = isAr
-          ? foundProgram.title.ar
-          : foundProgram.title.en;
+      if (applicationType === 'program') {
+        const foundProgram = programsData.find((p) => p.id === programId);
+        if (foundProgram) {
+          programTitle = isAr ? foundProgram.title.ar : foundProgram.title.en;
+          courseDbId = foundProgram.courseDbId;
+        }
       } else {
-        const foundUni = universitiesData.find(
-          (u) => u.id === programId
-        );
-
+        const foundUni = universitiesData.find((u) => u.id === programId);
         if (foundUni) {
           programTitle = foundUni.name;
         }
@@ -160,7 +158,7 @@ function ApplyFormContent() {
         phone: formData.phone.trim(),
         age: formData.age.trim(),
         school: formData.school.trim(),
-        programId,
+        programId: courseDbId || programId,
         programTitle,
         motivation: formData.motivation.trim(),
         locale,
@@ -171,7 +169,9 @@ function ApplyFormContent() {
       // 1. Create payment + save application
       // ----------------------------------------
 
-      const res = await fetch('/api/checkout', {
+      const apiEndpoint = applicationType === 'program' ? '/api/enroll-program' : '/api/apply-university';
+
+      const res = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -233,8 +233,15 @@ function ApplyFormContent() {
       }
 
       // ----------------------------------------
-      // 3. Redirect to success page
+      // 3. Redirect to success page or enrolled programs
       // ----------------------------------------
+
+      if (applicationType === 'program') {
+        toast.success(isAr ? 'تم التسجيل بنجاح!' : 'Successfully enrolled!');
+        router.push(locale === 'en' ? '/student/enrolled-programs' : `/${locale}/student/enrolled-programs`);
+        router.refresh();
+        return;
+      }
 
       if (data.redirectUrl) {
         router.push(data.redirectUrl);
@@ -374,16 +381,22 @@ function ApplyFormContent() {
                 <label className="text-sm font-bold text-[#0B2545]">{t('program')}</label>
                 <select name="program" value={formData.program} onChange={handleChange} required className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] outline-none transition-all bg-gray-50/50 focus:bg-white appearance-none ${isAr ? 'text-right' : 'text-left'}`}>
                   <option value="" disabled>{t('programPh')}</option>
-                  <optgroup label={isAr ? "البرامج" : "Programs"}>
-                    {programsData.map(p => (
-                      <option key={p.id} value={p.id}>{l(p.title)}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label={isAr ? "الجامعات" : "Universities"}>
-                    {universitiesData.map(u => (
-                      <option key={u.id} value={u.id}>{l({ en: u.name, ar: u.name })}</option>
-                    ))}
-                  </optgroup>
+                  
+                  {(!applicationType || applicationType === 'program') && (
+                    <optgroup label={isAr ? "البرامج" : "Programs"}>
+                      {programsData.map(p => (
+                        <option key={p.id} value={p.id}>{l(p.title)}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                  
+                  {(!applicationType || applicationType === 'university') && (
+                    <optgroup label={isAr ? "الجامعات" : "Universities"}>
+                      {universitiesData.map(u => (
+                        <option key={u.id} value={u.id}>{l({ en: u.name, ar: u.name })}</option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
               </div>
             </motion.div>

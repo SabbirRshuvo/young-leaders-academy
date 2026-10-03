@@ -216,7 +216,7 @@ export default function Page() {
 
             const { data: applications, error: applicationsError } =
                 await supabase
-                    .from("applications")
+                    .from("university_applications")
                     .select(
                         `
                         id,
@@ -896,7 +896,59 @@ export default function Page() {
 
 
 
-                <div className="mt-6">
+                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                    {/* =====================================================
+                        MY APPLICATIONS
+                    ====================================================== */}
+
+                    <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-5">
+                            <div>
+                                <h2 className="text-xl font-bold text-[#0B2545]">
+                                    University Applications
+                                </h2>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Track your university admissions progress.
+                                </p>
+                            </div>
+                        </div>
+
+                        {dashboard.applications.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center">
+                                <FileText className="mx-auto h-8 w-8 text-gray-400" />
+                                <p className="mt-3 text-sm font-medium text-gray-600">
+                                    No university applications yet
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-gray-100">
+                                {dashboard.applications.slice(0, 3).map((application) => (
+                                    <div key={application.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0B2545]/10">
+                                            <GraduationCap className="h-5 w-5 text-[#0B2545]" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-semibold text-[#0B2545] truncate">
+                                                {application.program_id || "University not specified"}
+                                            </p>
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                Application #{application.id}
+                                            </p>
+                                            {application.created_at && (
+                                                <p className="mt-1 text-xs text-gray-400">
+                                                    Submitted {new Date(application.created_at).toLocaleDateString()}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="inline-flex h-7 items-center rounded-full bg-amber-50 px-2.5 text-[11px] font-semibold text-amber-600 shrink-0">
+                                            Pending
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
 
                     {/* Quick Actions */}
 

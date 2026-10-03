@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       locale = 'en',
       baseAmount = 1500,
       userId,
+      entityType = 'course',
     } = body;
 
     // ----------------------------------------
@@ -135,64 +136,74 @@ export async function POST(req: Request) {
     }
 
     // ----------------------------------------
-    // 4. Save application
+    // 4. Handle Data Flow Separation
     // ----------------------------------------
 
-    const { data: application, error: applicationError } =
-      await supabase
-        .from('applications')
-        .insert([
+    let applicationId = null;
+
+    if (entityType === 'university') {
+      const { data: application, error: applicationError } =
+        await supabase
+          .from('applications')
+          .insert([
+            {
+              first_name: firstName,
+              last_name: lastName,
+              email,
+              phone,
+              age: Number(age),
+              school,
+              program_id: programId,
+              motivation,
+            },
+          ])
+          .select()
+          .single();
+
+      if (applicationError) {
+        console.error('Supabase application insert error:', applicationError);
+        return NextResponse.json(
           {
-            first_name: firstName,
-            last_name: lastName,
-            email,
-            phone,
-            age: Number(age),
-            school,
-            program_id: programId,
-            motivation,
+            success: false,
+            error: 'Payment completed, but application could not be saved.',
           },
-        ])
-        .select()
-        .single();
-
-    if (applicationError) {
-      console.error(
-        'Supabase application insert error:',
-        applicationError
-      );
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Payment completed, but application could not be saved.',
-        },
-        { status: 500 }
-      );
-    }
-
-    console.log('Application saved successfully:', application);
-
-    // ----------------------------------------
-    // 5. Enroll user into course
-    // ----------------------------------------
-
-    if (userId) {
-      const { error: enrollError } = await supabase
-        .from('course_enrollments')
-        .insert([
-          {
-            user_id: userId,
-            course_id: programId,
-          }
-        ]);
-        
-      if (enrollError) {
-        console.error('Supabase enrollment insert error:', enrollError);
-        // We do not fail the whole request because they already paid and applied.
-        // It can be retried or fixed by admin later, but log heavily.
+          { status: 500 }
+        );
+      }
+      applicationId = application.id;
+      console.log('University application saved successfully:', application);
+    } else if (entityType === 'course') {
+      if (userId) {
+        const { error: enrollError } = await supabase
+          .from('course_enrollments')
+          .insert([
+            {
+              user_id: userId,
+              course_id: programId,
+              status: 'active'
+            }
+          ]);
+          
+        if (enrollError) {
+          console.error('Supabase enrollment insert error:', enrollError);
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Enrollment failed. Please try again.',
+            },
+            { status: 500 }
+          );
+        } else {
+          console.log(`User ${userId} successfully enrolled in ${programId}`);
+        }
       } else {
-        console.log(`User ${userId} successfully enrolled in ${programId}`);
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'You must be logged in to enroll in a program.',
+          },
+          { status: 401 }
+        );
       }
     }
 
@@ -202,7 +213,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      applicationId: application.id,
+      applicationId: applicationId,
       paymentId: paymentRecord.id,
       transactionId: fakeTransactionId,
       redirectUrl: `/${locale}/apply/success?id=${paymentRecord.id}`,

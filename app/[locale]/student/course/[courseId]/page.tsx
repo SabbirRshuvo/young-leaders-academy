@@ -7,6 +7,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { programsData } from "@/data/programs";
 
 type Course = {
     id: string;
@@ -64,91 +65,197 @@ export default function CoursePlayerPage() {
         const fetchCourseData = async () => {
             try {
                 setLoading(true);
+                setError(null);
+
+                console.log("[DEBUG] Route courseId:", courseId);
 
                 const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
                 if (userError || !currentUser) {
+                    console.log("[DEBUG] No user found, redirecting.");
                     router.push(`/${locale}/student/dashboard`);
                     return;
                 }
                 setUser(currentUser);
 
-                // Make sure courseId is a valid UUID before executing any queries
-                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(courseId);
-                if (!isUUID) {
-                    setError("Invalid Course ID.");
-                    setLoading(false);
-                    return;
-                }
-
-                // Verify the student is allowed to view this course
-                const { data: applications } = await supabase
-                    .from("applications")
+                let targetCourseId = courseId;
+                
+                // 1. Check enrollment with route courseId
+                const { data: directEnrollment } = await supabase
+                    .from("course_enrollments")
                     .select("id")
-                    .ilike("email", currentUser.email || "")
-                    .eq("program_id", courseId)
-                    .limit(1);
-
-                const { data: payments } = await supabase
-                    .from("payments")
-                    .select("id")
-                    .ilike("parent_email", currentUser.email || "")
-                    .eq("program_id", courseId)
-                    .eq("payment_status", "paid")
-                    .limit(1);
-
-                const hasApplication = applications && applications.length > 0;
-                const hasPayment = payments && payments.length > 0;
-
-                if (!hasPayment && !hasApplication) {
-                    setError("You don't have access to this course.");
-                    setLoading(false);
-                    return;
-                }
-
-                const { data: courseData, error: courseError } = await supabase
-                    .from("courses")
-                    .select("*")
-                    .eq("id", courseId)
+                    .eq("user_id", currentUser.id)
+                    .eq("course_id", courseId)
                     .maybeSingle();
 
-                if (courseError) throw courseError;
-                if (!courseData) {
-                    setError("Course Not Found.");
-                    setLoading(false);
-                    return;
+                if (!directEnrollment) {
+                    console.log("[DEBUG] Direct enrollment not found. Checking fallback...");
+                    // Try fallback logic if courseId from URL is a program.id instead of DB UUID
+                    const fallbackProgram = programsData.find(p => p.id === courseId);
+                    if (fallbackProgram && fallbackProgram.courseDbId) {
+                        const { data: fbEnrollment } = await supabase
+                            .from("course_enrollments")
+                            .select("id")
+                            .eq("user_id", currentUser.id)
+                            .eq("course_id", fallbackProgram.courseDbId)
+                            .maybeSingle();
+
+                        if (!fbEnrollment) {
+                            console.log("[DEBUG] Fallback enrollment not found either.");
+                            setError("You don't have access to this course.");
+                            setLoading(false);
+                            return;
+                        }
+                        console.log("[DEBUG] Found fallback enrollment. Using courseDbId:", fallbackProgram.courseDbId);
+                        targetCourseId = fallbackProgram.courseDbId;
+                    } else {
+                        console.log("[DEBUG] No fallback program found or no courseDbId.");
+                        setError("You don't have access to this course.");
+                        setLoading(false);
+                        return;
+                    }
+                } else {
+                    console.log("[DEBUG] Found direct enrollment.");
                 }
 
-                setCourse(courseData);
+                console.log("[DEBUG] Fetching course data for ID:", targetCourseId);
+                // 2. Fetch Course
+                let { data: dbCourse, error: courseError } = await supabase
+                    .from("courses")
+                    .select("*")
+                    .eq("id", targetCourseId)
+                    .maybeSingle();
 
-                const { data: modulesData, error: modulesError } = await supabase
+                if (courseError) {
+                    console.error("[DEBUG] Error fetching course:", courseError);
+                    // don't throw, let it fallback
+                }
+
+                if (!dbCourse) {
+                    console.warn("[DEBUG] Course not found in DB. Applying fallback.");
+                    const fallbackProgram = programsData.find(p => p.id === courseId || p.courseDbId === targetCourseId);
+                    
+                    if (fallbackProgram) {
+                        console.log("[DEBUG] Found fallback program data.");
+                        dbCourse = {
+                            id: targetCourseId,
+                            title: fallbackProgram.title,
+                            description: fallbackProgram.overview
+                        };
+                    } else {
+                        console.log("[DEBUG] No fallback program data found. Using generic fallback.");
+                        dbCourse = {
+                            id: targetCourseId,
+                            title: { en: "Enrolled Course", ar: "دورة مسجلة" },
+                            description: { en: "Course details are currently unavailable.", ar: "تفاصيل الدورة غير متاحة حالياً." }
+                        };
+                    }
+                }
+
+                console.log("[DEBUG] Fetched Course:", dbCourse);
+                setCourse(dbCourse);
+
+                // 3. Fetch Modules
+                const { data: dbModules, error: modulesError } = await supabase
                     .from("modules")
                     .select("*")
-                    .eq("course_id", courseId)
+                    .eq("course_id", targetCourseId)
                     .order("serial_number", { ascending: true });
-                if (modulesError) throw modulesError;
-                setModules(modulesData || []);
 
+                if (modulesError) {
+                    console.error("[DEBUG] Error fetching modules:", modulesError);
+                    throw modulesError;
+                }
+
+                console.log("[DEBUG] Fetched Modules:", dbModules?.length || 0);
+                let modulesData = dbModules || [];
+
+                // 4. Fetch Lessons
                 let lessonsData: Lesson[] = [];
-                if (modulesData && modulesData.length > 0) {
-                    const { data: lData, error: lessonsError } = await supabase
+                if (modulesData.length > 0) {
+                    const moduleIds = modulesData.map((m) => m.id);
+                    const { data: dbLessons, error: lessonsError } = await supabase
                         .from("lessons")
                         .select("*")
-                        .in("module_id", modulesData.map((m) => m.id))
+                        .in("module_id", moduleIds)
                         .order("serial_number", { ascending: true });
-                    if (lessonsError) throw lessonsError;
-                    lessonsData = lData || [];
+
+                    if (lessonsError) {
+                        console.error("[DEBUG] Error fetching lessons:", lessonsError);
+                        // don't throw, let it fallback if empty
+                    }
+                    lessonsData = dbLessons || [];
                 }
+
+                // 4.5 Fallback for missing curriculum
+                if (modulesData.length === 0) {
+                    console.log("[DEBUG] No curriculum found in DB. Generating mocks.");
+                    const fallbackProgram = programsData.find(p => p.id === courseId || p.courseDbId === targetCourseId);
+                    
+                    if (fallbackProgram && fallbackProgram.curriculum) {
+                        modulesData = fallbackProgram.curriculum.map((c, i) => ({
+                            id: `mock-module-${i}`,
+                            course_id: targetCourseId,
+                            serial_number: i + 1,
+                            title: c.title,
+                            description: c.description
+                        }));
+                        // generate generic lessons for each module
+                        lessonsData = modulesData.map((m, i) => ({
+                            id: `mock-lesson-${i}`,
+                            module_id: m.id,
+                            serial_number: 1,
+                            title: { en: "Lesson 1", ar: "الدرس 1" },
+                            video_url: "https://www.w3schools.com/html/mov_bbb.mp4"
+                        }));
+                    } else {
+                        modulesData = [{
+                            id: "generic-mock-module",
+                            course_id: targetCourseId,
+                            serial_number: 1,
+                            title: { en: "Getting Started", ar: "البدء" },
+                            description: { en: "Introduction module.", ar: "مقدمة" }
+                        }];
+                        lessonsData = [{
+                            id: "generic-mock-lesson",
+                            module_id: "generic-mock-module",
+                            serial_number: 1,
+                            title: { en: "Welcome to the Course", ar: "مرحباً بكم في الدورة" },
+                            video_url: "https://www.w3schools.com/html/mov_bbb.mp4"
+                        }];
+                    }
+                }
+
+                console.log("[DEBUG] Final Modules:", modulesData.length);
+                console.log("[DEBUG] Final Lessons:", lessonsData.length);
+                
+                setModules(modulesData);
                 setLessons(lessonsData);
 
+                // 5. Fetch Progress
+                // Using the unified course_progress schema (student_id, program_id, completed_lessons)
                 const { data: progressData, error: progressError } = await supabase
                     .from("course_progress")
-                    .select("*")
-                    .eq("user_id", currentUser.id);
-                if (progressError) throw progressError;
-                setProgressList(progressData || []);
+                    .select("completed_lessons")
+                    .eq("student_id", currentUser.id)
+                    .eq("program_id", courseId)
+                    .maybeSingle();
+
+                if (progressError && progressError.code !== 'PGRST116') {
+                    console.error("[DEBUG] Error fetching progress:", progressError);
+                    // Don't throw, just warn
+                }
+                
+                const completedLessons = progressData?.completed_lessons || [];
+                console.log("[DEBUG] Fetched Progress (completed lessons):", completedLessons.length);
+                
+                setProgressList(completedLessons.map((id: string) => ({
+                    user_id: currentUser.id,
+                    lesson_id: id,
+                    is_completed: true
+                })));
 
             } catch (err: any) {
-                console.error("Error fetching course data:", err);
+                console.error("[DEBUG] Unexpected error in fetchCourseData:", err);
                 setError(err.message || "Failed to load course.");
             } finally {
                 setLoading(false);
@@ -254,25 +361,21 @@ export default function CoursePlayerPage() {
                 return [...prev, { user_id: user.id, lesson_id: lessonId, is_completed: true }];
             });
 
-            // Safely persist to Supabase
-            const { data: existingProgress } = await supabase
-                .from("course_progress")
-                .select("id")
-                .eq("user_id", user.id)
-                .eq("lesson_id", lessonId)
-                .limit(1);
+            // Safely persist to Supabase via API route
+            // This natively supports our mock string IDs and properly manages the completed_lessons array
+            const res = await fetch('/api/student/course/progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    studentId: user.id,
+                    programId: courseId,
+                    lessonModule: lessonId,
+                    isCompleted: true
+                })
+            });
 
-            if (existingProgress && existingProgress.length > 0) {
-                const { error: updateError } = await supabase
-                    .from("course_progress")
-                    .update({ is_completed: true })
-                    .eq("id", existingProgress[0].id);
-                if (updateError) throw updateError;
-            } else {
-                const { error: insertError } = await supabase
-                    .from("course_progress")
-                    .insert({ user_id: user.id, lesson_id: lessonId, is_completed: true });
-                if (insertError) throw insertError;
+            if (!res.ok) {
+                throw new Error("Failed to persist progress to DB");
             }
 
             toast.success("Lesson completed!");
@@ -287,7 +390,8 @@ export default function CoursePlayerPage() {
         } catch (err: any) {
             console.error("Error saving progress:", err);
             toast.error("Failed to save progress.");
-            // Optional: Revert optimistic UI on error
+            // Revert optimistic UI on error
+            setProgressList(prev => prev.filter(p => p.lesson_id !== lessonId));
         } finally {
             setActionLoading(false);
         }
@@ -559,14 +663,23 @@ export default function CoursePlayerPage() {
                                 className="aspect-video w-full rounded-2xl bg-black overflow-hidden shadow-2xl relative flex items-center justify-center group border border-gray-800"
                             >
                                 {activeLesson.video_url ? (
-                                    <video
-                                        src={activeLesson.video_url}
-                                        className="w-full h-full object-contain"
-                                        controls
-                                        autoPlay
-                                        onEnded={handleVideoEnded}
-                                        controlsList="nodownload"
-                                    />
+                                    activeLesson.video_url.includes("youtube.com") || activeLesson.video_url.includes("youtu.be") ? (
+                                        <iframe
+                                            src={`https://www.youtube.com/embed/${activeLesson.video_url.split('v=')[1]?.split('&')[0] || activeLesson.video_url.split('/').pop()}`}
+                                            className="w-full h-full object-cover"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : (
+                                        <video
+                                            src={activeLesson.video_url}
+                                            className="w-full h-full object-contain"
+                                            controls
+                                            autoPlay
+                                            onEnded={handleVideoEnded}
+                                            controlsList="nodownload"
+                                        />
+                                    )
                                 ) : (
                                     <div className="flex flex-col items-center justify-center text-white/50">
                                         <PlayCircle className="h-16 w-16 mb-4 text-[#D4AF37]" />

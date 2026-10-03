@@ -1,21 +1,22 @@
 "use client";
 
 import Link from 'next/link';
-import { GraduationCap, Users, Lightbulb, ArrowRight } from 'lucide-react';
+import { ArrowRight, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-
-
+import { programsData } from '@/data/programs';
 
 export default function FeaturedPrograms() {
   const t = useTranslations('FeaturedPrograms');
   const locale = useLocale();
+  const isAr = locale === 'ar';
 
-  const programs = [
-    { id: 'global-young-leaders-fellowship', title: t('prog1_title'), desc: t('prog1_desc'), icon: GraduationCap, image: '/card1.png' },
-    { id: 'high-school-leadership-program', title: t('prog2_title'), desc: t('prog2_desc'), icon: Users, image: '/card2.png' },
-    { id: 'global-mentorship-program', title: t('prog3_title'), desc: t('prog3_desc'), icon: Lightbulb, image: '/card3.png' }
-  ];
+  const programs = programsData.slice(0, 3);
+
+  const getLocalized = (obj: any) => {
+      if (!obj) return "";
+      return isAr ? obj.ar : obj.en;
+  };
 
   return (
     <section className="w-full py-16 md:py-24 bg-[#FAF7F2]">
@@ -32,24 +33,23 @@ export default function FeaturedPrograms() {
           <div className="flex items-center gap-4">
             <div className="h-[1px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#B8902E] font-bold tracking-[0.2em] text-[11px] uppercase">
-              {t('tag')}
+              {isAr ? 'التميز الأكاديمي' : 'ACADEMIC EXCELLENCE'}
             </span>
             <div className="h-[1px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
 
           <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
-            {t('title')}
+            {isAr ? 'برامج مميزة' : 'Featured Programs'}
           </h2>
 
           <p className="max-w-[700px] text-gray-500 md:text-base font-sans mt-2">
-            {t('subtitle')}
+            {isAr ? 'اكتشف مسارات عالمية مصممة لتطوير قادة المستقبل والباحثين وصناع التغيير العالمي.' : 'Discover world-class pathways designed to cultivate future leaders, researchers, and global changemakers.'}
           </p>
         </motion.div>
 
         {/* ================= CARDS GRID ================= */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {programs.map((prog, i) => {
-            const Icon = prog.icon;
             return (
               <motion.div
                 key={i}
@@ -62,25 +62,25 @@ export default function FeaturedPrograms() {
                 {/* Image Section */}
                 <div className="w-full h-[220px] relative">
                   <img
-                    src={prog.image}
-                    alt={prog.title}
+                    src={prog.heroImage}
+                    alt={getLocalized(prog.title)}
                     className="w-full h-full object-cover object-center"
                   />
 
                   {/* Floating Icon with White Border */}
                   <div className="absolute -bottom-7 left-6 w-14 h-14 rounded-full bg-[#D4AF37] flex items-center justify-center border-4 border-white shadow-sm z-10">
-                    <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
+                    <GraduationCap className="w-6 h-6 text-white" strokeWidth={1.5} />
                   </div>
                 </div>
 
                 {/* Content Section */}
                 <div className="p-8 pt-12 flex flex-col flex-1">
                   <h3 className="text-xl font-serif font-bold mb-3 text-[#0B2545]">
-                    {prog.title}
+                    {getLocalized(prog.title)}
                   </h3>
 
-                  <p className="text-[#6B7B8F] mb-8 text-[14px] leading-relaxed flex-1">
-                    {prog.desc}
+                  <p className="text-[#6B7B8F] mb-8 text-[14px] leading-relaxed flex-1 line-clamp-3">
+                    {getLocalized(prog.overview)}
                   </p>
 
                   <div className="mt-auto">
@@ -88,7 +88,7 @@ export default function FeaturedPrograms() {
                       href={`/${locale}/programs/${prog.id}`}
                       className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0B2545] to-[#1A3A65] hover:from-[#133055] hover:to-[#0B2545] px-6 text-[13px] font-semibold text-white shadow-md hover:shadow-lg transition-all duration-300 w-max group"
                     >
-                      {t('viewProgram')}
+                      Explore Program
                       <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>

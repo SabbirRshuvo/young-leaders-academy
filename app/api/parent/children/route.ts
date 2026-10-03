@@ -81,7 +81,7 @@ export async function GET(req: Request) {
 
         if (studentEmails.length > 0) {
             const { data: apps } = await supabaseAdmin
-                .from("applications")
+                .from("university_applications")
                 .select("id, email, program_id")
                 .in("email", studentEmails);
             if (apps) studentApplications = apps;

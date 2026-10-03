@@ -802,7 +802,7 @@ export default function Navbar() {
 
             <button
               onClick={() =>
-                router.push(getLocalizedHref("/sign-up"))
+                router.push(getLocalizedHref("/login"))
               }
               className="whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white hover:bg-navy/90 h-[42px] px-6 text-[15px] font-semibold transition-all shadow-md cursor-pointer"
             >
@@ -1043,7 +1043,7 @@ export default function Navbar() {
 
             <button
               onClick={() =>
-                router.push(getLocalizedHref("/sign-up"))
+                router.push(getLocalizedHref("/login"))
               }
               className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white h-[48px] font-semibold shadow-md"
             >

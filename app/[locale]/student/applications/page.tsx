@@ -64,7 +64,7 @@ export default function Page() {
 
             // Fetch applications belonging to the logged-in user
             const { data, error: applicationsError } = await supabase
-                .from("applications")
+                .from("university_applications")
                 .select("*")
                 .ilike("email", user.email || "")
                 .order("created_at", { ascending: false });

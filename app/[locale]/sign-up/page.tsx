@@ -6,15 +6,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Eye, EyeOff, GraduationCap, Users } from "lucide-react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { supabase } from "@/lib/supabase";
+import { Suspense } from "react";
 
-export default function Page() {
-    const [step, setStep] = useState(1);
+function SignUpForm() {
+    const searchParams = useSearchParams();
+    const initialRole = searchParams.get("role") as "student" | "parent" | null;
+
+    const [step, setStep] = useState(initialRole ? 2 : 1);
     const [selectedRole, setSelectedRole] = useState<
         "student" | "parent" | null
-    >(null);
+    >(initialRole);
     const router = useRouter();
     const t = useTranslations("Auth");
     const locale = useLocale();
@@ -1026,5 +1030,13 @@ export default function Page() {
 
             </div>
         </div>
+    );
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">Loading...</div>}>
+            <SignUpForm />
+        </Suspense>
     );
 }

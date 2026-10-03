@@ -1,7 +1,8 @@
 'use client';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { motion } from 'framer-motion';
@@ -12,6 +13,8 @@ import 'swiper/css/pagination';
 
 export default function Partners() {
   const t = useTranslations('Partners');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
   const partners = [
     { name: "HARVARD", sub: "UNIVERSITY", color: "text-[#A51C30]" },
     { name: "KSU", sub: "King Saud University", color: "text-[#184F8D]" },
@@ -26,7 +29,7 @@ export default function Partners() {
 
   return (
     <section className="w-full py-16 md:py-24 bg-[#FAFAFA]">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px] text-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px] text-center flex flex-col items-center">
 
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -38,15 +41,15 @@ export default function Partners() {
           <div className="flex items-center gap-4">
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[11px] uppercase">
-              {t('badge')}
+              {isAr ? 'الشبكة العالمية' : 'Global Network'}
             </span>
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
-            {t('title')}
+            {isAr ? 'مسارات مباشرة للجامعات العالمية' : 'Direct Pathways to Global Universities'}
           </h2>
           <p className="max-w-[750px] text-[#6B7B8F] md:text-lg">
-            {t('subtitle')}
+            {isAr ? 'تربط الأكاديمية الطلاب بالشركاء، مما يخلق مسارات مباشرة للتعليم العالمي والفرص الأكاديمية المرموقة حول العالم.' : 'YLA connects students to partners, creating direct pathways to global education and prestigious academic opportunities around the world.'}
           </p>
         </motion.div>
 
@@ -57,7 +60,7 @@ export default function Partners() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative flex items-center justify-center px-8 md:px-16 mt-14 w-full h-[160px]"
+          className="relative flex items-center justify-center px-8 md:px-16 mt-4 w-full h-[160px]"
         >
 
           <button
@@ -128,6 +131,21 @@ export default function Partners() {
         {/* Pagination Dots - Added fixed height h-[20px] */}
         <div className="partner-pagination h-[20px] flex justify-center items-center gap-3 mt-4 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-gray-300 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:!bg-[#D4AF37] [&_.swiper-pagination-bullet-active]:!opacity-100 [&_.swiper-pagination-bullet]:transition-all" />
 
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-10"
+        >
+          <Link
+            href={`/${locale}/universities`}
+            className="inline-flex h-[48px] items-center justify-center gap-2 rounded-full bg-[#0B2545] px-8 text-[14px] font-semibold text-white shadow-lg hover:shadow-xl hover:bg-[#113059] transition-all duration-300 group"
+          >
+            {isAr ? 'استكشف الجامعات الشريكة' : 'Explore Partner Universities'}
+            <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

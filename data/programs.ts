@@ -16,6 +16,7 @@ export interface CurriculumModule {
 
 export interface Program {
   id: string;
+  courseDbId?: string;
   title: LocalizedString;
   badge: LocalizedString;
   heroImage: string;
@@ -32,6 +33,7 @@ export interface Program {
 export const programsData: Program[] = [
   {
     id: "global-young-leaders-fellowship",
+    courseDbId: "95c2ed4e-a57a-43fd-9fe9-84da52771205",
     title: {
       en: "Global Young Leaders Fellowship",
       ar: "زمالة قادة الشباب العالمية"
@@ -94,6 +96,7 @@ export const programsData: Program[] = [
   },
   {
     id: "high-school-leadership-program",
+    courseDbId: "9ce2e68d-d50a-4b63-9e8e-2293e4066c71",
     title: {
       en: "High School Leadership Program",
       ar: "برنامج القيادة في المدرسة الثانوية"
@@ -156,6 +159,7 @@ export const programsData: Program[] = [
   },
   {
     id: "global-mentorship-program",
+    courseDbId: "63c54469-b9ec-4b1b-a699-8f1b43684959",
     title: {
       en: "Global Mentorship Program",
       ar: "برنامج الإرشاد العالمي"
@@ -218,6 +222,7 @@ export const programsData: Program[] = [
   },
   {
     id: "future-skills-executive-program",
+    courseDbId: "5663f29b-bf40-4542-9289-ded34e7bbe63",
     title: {
       en: "Future Skills & Executive Program",
       ar: "برنامج المهارات المستقبلية والتنفيذية"
@@ -280,6 +285,7 @@ export const programsData: Program[] = [
   },
   {
     id: "summer-leadership-camp",
+    courseDbId: "8387f24d-9133-4821-b026-37341681091d",
     title: {
       en: "Summer Leadership Camp",
       ar: "مخيم القيادة الصيفي"

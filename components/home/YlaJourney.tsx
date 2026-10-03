@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { Search, Award, Globe, Zap, ArrowRight, ArrowLeft } from 'lucide-react';
+import { BookOpen, TrendingUp, Globe, ArrowRight } from 'lucide-react';
 
 export default function YlaJourney() {
   const t = useTranslations('YlaJourney');
@@ -11,10 +11,9 @@ export default function YlaJourney() {
   const isAr = locale === 'ar';
 
   const steps = [
-    { icon: Search, title: t('step1Title'), desc: t('step1Desc') },
-    { icon: Award, title: t('step2Title'), desc: t('step2Desc') },
-    { icon: Globe, title: t('step3Title'), desc: t('step3Desc') },
-    { icon: Zap, title: t('step4Title'), desc: t('step4Desc') }
+    { icon: BookOpen, title: "1. Enroll in Programs", desc: "Enroll in Student Development Programs." },
+    { icon: TrendingUp, title: "2. Track Progress", desc: "Track Progress & Build a Digital Portfolio." },
+    { icon: Globe, title: "3. Match & Apply", desc: "Match & Apply to Partner Universities." }
   ];
 
   const containerVariants: Variants = {
@@ -49,15 +48,15 @@ export default function YlaJourney() {
           <div className="flex items-center gap-4 mb-6">
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
-              {t('badge')}
+              {isAr ? 'كيف تعمل الأكاديمية' : 'How YLA Works'}
             </span>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-6 leading-tight">
-            {t('title')}
+            {isAr ? 'رحلة الأكاديمية' : 'The YLA Journey'}
           </h2>
           <p className="text-gray-300 text-base md:text-lg max-w-2xl font-sans">
-            {t('subtitle')}
+            {isAr ? 'مسار واضح من 3 خطوات من اكتشاف إمكاناتك إلى القبول في الجامعات العالمية.' : 'A clear 3-step pathway from discovering your potential to matching with global universities.'}
           </p>
         </motion.div>
 
@@ -67,7 +66,7 @@ export default function YlaJourney() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 relative"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-12 relative"
         >
           {/* Connecting Line (visible on large screens) */}
           <div className="hidden lg:block absolute top-12 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent -z-10"></div>
@@ -101,7 +100,7 @@ export default function YlaJourney() {
                 </div>
 
                 {/* Content */}
-                <div className={`text-center md:text-left bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl w-full h-full group-hover:bg-white/10 transition-colors duration-500 shadow-xl ${isAr ? 'md:text-right' : ''}`}>
+                <div className={`text-center md:text-center bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl w-full h-full group-hover:bg-white/10 transition-colors duration-500 shadow-xl`}>
                   <h3 className="text-xl font-bold text-white mb-3 font-serif">
                     {step.title}
                   </h3>
@@ -112,7 +111,7 @@ export default function YlaJourney() {
 
                 {/* Connector Arrow for desktop */}
                 {!isLast && (
-                  <div className="hidden lg:block absolute top-12 -right-6 w-12 h-12 flex items-center justify-center text-[#D4AF37]/50 z-20">
+                  <div className="hidden lg:block absolute top-12 -right-8 w-12 h-12 flex items-center justify-center text-[#D4AF37]/50 z-20">
                     <ArrowRight className="w-6 h-6 animate-pulse" />
                   </div>
                 )}
