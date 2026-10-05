@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">Total Users</p>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Logged-in Users</p>
             <p className="text-2xl font-bold text-[#0B2545]">{loading ? '--' : totalUsers}</p>
           </div>
           <div className="h-12 w-12 rounded-full bg-[#0B2545]/5 flex items-center justify-center">
