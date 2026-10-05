@@ -13,11 +13,11 @@ import { Suspense } from "react";
 
 function SignUpForm() {
     const searchParams = useSearchParams();
-    const initialRole = searchParams.get("role") as "student" | "parent" | null;
+    const initialRole = searchParams.get("role") as "student" | "parent" | "admin" | null;
 
     const [step, setStep] = useState(initialRole ? 2 : 1);
     const [selectedRole, setSelectedRole] = useState<
-        "student" | "parent" | null
+        "student" | "parent" | "admin" | null
     >(initialRole);
     const router = useRouter();
     const t = useTranslations("Auth");
@@ -50,7 +50,7 @@ function SignUpForm() {
         setStep((prev) => prev - 1);
     };
 
-    const handleSelectedRole = (role: "student" | "parent") => {
+    const handleSelectedRole = (role: "student" | "parent" | "admin") => {
         setSelectedRole(role);
     };
 
@@ -201,6 +201,7 @@ function SignUpForm() {
                     last_name: formData.last_name.trim(),
                     country: formData.country,
                     preferred_language: formData.preferred_language,
+                    role: selectedRole === "admin" ? "pending_admin" : selectedRole,
 
                     phone:
                         selectedRole === "parent"
@@ -229,10 +230,11 @@ function SignUpForm() {
             // 3. FIND ROLE ID
             // ==========================================
 
+            const roleNameToQuery = selectedRole === "admin" ? "pending_admin" : selectedRole;
             const { data: roleData, error: roleError } = await supabase
                 .from("roles")
                 .select("id")
-                .eq("name", selectedRole)
+                .eq("name", roleNameToQuery)
                 .single();
 
             console.log("Testing Role: ", roleData)
@@ -293,7 +295,9 @@ function SignUpForm() {
             toast.success(
                 selectedRole === "student"
                     ? t("studentSuccess")
-                    : t("parentSuccess")
+                    : selectedRole === "parent"
+                        ? t("parentSuccess")
+                        : "Admin account created. Pending approval."
             );
 
         } catch (error) {
@@ -569,7 +573,7 @@ function SignUpForm() {
                                     <h2 className="text-center text-3xl">{t("selectRoleTitle")}</h2>
                                 </div>
 
-                                <div className="flex items-center justify-center space-x-6">
+                                <div className="flex items-center justify-center space-x-4 md:space-x-6">
 
                                     {/* Student */}
 
@@ -577,13 +581,13 @@ function SignUpForm() {
                                         onClick={() =>
                                             handleSelectedRole("student")
                                         }
-                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-5 shadow-lg border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "student"
-                                            ? "border-gold scale-110"
+                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-3 md:px-5 shadow-lg border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-105 ${selectedRole === "student"
+                                            ? "border-gold scale-105"
                                             : "border-navy"
                                             }`}
                                     >
-                                        <GraduationCap className="w-[60px] h-[60px] text-navy" />
-                                        <span className="text-navy font-semibold">{t("student")}</span>
+                                        <GraduationCap className="w-[40px] h-[40px] md:w-[60px] md:h-[60px] text-navy" />
+                                        <span className="text-navy font-semibold text-sm md:text-base">{t("student")}</span>
                                     </div>
 
                                     {/* Parent */}
@@ -592,16 +596,16 @@ function SignUpForm() {
                                         onClick={() =>
                                             handleSelectedRole("parent")
                                         }
-                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-5 border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-110 ${selectedRole === "parent"
-                                            ? "border-gold scale-110"
+                                        className={`flex flex-col items-center justify-center gap-2 py-4 px-3 md:px-5 shadow-lg border-2 rounded-xl cursor-pointer transition-all duration-300 ease-out hover:scale-105 ${selectedRole === "parent"
+                                            ? "border-gold scale-105"
                                             : "border-navy"
                                             }`}
                                     >
-                                        <Users className="w-[60px] h-[60px] text-navy" />
-                                        <span className="text-navy font-semibold">{t("parent")}</span>
+                                        <Users className="w-[40px] h-[40px] md:w-[60px] md:h-[60px] text-navy" />
+                                        <span className="text-navy font-semibold text-sm md:text-base">{t("parent")}</span>
                                     </div>
-
                                 </div>
+
 
                                 <button
                                     type="button"
@@ -678,7 +682,9 @@ function SignUpForm() {
                                     <h3 className="text-navy text-center text-2xl font-bold">
                                         {selectedRole === "student"
                                             ? t("createStudentTitle")
-                                            : t("createParentTitle")}
+                                            : selectedRole === "parent"
+                                                ? t("createParentTitle")
+                                                : "Create Admin Account"}
                                     </h3>
 
                                     <p className="mt-2 text-gray-600 text-center text-sm">{t("enterInfo")}</p>

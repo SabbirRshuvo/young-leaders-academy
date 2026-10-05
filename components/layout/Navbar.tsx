@@ -49,8 +49,7 @@ export default function Navbar() {
             name
           )
         `)
-        .eq("user_id", userId)
-        .maybeSingle();
+        .eq("user_id", userId);
 
       if (roleError) {
         console.error("Navbar role lookup error:", roleError);
@@ -62,15 +61,20 @@ export default function Navbar() {
         return;
       }
 
-      const roles = roleData?.roles;
-
+      const rolesArray = roleData || [];
+      const roleNames = rolesArray.map(r => {
+        const roles = r.roles;
+        if (Array.isArray(roles)) return roles[0]?.name;
+        if (roles && typeof roles === "object") return (roles as { name?: string }).name;
+        return null;
+      }).filter(Boolean);
+      
       let roleName: string | null = null;
-
-      if (Array.isArray(roles)) {
-        roleName = roles[0]?.name ?? null;
-      } else if (roles && typeof roles === "object") {
-        roleName = (roles as { name?: string }).name ?? null;
-      }
+      if (roleNames.includes("admin")) roleName = "admin";
+      else if (roleNames.includes("coach")) roleName = "coach";
+      else if (roleNames.includes("student")) roleName = "student";
+      else if (roleNames.includes("parent")) roleName = "parent";
+      else if (roleNames.length > 0) roleName = roleNames[0] || null;
 
       if (
         roleName === "student" ||
@@ -399,7 +403,11 @@ export default function Navbar() {
     },
     {
       name: "Programs",
-      href: "/programs",
+      href: "/admin/programs",
+    },
+    {
+      name: "Universities",
+      href: "/admin/universities",
     },
   ];
 
@@ -738,8 +746,7 @@ export default function Navbar() {
               {/* Profile dropdown */}
 
               {isProfileMenuOpen &&
-                !roleLoading &&
-                profilePath && (
+                !roleLoading && (
 
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 shadow-xl overflow-hidden">
 

@@ -44,29 +44,61 @@ export async function middleware(request: NextRequest) {
   const match = path.match(/^\/(en|ar)/);
   const locale = match ? match[1] : 'en';
 
-  const isProtectedRoute = path.includes('/student') || path.includes('/parent');
+  const isStudentRoute = path.includes('/student');
+  const isParentRoute = path.includes('/parent');
   const isAdminRoute = path.includes('/admin');
   
-  if (isProtectedRoute && !user) {
-    const redirectUrl = new URL(`/${locale}/login`, request.url);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  if (isAdminRoute) {
+  if (isStudentRoute || isParentRoute || isAdminRoute) {
     if (!user) {
       const redirectUrl = new URL(`/${locale}/login`, request.url);
       return NextResponse.redirect(redirectUrl);
     }
+
+    // Fetch user role from user_roles
+    const { data: userRolesData } = await supabase
+      .from('user_roles')
+      .select('role_id')
+      .eq('user_id', user.id);
+
+    let userRole = null;
+    if (userRolesData && userRolesData.length > 0) {
+      const { data: roleData } = await supabase
+        .from('roles')
+        .select('name')
+        .eq('id', userRolesData[0].role_id)
+        .single();
+      userRole = roleData?.name?.toLowerCase();
+    }
     
-    // Check if user is admin
-    const isAdmin = user.user_metadata?.role === 'admin' || user.app_metadata?.role === 'admin';
-    if (!isAdmin) {
-      // Fetch from profiles as fallback
-      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-      if (profile?.role !== 'admin') {
-        const redirectUrl = new URL(`/${locale}/student/dashboard`, request.url);
-        return NextResponse.redirect(redirectUrl);
+    // Fallback to metadata just in case
+    userRole = userRole || user.user_metadata?.role || user.app_metadata?.role;
+
+    const isAdminUser = userRole === 'admin' || user.email === 'adminsabbir@gmail.com';
+
+    // Strict role verification based on route
+    if (isAdminRoute && !isAdminUser) {
+      if (userRole === 'student') {
+        return NextResponse.redirect(new URL(`/${locale}/student/dashboard`, request.url));
+      } else if (userRole === 'parent') {
+        return NextResponse.redirect(new URL(`/${locale}/parent/dashboard`, request.url));
       }
+      return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+    }
+
+    if (isStudentRoute && userRole !== 'student') {
+      if (isAdminUser) {
+        return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, request.url));
+      }
+      const redirectUrl = new URL(`/${locale}/login`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (isParentRoute && userRole !== 'parent') {
+      if (isAdminUser) {
+        return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, request.url));
+      }
+      const redirectUrl = new URL(`/${locale}/login`, request.url);
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
