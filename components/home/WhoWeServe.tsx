@@ -126,65 +126,7 @@ export default function WhoWeServe() {
             </div>
           </motion.div>
 
-          {/* Card 4: Schools & Institutions */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="group relative w-full min-h-[450px] bg-[#0B2545] overflow-hidden rounded-[24px] border border-[#D4AF37]/30 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col"
-          >
-            <div className="absolute inset-0 w-full h-full">
-              <img src="/school.png" alt="Schools" className="w-full h-full object-cover object-top" />
-            </div>
-            <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-[#0B2545] via-[#0B2545]/90 to-transparent" />
 
-            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir={isAr ? 'rtl' : 'ltr'}>
-              <h3 className="text-3xl font-serif font-bold text-white mb-2">{t('schoolsTitle')}</h3>
-              <p className="text-sm font-semibold text-[#D4AF37] mb-3 uppercase tracking-wide">{t('schoolsSubtitle')}</p>
-              <p className="text-sm font-sans text-gray-300 mb-6 leading-relaxed">
-                {t('schoolsDesc')}
-              </p>
-              <div>
-                <button
-                  onClick={() => openModal('school')}
-                  className="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-xl bg-white text-[#0B2545] font-bold text-sm hover:bg-gray-100 transition-colors cursor-pointer relative z-20"
-                >
-                  {t('schoolsBtn')} {isAr ? <ArrowLeft className="w-4 h-4 text-[#D4AF37]" /> : <ArrowRight className="w-4 h-4 text-[#D4AF37]" />}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Card 5: Coaches & Experts */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="group relative w-full min-h-[450px] bg-white overflow-hidden rounded-[24px] border border-[#D4AF37]/30 shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col"
-          >
-            <div className="absolute inset-0 w-full h-full">
-              <img src="/mentor.png" alt="Coaches" className="w-full h-full object-cover object-center" />
-            </div>
-            <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-white via-white/90 to-transparent" />
-
-            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto">
-              <h3 className="text-3xl font-serif font-bold text-[#0B2545] mb-2">{t('coachesTitle')}</h3>
-              <p className="text-sm font-semibold text-[#C59B27] mb-3 uppercase tracking-wide">{t('coachesSubtitle')}</p>
-              <p className="text-sm font-sans text-gray-600 mb-6 leading-relaxed">
-                {t('coachesDesc')}
-              </p>
-              <div>
-                <button
-                  onClick={() => openModal('coach')}
-                  className="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-xl border border-[#0B2545] text-[#0B2545] font-bold text-sm hover:bg-[#0B2545]/5 transition-colors cursor-pointer relative z-20"
-                >
-                  {t('coachesBtn')} {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </motion.div>
 
         </div>
       </div>

@@ -12,37 +12,33 @@ export default function AdminUniversitiesPage() {
     const [isAdding, setIsAdding] = useState(false);
     
     const [formData, setFormData] = useState({
+        logo_url: "",
         name: "",
         country: "",
         description: "",
-        tags: "" // comma separated
+        tags: "" // comma separated or plain text
     });
 
     const handleAddSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // We can inject tags into the description JSON or handle it as plain text if it's a string column.
-        // The schema for universities has description as TEXT. We can store it as JSON string or just text.
-        // Let's store description as text, but append tags if needed, or better, make description a JSON string.
-        const descObj = {
-            text: formData.description,
-            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean)
-        };
-
         const { error } = await supabase.from("universities").insert({
+            logo_url: formData.logo_url,
             name: formData.name,
             country: formData.country,
-            description: JSON.stringify(descObj),
+            tags: formData.tags,
+            description: formData.description,
             status: 'active'
         });
 
         if (error) {
-            toast.error("Failed to add university");
+            console.error("Supabase insert error:", error);
+            toast.error(`Failed to add university: ${error.message || 'Unknown error'}`);
         } else {
             toast.success("University added successfully");
             setIsAdding(false);
             fetchUniversities();
-            setFormData({ name: "", country: "", description: "", tags: "" });
+            setFormData({ logo_url: "", name: "", country: "", description: "", tags: "" });
         }
     };
 
@@ -67,7 +63,10 @@ export default function AdminUniversitiesPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#0B2545]">Universities</h1>
+                    <h1 className="text-2xl font-bold text-[#0B2545] flex items-center gap-3">
+                        Universities
+                        {!loading && <span className="bg-gray-100 text-gray-700 text-sm py-1 px-3 rounded-full font-medium">{universities.length} Total</span>}
+                    </h1>
                     <p className="text-sm text-gray-500 mt-1">Manage university applications and database</p>
                 </div>
                 {activeTab === "Manage" && (
@@ -85,6 +84,11 @@ export default function AdminUniversitiesPage() {
                     <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <h2 className="text-xl font-bold text-[#0B2545] mb-4">Add New University</h2>
                         <form onSubmit={handleAddSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                                <input type="url" value={formData.logo_url} onChange={e => setFormData({...formData, logo_url: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="https://example.com/logo.png" />
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">University Name</label>
@@ -165,12 +169,17 @@ export default function AdminUniversitiesPage() {
                                 {universities.map((uni) => (
                                     <tr key={uni.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <div className="font-medium text-[#0B2545]">{uni.name}</div>
-                                            {uni.website && (
-                                                <a href={uni.website} target="_blank" className="text-xs text-blue-600 hover:underline flex items-center mt-1">
-                                                    <Globe className="h-3 w-3 mr-1" /> {uni.website}
-                                                </a>
-                                            )}
+                                            <div className="flex items-center gap-3">
+                                                {uni.logo_url && <img src={uni.logo_url} alt={uni.name} className="w-10 h-10 rounded-full object-cover border border-gray-100 bg-white" />}
+                                                <div>
+                                                    <div className="font-medium text-[#0B2545]">{uni.name}</div>
+                                                    {uni.website && (
+                                                        <a href={uni.website} target="_blank" className="text-xs text-blue-600 hover:underline flex items-center mt-1">
+                                                            <Globe className="h-3 w-3 mr-1" /> {uni.website}
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
                                             <div className="flex items-center">

@@ -11,6 +11,8 @@ export default function AdminDashboardPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [studentProgress, setStudentProgress] = useState<any[]>([]);
   const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [totalPrograms, setTotalPrograms] = useState<number>(0);
+  const [totalUniversities, setTotalUniversities] = useState<number>(0);
   const [totalEnrollments, setTotalEnrollments] = useState<number>(0);
   const [totalApplications, setTotalApplications] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -19,9 +21,22 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch total counts
-      const { count: usersCount } = await supabase
-        .from("profiles")
+      // Fetch exact users count matching /admin/users list
+      try {
+        const res = await fetch("/api/admin/users");
+        if (res.ok) {
+          const data = await res.json();
+          setTotalUsers(data.users?.length || 0);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users", err);
+      }
+      const { count: programsCount } = await supabase
+        .from("programs")
+        .select('*', { count: 'exact', head: true });
+        
+      const { count: universitiesCount } = await supabase
+        .from("universities")
         .select('*', { count: 'exact', head: true });
         
       const { count: enrollmentsCount } = await supabase
@@ -32,7 +47,8 @@ export default function AdminDashboardPage() {
         .from("university_applications")
         .select('*', { count: 'exact', head: true });
 
-      if (usersCount !== null) setTotalUsers(usersCount);
+      if (programsCount !== null) setTotalPrograms(programsCount);
+      if (universitiesCount !== null) setTotalUniversities(universitiesCount);
       if (enrollmentsCount !== null) setTotalEnrollments(enrollmentsCount);
       if (applicationsCount !== null) setTotalApplications(applicationsCount);
 
@@ -124,10 +140,10 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">Total Logged-in Users</p>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Users</p>
             <p className="text-2xl font-bold text-[#0B2545]">{loading ? '--' : totalUsers}</p>
           </div>
           <div className="h-12 w-12 rounded-full bg-[#0B2545]/5 flex items-center justify-center">
@@ -136,11 +152,20 @@ export default function AdminDashboardPage() {
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">Course Enrollments</p>
-            <p className="text-2xl font-bold text-[#0B2545]">{loading ? '--' : totalEnrollments}</p>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Programs</p>
+            <p className="text-2xl font-bold text-[#0B2545]">{loading ? '--' : totalPrograms}</p>
           </div>
           <div className="h-12 w-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
             <BookOpen className="h-6 w-6 text-[#D4AF37]" />
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Total Universities</p>
+            <p className="text-2xl font-bold text-[#0B2545]">{loading ? '--' : totalUniversities}</p>
+          </div>
+          <div className="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center">
+            <GraduationCap className="h-6 w-6 text-blue-600" />
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
