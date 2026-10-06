@@ -9,14 +9,18 @@ export default function AdminUniversitiesPage() {
     const [activeTab, setActiveTab] = useState<"Applications" | "Manage">("Applications");
     const [universities, setUniversities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isAdding, setIsAdding] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         logo_url: "",
         name: "",
         country: "",
+        city: "",
+        email: "",
+        phone: "",
+        website: "",
         description: "",
         tags: "" // comma separated or plain text
     });
@@ -51,28 +55,77 @@ export default function AdminUniversitiesPage() {
             finalLogoUrl = publicUrlData.publicUrl;
         }
         
-        const { error } = await supabase.from("universities").insert({
+        const payload = {
             logo_url: finalLogoUrl,
             name: formData.name,
             country: formData.country,
+            city: formData.city,
+            email: formData.email,
+            phone: formData.phone,
+            website: formData.website,
             tags: formData.tags,
             description: formData.description,
             status: 'active'
-        });
+        };
 
-        setIsUploading(false);
-
-        if (error) {
-            console.error("Supabase insert error:", error);
-            toast.error(`Failed to add university: ${error.message || 'Unknown error'}`);
+        if (editingId) {
+            const { error } = await supabase.from("universities").update(payload).eq('id', editingId);
+            setIsUploading(false);
+            if (error) {
+                toast.error(`Failed to update: ${error.message}`);
+            } else {
+                toast.success("University updated");
+                closeModal();
+                fetchUniversities();
+            }
         } else {
-            toast.success("University added successfully");
-            setIsAdding(false);
-            setImageFile(null);
-            setImagePreview(null);
-            fetchUniversities();
-            setFormData({ logo_url: "", name: "", country: "", description: "", tags: "" });
+            const { error } = await supabase.from("universities").insert(payload);
+            setIsUploading(false);
+            if (error) {
+                toast.error(`Failed to add: ${error.message}`);
+            } else {
+                toast.success("University added");
+                closeModal();
+                fetchUniversities();
+            }
         }
+    };
+
+    const handleEdit = (uni: any) => {
+        setFormData({
+            logo_url: uni.logo_url || "",
+            name: uni.name || "",
+            country: uni.country || "",
+            city: uni.city || "",
+            email: uni.email || "",
+            phone: uni.phone || "",
+            website: uni.website || "",
+            description: uni.description || "",
+            tags: uni.tags || ""
+        });
+        setImagePreview(uni.logo_url || null);
+        setImageFile(null);
+        setEditingId(uni.id);
+        setIsAdding(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this university?")) return;
+        const { error } = await supabase.from("universities").delete().eq("id", id);
+        if (error) {
+            toast.error(`Delete failed: ${error.message}`);
+        } else {
+            toast.success("University deleted");
+            fetchUniversities();
+        }
+    };
+
+    const closeModal = () => {
+        setIsAdding(false);
+        setEditingId(null);
+        setImageFile(null);
+        setImagePreview(null);
+        setFormData({ logo_url: "", name: "", country: "", city: "", email: "", phone: "", website: "", description: "", tags: "" });
     };
 
     const fetchUniversities = async () => {
@@ -147,6 +200,22 @@ export default function AdminUniversitiesPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
                                     <input required type="text" value={formData.country} onChange={e => setFormData({...formData, country: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. United States" />
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                    <input type="text" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. Stanford" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="contact@stanford.edu" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="+1 234 567 890" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                                    <input type="url" value={formData.website} onChange={e => setFormData({...formData, website: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="https://stanford.edu" />
+                                </div>
                             </div>
                             
                             <div>
@@ -160,7 +229,7 @@ export default function AdminUniversitiesPage() {
                             </div>
 
                             <div className="flex justify-end gap-3 mt-6">
-                                <button type="button" onClick={() => {setIsAdding(false); setImageFile(null); setImagePreview(null); setFormData({ logo_url: "", name: "", country: "", description: "", tags: "" });}} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
+                                <button type="button" onClick={closeModal} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
                                 <button type="submit" disabled={isUploading} className="px-4 py-2 text-sm font-medium text-white bg-[#0B2545] hover:bg-[#0B2545]/90 rounded-lg disabled:opacity-50 flex items-center">
                                     {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                                     {isUploading ? "Uploading..." : "Save University"}
@@ -254,9 +323,9 @@ export default function AdminUniversitiesPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-[#D4AF37] hover:text-[#b5952f] font-medium text-xs">Edit</button>
+                                            <button onClick={() => handleEdit(uni)} className="text-[#D4AF37] hover:text-[#b5952f] font-medium text-xs">Edit</button>
                                             <span className="text-gray-300 mx-2">|</span>
-                                            <button className="text-red-500 hover:text-red-700 font-medium text-xs">Delete</button>
+                                            <button onClick={() => handleDelete(uni.id)} className="text-red-500 hover:text-red-700 font-medium text-xs">Delete</button>
                                         </td>
                                     </tr>
                                 ))}

@@ -79,13 +79,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Failed to complete payment' }, { status: 500 });
     }
 
-    // 4. Enroll in course
+    // 4. Enroll in course (direct access since they paid)
     const { error: enrollError } = await supabase
-      .from('course_enrollments')
+      .from('program_applications')
       .insert([{
-          user_id: userId,
-          course_id: programId,
-          status: 'active'
+          student_id: userId,
+          program_id: programId,
+          status: 'accepted'
       }]);
       
     if (enrollError) {

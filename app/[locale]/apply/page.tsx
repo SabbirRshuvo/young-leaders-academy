@@ -35,6 +35,9 @@ function ApplyFormContent() {
     motivation: ''
   });
   const [applicationType, setApplicationType] = useState<'program' | 'university' | null>(null);
+  
+  // Dynamic Data
+  const [dbPrograms, setDbPrograms] = useState<any[]>([]);
 
   // Pre-fill program from URL if present
   useEffect(() => {
@@ -69,7 +72,14 @@ function ApplyFormContent() {
       }
     };
     
+    // Fetch live programs from DB
+    const fetchPrograms = async () => {
+      const { data } = await supabase.from('programs').select('id, title, price').order('created_at', { ascending: false });
+      if (data) setDbPrograms(data);
+    };
+    
     fetchUserProfile();
+    fetchPrograms();
   }, [searchParams]);
 
   const handleNext = () => {
@@ -131,10 +141,10 @@ function ApplyFormContent() {
       let courseDbId: string | undefined;
 
       if (applicationType === 'program') {
-        const foundProgram = programsData.find((p) => p.id === programId);
+        const foundProgram = dbPrograms.find((p) => p.id === programId);
         if (foundProgram) {
-          programTitle = isAr ? foundProgram.title.ar : foundProgram.title.en;
-          courseDbId = foundProgram.courseDbId;
+          programTitle = typeof foundProgram.title === 'string' ? foundProgram.title : foundProgram.title?.en;
+          courseDbId = foundProgram.id;
         }
       } else {
         const foundUni = universitiesData.find((u) => u.id === programId);
@@ -162,7 +172,7 @@ function ApplyFormContent() {
         programTitle,
         motivation: formData.motivation.trim(),
         locale,
-        baseAmount: 1500,
+        baseAmount: dbPrograms.find(p => p.id === programId)?.price || 1500,
       };
 
       // ----------------------------------------
@@ -384,8 +394,8 @@ function ApplyFormContent() {
                   
                   {(!applicationType || applicationType === 'program') && (
                     <optgroup label={isAr ? "البرامج" : "Programs"}>
-                      {programsData.map(p => (
-                        <option key={p.id} value={p.id}>{l(p.title)}</option>
+                      {dbPrograms.map(p => (
+                        <option key={p.id} value={p.id}>{typeof p.title === 'string' ? p.title : p.title?.en}</option>
                       ))}
                     </optgroup>
                   )}

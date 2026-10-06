@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Shield, ShieldOff, Loader2 } from "lucide-react";
+import { Users, Shield, ShieldOff, Loader2, Eye, BookOpen, CheckCircle, Clock, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
 
@@ -19,6 +19,11 @@ export default function AdminUsersPage() {
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"All" | "Students" | "Parents" | "Admins">("All");
+
+    // Student Details Modal State
+    const [selectedStudent, setSelectedStudent] = useState<UserData | null>(null);
+    const [studentDetails, setStudentDetails] = useState<{ profile: any, enrollments: any[], progress: any[] } | null>(null);
+    const [loadingDetails, setLoadingDetails] = useState(false);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -76,6 +81,32 @@ export default function AdminUsersPage() {
         if (activeTab === "Admins") return user.roles.includes("admin");
         return true;
     });
+
+    const openStudentDetails = async (user: UserData) => {
+        setSelectedStudent(user);
+        setStudentDetails(null);
+        setLoadingDetails(true);
+        try {
+            const res = await fetch(`/api/admin/users/${user.id}`);
+            if (!res.ok) throw new Error("Failed to fetch student details");
+            const data = await res.json();
+            setStudentDetails({ 
+                profile: data.profile || null,
+                enrollments: data.enrollments || [], 
+                progress: data.progress || [] 
+            });
+        } catch (error) {
+            console.error("Gracefully caught details error:", error);
+            // DO NOT CRASH: just show whatever basic info we have
+            setStudentDetails({
+                profile: null,
+                enrollments: [],
+                progress: []
+            });
+        } finally {
+            setLoadingDetails(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -157,7 +188,15 @@ export default function AdminUsersPage() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <button
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => openStudentDetails(user)}
+                                                        className="inline-flex items-center justify-center px-3 py-2 text-xs font-bold rounded-lg transition-all bg-gray-100 text-[#0B2545] hover:bg-gray-200"
+                                                    >
+                                                        <Eye className="h-4 w-4 mr-1.5" />
+                                                        View Activity
+                                                    </button>
+                                                    <button
                                                     onClick={() => toggleAdminRole(user.id, user.roles, user.email)}
                                                     disabled={isMaster || processingId === user.id}
                                                     className={`inline-flex items-center justify-center px-4 py-2 text-xs font-bold rounded-lg transition-all ${
@@ -181,7 +220,8 @@ export default function AdminUsersPage() {
                                                             Make Admin
                                                         </>
                                                     )}
-                                                </button>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -198,6 +238,109 @@ export default function AdminUsersPage() {
                     )}
                 </div>
             </div>
+
+            {/* Student Details Modal */}
+            {selectedStudent && (
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
+                        {/* Header */}
+                        <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex justify-between items-start z-10">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                                <div>
+                                    <h2 className="text-xl font-bold text-[#0B2545]">
+                                        {selectedStudent.first_name} {selectedStudent.last_name}
+                                    </h2>
+                                    <p className="text-sm text-gray-500">{selectedStudent.email}</p>
+                                </div>
+                                {studentDetails?.profile && (
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold w-max ${
+                                        (studentDetails.profile.is_online || studentDetails.profile.status === 'active') 
+                                        ? "bg-green-50 text-green-700 border border-green-200" 
+                                        : "bg-gray-50 text-gray-600 border border-gray-200"
+                                    }`}>
+                                        <span className={`w-2 h-2 rounded-full ${
+                                            (studentDetails.profile.is_online || studentDetails.profile.status === 'active') 
+                                            ? "bg-green-500 animate-pulse" 
+                                            : "bg-gray-400"
+                                        }`}></span>
+                                        {(studentDetails.profile.is_online || studentDetails.profile.status === 'active') ? "Online / Active" : "Offline"}
+                                    </span>
+                                )}
+                            </div>
+                            <button 
+                                onClick={() => setSelectedStudent(null)}
+                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6">
+                            {loadingDetails ? (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37] mb-2" />
+                                    <p className="text-sm text-gray-500">Loading student activity...</p>
+                                </div>
+                            ) : studentDetails ? (
+                                <div className="space-y-6">
+                                    
+                                    {/* Stats Summary */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-3">
+                                            <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><BookOpen className="w-5 h-5" /></div>
+                                            <div>
+                                                <div className="text-sm text-gray-500 font-medium">Enrollments</div>
+                                                <div className="text-xl font-bold text-[#0B2545]">{studentDetails.enrollments.length}</div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center gap-3">
+                                            <div className="bg-green-100 p-2 rounded-lg text-green-600"><CheckCircle className="w-5 h-5" /></div>
+                                            <div>
+                                                <div className="text-sm text-gray-500 font-medium">Completed Items</div>
+                                                <div className="text-xl font-bold text-[#0B2545]">{studentDetails.progress.length}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Enrollments List */}
+                                    <div>
+                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Enrolled Programs</h3>
+                                        {studentDetails.enrollments.length === 0 ? (
+                                            <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg text-center border border-gray-100">
+                                                This student is not enrolled in any programs.
+                                            </p>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {studentDetails.enrollments.map((enrollment, idx) => (
+                                                    <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center hover:border-blue-200 transition-colors">
+                                                        <div>
+                                                            <div className="font-bold text-[#0B2545]">{enrollment.program?.title || "Unknown Program"}</div>
+                                                            <div className="text-xs text-gray-500 flex items-center mt-1">
+                                                                <Clock className="w-3 h-3 mr-1" /> Enrolled on {new Date(enrollment.created_at).toLocaleDateString()}
+                                                            </div>
+                                                        </div>
+                                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                                                            enrollment.status === 'active' 
+                                                                ? "bg-green-50 text-green-700 border-green-200" 
+                                                                : "bg-gray-100 text-gray-600 border-gray-200"
+                                                        }`}>
+                                                            {enrollment.status}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 text-red-500">Failed to load data.</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

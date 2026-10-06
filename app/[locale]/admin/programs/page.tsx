@@ -393,7 +393,7 @@ export default function AdminProgramsPage() {
                                                 <div className="font-bold text-[#0B2545] mt-1">${prog.price || '0.00'}</div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <Link href={`/${locale}/admin/programs/${prog.id}/modules`} className="text-[#0B2545] hover:underline font-medium text-xs">Manage Modules</Link>
+                                                <Link href={`/${locale}/admin/modules?programId=${prog.id}`} className="text-[#0B2545] hover:underline font-medium text-xs">Manage Modules</Link>
                                                 <span className="text-gray-300 mx-2">|</span>
                                                 <button onClick={() => handleEdit(prog)} className="text-[#D4AF37] hover:text-[#b5952f] font-medium text-xs">Edit</button>
                                                 <span className="text-gray-300 mx-2">|</span>

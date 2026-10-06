@@ -4,38 +4,38 @@ import Link from "next/link";
 import {
     BookOpen,
     ChevronRight,
-    FileText,
-    GraduationCap,
     Sparkles,
-    X
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
-import { programsData } from "@/data/programs";
-import { useTranslations } from "next-intl";
-type CourseProgressData = {
-    course_id: string;
-    title: { en: string; ar: string } | string;
-    description: { en: string; ar: string } | string | null;
-    thumbnail: string | null;
-    totalLessons: number;
-    completedLessons: number;
+import { useTranslations, useLocale } from "next-intl";
+import Image from "next/image";
+
+type EnrolledProgramData = {
+    id: string;
+    program_id: string;
+    status: string;
+    program: {
+        id: string;
+        title: string | any;
+        description: string | any;
+        cover_image_url: string;
+    } | null;
+    completedContentsCount: number;
+    totalContentsCount: number;
     progressPercentage: number;
 };
 
 export default function EnrolledProgramsPage() {
-
-    const [enrolledCourses, setEnrolledCourses] = useState<CourseProgressData[]>([]);
+    const [enrollments, setEnrollments] = useState<EnrolledProgramData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
     const params = useParams();
     const locale = (params.locale as string) || "en";
-    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -54,184 +54,93 @@ export default function EnrolledProgramsPage() {
             if (userError) throw userError;
 
             if (!user) {
-                setError("You must be logged in.");
+                setError("You must be logged in to view your enrolled programs.");
                 return;
             }
 
-
-
-            // Fetch enrolled courses from the dedicated enrollment table, joined with courses
-            const { data: enrollments, error: enrollError } = await supabase
-                .from("course_enrollments")
+            // Fetch approved applications for this student
+            const { data: appsData, error: appsError } = await supabase
+                .from("program_applications")
                 .select(`
-                    course_id,
-                    courses (
+                    id,
+                    program_id,
+                    status,
+                    program:programs (
                         id,
                         title,
-                        description
+                        description,
+                        cover_image_url
                     )
                 `)
-                .eq("user_id", user.id);
+                .eq("student_id", user.id)
+                .eq("status", "accepted");
 
-            if (enrollError) {
-                console.warn("[DEBUG] Could not fetch course_enrollments:", enrollError);
+            if (appsError) throw appsError;
+
+            if (!appsData || appsData.length === 0) {
+                setEnrollments([]);
+                setLoading(false);
+                return;
             }
 
-            console.log("[DEBUG] Fetched Enrollments:", enrollments);
+            // For progress tracking, we need to know how many contents exist for each program
+            // and how many this user has completed in `user_progress`
+            const programIds = appsData.map(a => a.program_id);
 
-            // Filter and map enrollments, filling in missing DB courses from programsData fallback
-            let coursesData = (enrollments || []).map(e => {
-                if (e.courses) return e.courses;
+            // Fetch all modules & contents for these programs to get total counts
+            const { data: modulesData } = await supabase
+                .from("modules")
+                .select(`id, program_id, module_contents(id)`)
+                .in("program_id", programIds);
 
-                console.log(`[DEBUG] Missing DB course for ${e.course_id}, using fallback mapping.`);
-                const prog = programsData.find(p => p.courseDbId === e.course_id || p.id === e.course_id);
-                return {
-                    id: e.course_id,
-                    title: prog ? prog.title : "Enrolled Program",
-                    description: prog ? prog.overview : "",
-                    thumbnail: prog ? prog.heroImage : null
-                };
-            }) as any[];
+            // Fetch user progress for these contents
+            const { data: progressData } = await supabase
+                .from("user_progress")
+                .select("content_id, is_completed")
+                .eq("student_id", user.id)
+                .eq("is_completed", true);
 
-            const courseIds = Array.from(new Set(coursesData.map(c => c.id).filter(Boolean)));
+            const completedContentIds = new Set(progressData?.map(p => p.content_id) || []);
 
-            if (courseIds.length > 0) {
+            // Process stats per program
+            const finalEnrollments = appsData.map(app => {
+                let totalContentsCount = 0;
+                let completedContentsCount = 0;
 
-                if (coursesData && coursesData.length > 0) {
-                    const fetchedCourseIds = coursesData.map(c => c.id);
-
-                    console.log("[DEBUG] Fetching modules for course IDs:", fetchedCourseIds);
-                    // Fetch modules
-                    const { data: modulesData, error: modulesError } = await supabase
-                        .from("modules")
-                        .select("id, course_id")
-                        .in("course_id", fetchedCourseIds);
-
-                    if (modulesError) throw modulesError;
-
-                    const moduleIds = modulesData?.map(m => m.id) || [];
-
-                    let lessonsData: any[] = [];
-                    if (moduleIds.length > 0) {
-                        const { data, error: lessonsError } = await supabase
-                            .from("lessons")
-                            .select("id, module_id")
-                            .in("module_id", moduleIds);
-
-                        if (lessonsError) throw lessonsError;
-                        lessonsData = data || [];
-                    }
-
-                    // Fetch course progress using the unified schema
-                    const { data: progressData, error: progressError } = await supabase
-                        .from("course_progress")
-                        .select("program_id, completed_lessons")
-                        .eq("student_id", user.id);
-
-                    if (progressError) throw progressError;
-
-                    const courseStats: CourseProgressData[] = coursesData.map(course => {
-                        const courseModules = modulesData?.filter(m => m.course_id === course.id) || [];
-                        const courseModuleIds = new Set(courseModules.map(m => m.id));
-                        const courseLessons = lessonsData.filter(l => courseModuleIds.has(l.module_id));
-
-                        const fallbackProgram = programsData.find(p => p.courseDbId === course.id || p.id === course.id);
-
-                        // 4.5 Fallback for missing curriculum (consistent with CoursePlayerPage)
-                        let totalLessonsCount = courseLessons.length;
-                        if (totalLessonsCount === 0) {
-                            if (fallbackProgram && fallbackProgram.curriculum) {
-                                totalLessonsCount = fallbackProgram.curriculum.length;
-                            } else {
-                                totalLessonsCount = 1;
-                            }
+                const progModules = modulesData?.filter(m => m.program_id === app.program_id) || [];
+                
+                progModules.forEach(mod => {
+                    const contents = mod.module_contents || [];
+                    totalContentsCount += contents.length;
+                    contents.forEach((content: any) => {
+                        if (completedContentIds.has(content.id)) {
+                            completedContentsCount++;
                         }
-
-                        // Retrieve the specific progress record for this course
-                        const prog = progressData?.find(p => p.program_id === course.id || (fallbackProgram && p.program_id === fallbackProgram.id));
-                        const completedLessonIds = new Set(prog?.completed_lessons || []);
-
-                        const completedLessons = completedLessonIds.size;
-                        const progressPercentage = totalLessonsCount > 0 ? Math.round((completedLessons / totalLessonsCount) * 100) : 0;
-
-                        return {
-                            course_id: course.id,
-                            title: course.title,
-                            description: course.description,
-                            thumbnail: (course as any).thumbnail || null,
-                            totalLessons: totalLessonsCount,
-                            completedLessons,
-                            progressPercentage
-                        };
                     });
+                });
 
-                    setEnrolledCourses(courseStats);
-                }
-            }
+                const progressPercentage = totalContentsCount > 0 
+                    ? Math.round((completedContentsCount / totalContentsCount) * 100) 
+                    : 0;
+
+                return {
+                    id: app.id,
+                    program_id: app.program_id,
+                    status: app.status,
+                    program: Array.isArray(app.program) ? app.program[0] : app.program, // Handle potential array join issue
+                    totalContentsCount,
+                    completedContentsCount,
+                    progressPercentage
+                };
+            });
+
+            setEnrollments(finalEnrollments as EnrolledProgramData[]);
+
         } catch (err) {
             console.error("Error fetching data:", err);
             setError(err instanceof Error ? err.message : "Failed to load data.");
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleMockEnroll = async () => {
-        try {
-            setActionLoading(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Not logged in");
-
-            // 1. Fetch any existing course
-            const { data: existingCourses, error: fetchErr } = await supabase
-                .from("courses")
-                .select("id")
-                .limit(1);
-
-            if (fetchErr) throw fetchErr;
-
-            let courseId = existingCourses?.[0]?.id;
-
-            // 2. If no course exists, create a dummy one
-            if (!courseId) {
-                const { data: newCourse, error: insertErr } = await supabase
-                    .from("courses")
-                    .insert({
-                        title: { en: "Mock Test Course", ar: "دورة تجريبية" },
-                        description: { en: "This is a generated mock course.", ar: "هذه دورة تجريبية تم إنشاؤها." }
-                    })
-                    .select("id")
-                    .single();
-
-                if (insertErr) throw insertErr;
-                courseId = newCourse.id;
-            }
-
-            // 3. Check if already enrolled to avoid duplicates
-            const { data: existingEnrollment } = await supabase
-                .from("course_enrollments")
-                .select("id")
-                .eq("user_id", user.id)
-                .eq("course_id", courseId)
-                .maybeSingle();
-
-            if (!existingEnrollment) {
-                // 4. Insert enrollment
-                const { error: enrollErr } = await supabase
-                    .from("course_enrollments")
-                    .insert({ user_id: user.id, course_id: courseId });
-
-                if (enrollErr) throw enrollErr;
-            }
-
-            toast.success("Successfully enrolled in mock course!");
-            await fetchData(); // Refresh the list
-            router.refresh();
-        } catch (err: any) {
-            console.error("Mock enroll error:", err);
-            toast.error(err.message || "Failed to mock enroll");
-        } finally {
-            setActionLoading(false);
         }
     };
 
@@ -269,7 +178,7 @@ export default function EnrolledProgramsPage() {
                                 My Learning Hub
                             </h1>
                             <p className="mt-2 text-sm text-white/70">
-                                Track your enrolled courses and recent applications.
+                                Access the programs you have been accepted into and track your progress.
                             </p>
                         </div>
                     </div>
@@ -280,66 +189,58 @@ export default function EnrolledProgramsPage() {
                     <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545] flex items-center gap-2">
-                                My Enrolled Courses
+                                Active Enrollments
                                 <span className="flex items-center justify-center bg-[#D4AF37]/20 text-[#D4AF37] text-xs font-bold px-2.5 py-0.5 rounded-full">
-                                    {enrolledCourses.length}
+                                    {enrollments.length}
                                 </span>
                             </h2>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Continue learning and track your progress.
-                            </p>
                         </div>
-
-                        {/* MOCK COURSE TEST BUTTON */}
-                        <button
-                            onClick={handleMockEnroll}
-                            disabled={actionLoading}
-                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-5 text-sm font-bold text-[#0B2545] shadow-sm hover:bg-[#b5952f] transition-all disabled:opacity-50"
-                        >
-                            <Sparkles className="h-4 w-4" />
-                            {actionLoading ? "Enrolling..." : "Test Mock Course"}
-                        </button>
                     </div>
 
-                    {enrolledCourses.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center">
-                            <BookOpen className="mx-auto h-8 w-8 text-gray-400" />
-                            <p className="mt-3 text-sm font-medium text-gray-600">
-                                You are not enrolled in any programs yet.
+                    {enrollments.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-12 text-center">
+                            <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                            <h3 className="text-lg font-bold text-[#0B2545] mb-2">No Active Enrollments</h3>
+                            <p className="text-sm font-medium text-gray-500 max-w-md mx-auto">
+                                You are not currently enrolled in any programs, or your application is still pending approval.
                             </p>
-                            <Link href={`/${locale}/programs`} className="mt-4 inline-flex h-9 items-center justify-center rounded-full bg-[#0B2545] px-4 text-xs font-semibold text-white">
+                            <Link href={`/${locale}/programs`} className="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-[#0B2545] hover:bg-[#071931] px-6 text-sm font-semibold text-white transition-colors">
                                 Browse Programs
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                            {enrolledCourses.map((course) => {
-                                const { totalLessons, completedLessons, progressPercentage } = course;
-                                const hasStarted = progressPercentage > 0;
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            {enrollments.map((enrollment) => {
+                                const { program, totalContentsCount, completedContentsCount, progressPercentage, program_id } = enrollment;
+                                if (!program) return null;
 
-                                const courseTitle = typeof course.title === 'string' ? course.title : (course.title?.en || "Enrolled Program");
-                                const courseDesc = typeof course.description === 'string' ? course.description : (course.description?.en || "");
+                                const title = typeof program.title === 'string' ? program.title : (program.title?.en || "Unknown");
 
                                 return (
                                     <div
-                                        key={course.course_id}
-                                        className="group flex flex-col justify-between overflow-hidden rounded-xl border border-gray-100 bg-white p-6 transition-all hover:border-[#D4AF37]/50 hover:shadow-lg"
+                                        key={enrollment.id}
+                                        className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all hover:border-[#D4AF37]/50 hover:shadow-xl"
                                     >
-                                        <div>
-                                            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B2545]/5 group-hover:bg-[#D4AF37]/10 transition-colors">
-                                                <BookOpen className="h-7 w-7 text-[#0B2545] group-hover:text-[#D4AF37] transition-colors" />
+                                        <div className="relative w-full h-[180px] bg-gray-100">
+                                            {program.cover_image_url ? (
+                                                <Image src={program.cover_image_url} alt={title} fill className="object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-400"><BookOpen className="w-10 h-10 opacity-30" /></div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                            <div className="absolute bottom-4 left-4 right-4">
+                                                <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight">
+                                                    {title}
+                                                </h3>
                                             </div>
-                                            <h3 className="mb-2 text-xl font-bold text-[#0B2545] group-hover:text-[#D4AF37] transition-colors line-clamp-2">
-                                                {courseTitle}
-                                            </h3>
                                         </div>
 
-                                        <div className="mt-6 flex flex-col gap-6">
+                                        <div className="flex flex-col p-6 flex-1 bg-white">
                                             {/* Dynamic Progress Tracker */}
-                                            <div className="w-full">
+                                            <div className="w-full mt-auto">
                                                 <div className="flex justify-between text-xs text-gray-500 mb-2 font-medium">
-                                                    <span>Progress: {completedLessons} of {totalLessons} Lessons Completed</span>
-                                                    <span className="font-bold text-[#0B2545]">{progressPercentage}%</span>
+                                                    <span>Progress: {completedContentsCount} of {totalContentsCount} Items</span>
+                                                    <span className="font-bold text-[#D4AF37]">{progressPercentage}%</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                                                     <div
@@ -350,11 +251,11 @@ export default function EnrolledProgramsPage() {
                                             </div>
 
                                             <Link
-                                                href={`/${locale}/student/course/${course.course_id}`}
-                                                className="w-full inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-4 text-base font-bold text-white transition-all hover:bg-[#D4AF37] hover:text-[#0B2545] hover:scale-[1.02] active:scale-95 shadow-md"
+                                                href={`/${locale}/programs/${program_id}/play`}
+                                                className="w-full inline-flex mt-6 h-12 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-4 text-sm font-bold text-white transition-transform hover:scale-[1.02] active:scale-95 shadow-md group/btn"
                                             >
-                                                Start Course
-                                                <ChevronRight className="w-5 h-5" />
+                                                {progressPercentage > 0 ? "Continue Learning" : "Start Program"}
+                                                <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                             </Link>
                                         </div>
                                     </div>

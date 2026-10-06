@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, PlayCircle, FileText, CheckCircle, ArrowLeft
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
+import QuizPlayer from "@/components/programs/QuizPlayer";
 
 export default function CoursePlayerPage() {
     const params = useParams();
@@ -53,29 +54,60 @@ export default function CoursePlayerPage() {
         }
         setProgram(progData);
 
-        // Fetch Modules and Contents
-        const { data: modData, error: modError } = await supabase
+        // Fetch Modules (Sequential to avoid PGRST200 nested join errors)
+        const { data: rawModules, error: modError } = await supabase
             .from("modules")
-            .select(`
-                *,
-                module_contents (*)
-            `)
+            .select("*")
             .eq("program_id", programId)
             .order("order_index", { ascending: true });
 
-        let sortedModules: any[] = [];
-        if (!modError && modData) {
-            sortedModules = modData.map(m => ({
+        if (modError) {
+            console.error("Supabase Modules Fetch Error:", modError);
+            toast.error("Failed to load modules");
+            setLoading(false);
+            return;
+        }
+
+        let rawContents: any[] = [];
+        if (rawModules && rawModules.length > 0) {
+            const moduleIds = rawModules.map(m => m.id);
+            const { data: contentsData } = await supabase
+                .from("module_contents")
+                .select("*")
+                .in("module_id", moduleIds)
+                .order("order_index", { ascending: true });
+            
+            rawContents = contentsData || [];
+        }
+
+        const assembledModules = (rawModules || []).map(m => {
+            const hasModuleContent = m.video_url || m.pdf_url || m.description || m.quiz_url;
+            
+            // If the module has its own content fields, treat it as the first playable item!
+            const overviewItem = hasModuleContent ? [{
+                id: m.id, 
+                title: "Module Overview",
+                content_type: "module_overview",
+                video_url: m.video_url,
+                pdf_url: m.pdf_url,
+                body_text: m.description,
+                quiz_url: m.quiz_url,
+                order_index: -1
+            }] : [];
+
+            return {
                 ...m,
-                module_contents: (m.module_contents || []).sort((a: any, b: any) => a.order_index - b.order_index)
-            }));
-            setModules(sortedModules);
-            // Expand first module by default
-            if (sortedModules.length > 0) {
-                setExpandedModules([sortedModules[0].id]);
-                if (sortedModules[0].module_contents.length > 0) {
-                    setActiveContent(sortedModules[0].module_contents[0]);
-                }
+                module_contents: [...overviewItem, ...rawContents.filter((c: any) => c.module_id === m.id)]
+            };
+        });
+
+        setModules(assembledModules);
+        
+        // Expand first module by default
+        if (assembledModules.length > 0) {
+            setExpandedModules([assembledModules[0].id]);
+            if (assembledModules[0].module_contents.length > 0) {
+                setActiveContent(assembledModules[0].module_contents[0]);
             }
         }
 
@@ -83,7 +115,7 @@ export default function CoursePlayerPage() {
         const { data: progressData, error: progressError } = await supabase
             .from("user_progress")
             .select("*")
-            .eq("user_id", session.user.id);
+            .eq("student_id", session.user.id);
             
         if (progressData) {
             setUserProgress(progressData);
@@ -110,20 +142,15 @@ export default function CoursePlayerPage() {
         setIsMarking(true);
         const completed = isContentCompleted(contentId);
         
-        // We will optimistically use 'content_id' but fallback gracefully
-        const payload = { user_id: user.id, content_id: contentId, is_completed: true, completed_at: new Date().toISOString() };
+        const payload = { student_id: user.id, content_id: contentId, is_completed: true, completed_at: new Date().toISOString() };
         
         if (completed) {
             // Unmark
-            await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
-            await supabase.from("user_progress").delete().match({ user_id: user.id, lesson_id: contentId }); // fallback cleanup
-            setUserProgress(prev => prev.filter(p => p.content_id !== contentId && p.lesson_id !== contentId));
+            await supabase.from("user_progress").delete().match({ student_id: user.id, content_id: contentId });
+            setUserProgress(prev => prev.filter(p => p.content_id !== contentId));
         } else {
-            // Mark - try with content_id first, if it fails because column doesn't exist, try lesson_id
-            const { error } = await supabase.from("user_progress").insert(payload);
-            if (error && error.message.includes("content_id")) {
-                await supabase.from("user_progress").insert({ user_id: user.id, lesson_id: contentId, is_completed: true, completed_at: new Date().toISOString() });
-            }
+            // Mark
+            await supabase.from("user_progress").insert(payload);
             setUserProgress(prev => [...prev, payload]);
         }
         setIsMarking(false);
@@ -155,7 +182,6 @@ export default function CoursePlayerPage() {
         }
 
         const type = activeContent.content_type;
-        const urlOrText = activeContent.content_url_or_text;
 
         return (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -163,9 +189,9 @@ export default function CoursePlayerPage() {
                 {/* Media Area based on type */}
                 {type === 'video' && (
                     <div className="aspect-video bg-black relative flex items-center justify-center">
-                        {urlOrText ? (
+                        {activeContent.video_url ? (
                             <iframe 
-                                src={urlOrText} 
+                                src={activeContent.video_url} 
                                 className="w-full h-full absolute inset-0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowFullScreen
@@ -181,8 +207,8 @@ export default function CoursePlayerPage() {
 
                 {type === 'pdf' && (
                     <div className="aspect-video bg-gray-100 border-b border-gray-200 relative flex items-center justify-center">
-                        {urlOrText ? (
-                            <iframe src={`${urlOrText}#toolbar=0`} className="w-full h-full absolute inset-0"></iframe>
+                        {activeContent.pdf_url ? (
+                            <iframe src={`${activeContent.pdf_url}#toolbar=0`} className="w-full h-full absolute inset-0"></iframe>
                         ) : (
                             <div className="text-gray-400 flex flex-col items-center">
                                 <FileText className="h-16 w-16 mb-2 opacity-50" />
@@ -205,17 +231,65 @@ export default function CoursePlayerPage() {
                     {type === 'text' && (
                         <div className="mt-6 prose prose-blue max-w-none text-gray-700">
                             {/* In a real app, this might be parsed markdown or HTML */}
-                            <div className="whitespace-pre-wrap leading-relaxed">{urlOrText}</div>
+                            <div className="whitespace-pre-wrap leading-relaxed">{activeContent.body_text}</div>
                         </div>
                     )}
 
                     {type === 'quiz' && (
-                        <div className="mt-6 bg-blue-50 border border-blue-100 p-6 rounded-xl">
-                            <h3 className="font-bold text-[#0B2545] text-lg mb-2 flex items-center gap-2"><HelpCircle className="w-5 h-5" /> Quiz Component</h3>
-                            <p className="text-gray-600 text-sm mb-4">Quiz data is ready. You would render your quiz UI mapping over this JSON:</p>
-                            <pre className="bg-gray-800 text-gray-200 p-4 rounded-lg text-xs overflow-x-auto">
-                                {urlOrText}
-                            </pre>
+                        <div className="mt-6">
+                            <QuizPlayer 
+                                quizJsonStr={activeContent.quiz_data ? JSON.stringify(activeContent.quiz_data) : '[]'} 
+                                onComplete={() => toggleContentCompletion(activeContent.id)}
+                            />
+                        </div>
+                    )}
+
+                    {type === 'module_overview' && (
+                        <div className="mt-6 space-y-8">
+                            {/* Description */}
+                            {activeContent.body_text && (
+                                <div className="prose prose-blue max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    {activeContent.body_text}
+                                </div>
+                            )}
+
+                            {/* Video */}
+                            {activeContent.video_url && (
+                                <div className="mt-4">
+                                    <h3 className="text-lg font-bold text-[#0B2545] mb-3 flex items-center gap-2"><Video className="w-5 h-5 text-blue-500"/> Module Video</h3>
+                                    <div className="aspect-video bg-black rounded-xl overflow-hidden relative">
+                                        <iframe src={activeContent.video_url} className="w-full h-full absolute inset-0" allowFullScreen></iframe>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PDF */}
+                            {activeContent.pdf_url && (
+                                <div className="mt-4">
+                                    <h3 className="text-lg font-bold text-[#0B2545] mb-3 flex items-center gap-2"><FileText className="w-5 h-5 text-red-500"/> Module PDF Resource</h3>
+                                    <div className="aspect-[4/3] sm:aspect-video bg-gray-100 rounded-xl overflow-hidden relative border border-gray-200">
+                                        <iframe src={`${activeContent.pdf_url}#toolbar=0`} className="w-full h-full absolute inset-0"></iframe>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Quiz Link */}
+                            {activeContent.quiz_url && (
+                                <div className="mt-4 p-6 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-[#0B2545] flex items-center gap-2"><HelpCircle className="w-5 h-5 text-blue-600"/> Module Assessment</h3>
+                                        <p className="text-sm text-gray-600 mt-1">Take the quiz to test your knowledge.</p>
+                                    </div>
+                                    <a 
+                                        href={activeContent.quiz_url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="px-5 py-2.5 bg-[#0B2545] text-white font-bold rounded-lg text-sm hover:bg-[#0B2545]/90 transition-colors"
+                                    >
+                                        Open Quiz
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     )}
 
