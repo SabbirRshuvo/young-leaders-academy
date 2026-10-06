@@ -10,7 +10,9 @@ export default function AdminUniversitiesPage() {
     const [universities, setUniversities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
-    
+    const [isUploading, setIsUploading] = useState(false);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         logo_url: "",
         name: "",
@@ -21,9 +23,36 @@ export default function AdminUniversitiesPage() {
 
     const handleAddSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsUploading(true);
+
+        let finalLogoUrl = formData.logo_url;
+
+        // 1. Upload image if a new file is selected
+        if (imageFile) {
+            const fileExt = imageFile.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+            const filePath = `universities/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('public-media')
+                .upload(filePath, imageFile);
+
+            if (uploadError) {
+                console.error("Upload Error:", uploadError);
+                toast.error(`Failed to upload logo: ${uploadError.message}`);
+                setIsUploading(false);
+                return;
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('public-media')
+                .getPublicUrl(filePath);
+
+            finalLogoUrl = publicUrlData.publicUrl;
+        }
         
         const { error } = await supabase.from("universities").insert({
-            logo_url: formData.logo_url,
+            logo_url: finalLogoUrl,
             name: formData.name,
             country: formData.country,
             tags: formData.tags,
@@ -31,12 +60,16 @@ export default function AdminUniversitiesPage() {
             status: 'active'
         });
 
+        setIsUploading(false);
+
         if (error) {
             console.error("Supabase insert error:", error);
             toast.error(`Failed to add university: ${error.message || 'Unknown error'}`);
         } else {
             toast.success("University added successfully");
             setIsAdding(false);
+            setImageFile(null);
+            setImagePreview(null);
             fetchUniversities();
             setFormData({ logo_url: "", name: "", country: "", description: "", tags: "" });
         }
@@ -85,8 +118,24 @@ export default function AdminUniversitiesPage() {
                         <h2 className="text-xl font-bold text-[#0B2545] mb-4">Add New University</h2>
                         <form onSubmit={handleAddSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
-                                <input type="url" value={formData.logo_url} onChange={e => setFormData({...formData, logo_url: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="https://example.com/logo.png" />
+                                <label className="block text-sm font-medium text-gray-700 mb-1">University Logo</label>
+                                <div className="flex items-center gap-4">
+                                    {imagePreview && (
+                                        <img src={imagePreview} alt="Preview" className="w-16 h-16 rounded object-cover border border-gray-200" />
+                                    )}
+                                    <input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setImageFile(file);
+                                                setImagePreview(URL.createObjectURL(file));
+                                            }
+                                        }} 
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -111,8 +160,11 @@ export default function AdminUniversitiesPage() {
                             </div>
 
                             <div className="flex justify-end gap-3 mt-6">
-                                <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-[#0B2545] hover:bg-[#0B2545]/90 rounded-lg">Save University</button>
+                                <button type="button" onClick={() => {setIsAdding(false); setImageFile(null); setImagePreview(null); setFormData({ logo_url: "", name: "", country: "", description: "", tags: "" });}} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
+                                <button type="submit" disabled={isUploading} className="px-4 py-2 text-sm font-medium text-white bg-[#0B2545] hover:bg-[#0B2545]/90 rounded-lg disabled:opacity-50 flex items-center">
+                                    {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                                    {isUploading ? "Uploading..." : "Save University"}
+                                </button>
                             </div>
                         </form>
                     </div>

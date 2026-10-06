@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
-import { LayoutDashboard, GraduationCap, Users, Settings, LogOut, FileText, Building2 } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Users, Settings, LogOut, FileText, Building2, BookOpen } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -26,6 +26,7 @@ export default function AdminLayout({
     { name: "Dashboard", href: `/${locale}/admin/dashboard`, icon: LayoutDashboard },
     { name: "Users", href: `/${locale}/admin/users`, icon: Users },
     { name: "Programs", href: `/${locale}/admin/programs`, icon: GraduationCap },
+    { name: "Modules", href: `/${locale}/admin/modules`, icon: BookOpen },
     { name: "Universities", href: `/${locale}/admin/universities`, icon: Building2 },
   ];
 
