@@ -153,22 +153,47 @@ export default function AdminProgramsPage() {
 
     const fetchApplications = async () => {
         setLoading(true);
-        // Attempt to fetch applications, optionally joining profiles if they exist
-        const { data, error } = await supabase
+        // Fetch applications without profiles join
+        const { data: appsData, error } = await supabase
             .from("program_applications")
-            .select("*, program:programs(title), profile:profiles(full_name, email)")
+            .select("*, program:programs(title)")
             .order("created_at", { ascending: false });
 
         if (error) {
-            // Fallback if profiles relationship fails
-            const { data: fallbackData } = await supabase
-                .from("program_applications")
-                .select("*, program:programs(title)")
-                .order("created_at", { ascending: false });
-            setApplications(fallbackData || []);
-        } else {
-            setApplications(data || []);
+            toast.error("Failed to load applications");
+            setApplications([]);
+            setLoading(false);
+            return;
         }
+
+        const apps = appsData || [];
+        
+        // Extract unique student IDs
+        const studentIds = Array.from(new Set(apps.map(a => a.student_id).filter(Boolean)));
+        
+        // Fetch profiles for these students manually
+        let profilesMap: Record<string, any> = {};
+        if (studentIds.length > 0) {
+            const { data: profiles } = await supabase
+                .from("profiles")
+                .select("id, full_name, email")
+                .in("id", studentIds);
+                
+            if (profiles) {
+                profilesMap = profiles.reduce((acc, curr) => {
+                    acc[curr.id] = curr;
+                    return acc;
+                }, {} as Record<string, any>);
+            }
+        }
+
+        // Map applications to include profile data
+        const enrichedApps = apps.map(app => ({
+            ...app,
+            profile: app.student_id ? profilesMap[app.student_id] : null
+        }));
+
+        setApplications(enrichedApps);
         setLoading(false);
     };
 

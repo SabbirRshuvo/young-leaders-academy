@@ -39,7 +39,7 @@ export default async function RootLayout({
     return (
         <html
             lang={locale}
-            dir="ltr"
+            dir={locale === "ar" ? "rtl" : "ltr"}
             className={`${playfair.variable} ${inter.variable} h-full antialiased`}
         >
             <body className="font-sans antialiased min-h-full flex flex-col" suppressHydrationWarning>

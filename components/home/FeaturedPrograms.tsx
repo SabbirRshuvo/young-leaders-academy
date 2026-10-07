@@ -119,8 +119,8 @@ export default function FeaturedPrograms() {
                         href={`/${locale}/programs/${prog.id}`}
                         className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0B2545] to-[#1A3A65] hover:from-[#133055] hover:to-[#0B2545] px-6 text-[13px] font-semibold text-white shadow-md hover:shadow-lg transition-all duration-300 w-max group"
                         >
-                        Explore Program
-                        <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
+                        {isAr ? 'استكشف البرنامج' : 'Explore Program'}
+                        <ArrowRight className={`w-4 h-4 text-white transition-transform ${isAr ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
                         </Link>
                     </div>
                     </div>
@@ -143,7 +143,7 @@ export default function FeaturedPrograms() {
                 className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-transparent border-2 border-[#D4AF37] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-white font-bold text-sm md:text-base transition-all duration-300 hover:shadow-xl group"
             >
                 {isAr ? 'عرض جميع البرامج' : 'View All Programs'}
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className={`w-5 h-5 transition-transform ${isAr ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
             </Link>
         </motion.div>
 
