@@ -17,7 +17,7 @@ export default function Home() {
       <WhoWeServe />
       <YlaJourney />
       <FeaturedPrograms />
-      <EventsPreview />
+      {/* <EventsPreview /> */}
       <Testimonials />
       <Partners />
     </>

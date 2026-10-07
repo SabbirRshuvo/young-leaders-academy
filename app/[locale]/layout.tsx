@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "../globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { Providers } from "@/components/layout/Providers";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -47,9 +46,9 @@ export default async function RootLayout({
                 <NextIntlClientProvider messages={messages}>
                     <Providers>
                         <Toaster />
-                        <Navbar />
-                        <main className="flex-1 flex flex-col">{children}</main>
-                        <Footer />
+                        <ConditionalLayout>
+                            {children}
+                        </ConditionalLayout>
                     </Providers>
                 </NextIntlClientProvider>
             </body>

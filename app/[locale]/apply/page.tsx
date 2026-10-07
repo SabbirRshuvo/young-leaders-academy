@@ -156,6 +156,21 @@ function ApplyFormContent() {
       // Fetch user to attach to enrollment
       const { data: { user } } = await supabase.auth.getUser();
 
+      if (user && applicationType === 'program') {
+        const { data: existingEnrollment } = await supabase
+          .from('enrollments')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('program_id', courseDbId || programId)
+          .single();
+
+        if (existingEnrollment) {
+          toast.error(isAr ? 'أنت مسجل بالفعل في هذا البرنامج.' : 'You are already enrolled in this program.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       // ----------------------------------------
       // Complete application data
       // ----------------------------------------

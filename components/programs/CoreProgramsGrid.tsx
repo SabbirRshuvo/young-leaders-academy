@@ -90,13 +90,10 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                     >
                         {/* Image Box */}
                         <div className="relative w-full h-[240px] overflow-hidden bg-gray-100">
-                        <Image
-                            src={program.cover_image_url || "/default-program.jpg"}
+                        <img
+                            src={program.image_url || "/default-program.jpg"}
                             alt={program.title}
-                            fill
-                            priority={index < 4}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute bottom-4 left-4 bg-[#D4AF37] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm shadow-sm">
                             {(program.category || "General").toUpperCase()}

@@ -1,7 +1,10 @@
 "use client";
 
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Loader2 } from 'lucide-react';
 
 interface ProgramsHeroProps {
   selectedCategory: string;
@@ -10,18 +13,47 @@ interface ProgramsHeroProps {
 
 export default function ProgramsHero({ selectedCategory, setSelectedCategory }: ProgramsHeroProps) {
   const t = useTranslations('ProgramsHero');
-  const categories = [
-    { id: 'all', label: t('cat1') },
-    { id: 'high_school', label: t('cat2') },
-    { id: 'mentorship', label: t('cat3') },
-    { id: 'executive', label: t('cat4') },
-    { id: 'summer', label: t('cat5') }
-  ];
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+  
+  const [categories, setCategories] = useState<{id: string, label: string}[]>([
+    { id: 'all', label: isAr ? 'جميع البرامج' : 'All Programs' }
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      // Fetch all programs to extract unique categories
+      const { data } = await supabase
+        .from('programs')
+        .select('category')
+        .not('category', 'is', null);
+        
+      if (data) {
+        // Extract unique categories
+        const uniqueCategories = Array.from(new Set(data.map(p => p.category).filter(Boolean)));
+        
+        // Format for UI
+        const formattedCategories = uniqueCategories.map(cat => ({
+          id: cat,
+          label: cat // You might want to translate this if you have a map, but for now we display it raw
+        }));
+        
+        setCategories([
+          { id: 'all', label: isAr ? 'جميع البرامج' : 'All Programs' },
+          ...formattedCategories
+        ]);
+      }
+      setLoading(false);
+    };
+
+    fetchCategories();
+  }, [isAr]);
 
   return (
     <section className="relative w-full">
       {/* Hero Banner Area */}
-      <div className="relative w-full h-[500px] md:h-[600px]  flex items-center">
+      <div className="relative w-full h-[500px] md:h-[600px] flex items-center">
 
         {/* Background Image */}
         <Image
@@ -34,7 +66,7 @@ export default function ProgramsHero({ selectedCategory, setSelectedCategory }: 
         />
 
         {/* Gradient Overlay for Text Readability */}
-        <div className="absolute inset-0"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
 
         {/* Content Container */}
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10">
@@ -43,18 +75,18 @@ export default function ProgramsHero({ selectedCategory, setSelectedCategory }: 
             {/* Tagline */}
             <div className="flex items-center gap-4 mb-4 md:mb-6">
               <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
-              <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase">
+              <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase shadow-black drop-shadow-md">
                 {t('badge')}
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-white font-serif text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+            <h1 className="text-white font-serif text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 drop-shadow-lg">
               {t('title')}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-gray-200 text-base md:text-lg lg:text-[19px] leading-relaxed max-w-xl font-sans">
+            <p className="text-gray-100 text-base md:text-lg lg:text-[19px] leading-relaxed max-w-xl font-sans drop-shadow-md">
               {t('subtitle')}
             </p>
 
@@ -65,21 +97,27 @@ export default function ProgramsHero({ selectedCategory, setSelectedCategory }: 
       {/* Category Filter Bar */}
       <div className="w-full bg-white border-b border-gray-100 shadow-sm relative z-20">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-start md:justify-center overflow-x-auto hide-scrollbar gap-3 md:gap-4">
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${isActive
-                  ? 'bg-[#0B2545] text-white shadow-md scale-105'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#D4AF37] hover:text-[#0B2545]'
-                  }`}
-              >
-                {cat.label}
-              </button>
-            )
-          })}
+          {loading ? (
+            <div className="flex items-center justify-center py-2 px-8">
+                <Loader2 className="w-5 h-5 animate-spin text-[#D4AF37]" />
+            </div>
+          ) : (
+            categories.map((cat) => {
+                const isActive = selectedCategory === cat.id;
+                return (
+                <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${isActive
+                    ? 'bg-[#0B2545] text-white shadow-md scale-105'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-[#D4AF37] hover:text-[#0B2545]'
+                    }`}
+                >
+                    {cat.label}
+                </button>
+                )
+            })
+          )}
         </div>
       </div>
     </section>

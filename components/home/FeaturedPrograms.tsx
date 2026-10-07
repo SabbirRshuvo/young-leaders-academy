@@ -86,9 +86,9 @@ export default function FeaturedPrograms() {
                 >
                     {/* Image Section */}
                     <div className="w-full h-[220px] relative bg-gray-100">
-                    {prog.cover_image_url ? (
+                    {prog.image_url ? (
                         <img
-                            src={prog.cover_image_url}
+                            src={prog.image_url}
                             alt={getLocalized(prog.title)}
                             className="w-full h-full object-cover object-center"
                         />
@@ -130,6 +130,22 @@ export default function FeaturedPrograms() {
             })}
             </div>
         )}
+
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-16 flex justify-center"
+        >
+            <Link 
+                href={`/${locale}/programs`}
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-transparent border-2 border-[#D4AF37] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-white font-bold text-sm md:text-base transition-all duration-300 hover:shadow-xl group"
+            >
+                {isAr ? 'عرض جميع البرامج' : 'View All Programs'}
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+        </motion.div>
 
       </div>
     </section>

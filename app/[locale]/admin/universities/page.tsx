@@ -7,7 +7,9 @@ import { supabase } from "@/lib/supabase";
 
 export default function AdminUniversitiesPage() {
     const [activeTab, setActiveTab] = useState<"Applications" | "Manage">("Applications");
+    const [isAdding, setIsAdding] = useState(false);
     const [universities, setUniversities] = useState<any[]>([]);
+    const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -139,9 +141,26 @@ export default function AdminUniversitiesPage() {
         setLoading(false);
     };
 
+    const fetchApplications = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from("university_applications")
+            .select("*")
+            .order("created_at", { ascending: false });
+            
+        if (error) {
+            toast.error("Failed to load applications");
+        } else {
+            setApplications(data || []);
+        }
+        setLoading(false);
+    };
+
     useEffect(() => {
         if (activeTab === "Manage") {
             fetchUniversities();
+        } else {
+            fetchApplications();
         }
     }, [activeTab]);
 
@@ -268,9 +287,55 @@ export default function AdminUniversitiesPage() {
 
                 <div className="overflow-x-auto">
                     {activeTab === "Applications" ? (
-                        <div className="p-12 text-center text-gray-500">
-                            No university applications pending at this time.
-                        </div>
+                        applications.length === 0 ? (
+                            <div className="p-12 text-center text-gray-500">
+                                No university applications pending at this time.
+                            </div>
+                        ) : (
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4 font-semibold">Student Name</th>
+                                        <th className="px-6 py-4 font-semibold">Email</th>
+                                        <th className="px-6 py-4 font-semibold">Applied University</th>
+                                        <th className="px-6 py-4 font-semibold">Date Applied</th>
+                                        <th className="px-6 py-4 font-semibold">Payment Status</th>
+                                        <th className="px-6 py-4 font-semibold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {applications.map(app => {
+                                        const fullName = `${app.first_name || ""} ${app.last_name || ""}`.trim();
+                                        return (
+                                            <tr key={app.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="font-medium text-[#0B2545]">{fullName || 'Unknown'}</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="text-xs text-gray-500">{app.email || 'N/A'}</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="font-medium text-gray-800">{app.university_id || app.program_id || 'Unknown'}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-500 text-xs">
+                                                    {new Date(app.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${app.payment_status === 'paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                                                        {app.payment_status || 'Unpaid'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${app.status === 'accepted' ? 'bg-green-50 text-green-700 border-green-200' : app.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-gray-50 text-gray-700 border-gray-200'}`}>
+                                                        {app.status || 'Pending'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        )
                     ) : loading ? (
                         <div className="p-12 flex justify-center items-center">
                             <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />

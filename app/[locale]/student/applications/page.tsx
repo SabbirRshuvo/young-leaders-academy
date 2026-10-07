@@ -24,6 +24,7 @@ type Application = {
     age: number | null;
     school: string | null;
     program_id: string | null;
+    university_id: string | null;
     motivation: string | null;
     created_at: string | null;
     status?: string | null;
@@ -66,28 +67,14 @@ export default function Page() {
             const { data, error: applicationsError } = await supabase
                 .from("university_applications")
                 .select("*")
-                .ilike("email", user.email || "")
+                .eq("user_id", user.id)
                 .order("created_at", { ascending: false });
 
             if (applicationsError) {
                 throw applicationsError;
             }
 
-            // Fetch payments to link payment status to the applications
-            const { data: paymentsData } = await supabase
-                .from("payments")
-                .select("program_id, payment_status")
-                .ilike("parent_email", user.email || "");
-
-            const enrichedData = data?.map((app) => {
-                const payment = paymentsData?.find((p) => p.program_id === app.program_id);
-                return {
-                    ...app,
-                    payment_status: payment?.payment_status || "unpaid",
-                };
-            }) || [];
-
-            setApplications(enrichedData);
+            setApplications(data || []);
         } catch (err) {
             console.error("Error fetching applications:", err);
             setError(
@@ -270,8 +257,8 @@ export default function Page() {
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Program</p>
-                                    <p className="font-bold text-[#0B2545] text-lg truncate" title={selectedApplication.program_id || ""}>
-                                        {selectedApplication.program_id || "Not specified"}
+                                    <p className="font-bold text-[#0B2545] text-lg truncate" title={selectedApplication.university_id || selectedApplication.program_id || ""}>
+                                        {selectedApplication.university_id || selectedApplication.program_id || "Not specified"}
                                     </p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
@@ -353,7 +340,7 @@ function ApplicationCard({
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-[#0B2545]">
-                                {application.program_id || "Program not specified"}
+                                {application.university_id || application.program_id || "Program not specified"}
                             </h3>
                             <p className="mt-1 text-sm text-gray-500">
                                 Application #{application.id}

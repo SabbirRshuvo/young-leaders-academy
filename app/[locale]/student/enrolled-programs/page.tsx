@@ -21,7 +21,7 @@ type EnrolledProgramData = {
         id: string;
         title: string | any;
         description: string | any;
-        cover_image_url: string;
+        image_url: string;
     } | null;
     completedContentsCount: number;
     totalContentsCount: number;
@@ -69,7 +69,7 @@ export default function EnrolledProgramsPage() {
                         id,
                         title,
                         description,
-                        cover_image_url
+                        image_url
                     )
                 `)
                 .eq("student_id", user.id)
@@ -97,7 +97,7 @@ export default function EnrolledProgramsPage() {
             const { data: progressData } = await supabase
                 .from("user_progress")
                 .select("content_id, is_completed")
-                .eq("student_id", user.id)
+                .eq("user_id", user.id)
                 .eq("is_completed", true);
 
             const completedContentIds = new Set(progressData?.map(p => p.content_id) || []);
@@ -222,8 +222,8 @@ export default function EnrolledProgramsPage() {
                                         className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all hover:border-[#D4AF37]/50 hover:shadow-xl"
                                     >
                                         <div className="relative w-full h-[180px] bg-gray-100">
-                                            {program.cover_image_url ? (
-                                                <Image src={program.cover_image_url} alt={title} fill className="object-cover" />
+                                            {program.image_url ? (
+                                                <img src={program.image_url} alt={title} className="absolute inset-0 w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-gray-400"><BookOpen className="w-10 h-10 opacity-30" /></div>
                                             )}

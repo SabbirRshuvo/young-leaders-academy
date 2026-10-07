@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ArrowLeft, Info } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
-import { universitiesData } from '@/data/universities';
 import RequestInfoModal from './RequestInfoModal';
+import { supabase } from '@/lib/supabase';
 
 export default function UniversityGrid() {
   const t = useTranslations('UniversityGrid');
@@ -15,6 +15,25 @@ export default function UniversityGrid() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUni, setSelectedUni] = useState<{ id: string, name: string } | null>(null);
+  const [universities, setUniversities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUniversities();
+  }, []);
+
+  const fetchUniversities = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('universities')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
+    if (!error && data) {
+      setUniversities(data);
+    }
+    setLoading(false);
+  };
 
   const handleRequestInfo = (id: string, name: string) => {
     setSelectedUni({ id, name });
@@ -82,23 +101,28 @@ export default function UniversityGrid() {
         </motion.div>
 
         {/* 3-Column Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-        >
-          {universitiesData.map((uni, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className={`bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-300 p-8 flex flex-col h-full hover:-translate-y-1.5 transition-transform duration-300 ${isAr ? 'font-arabic' : ''}`}
-            >
+        {loading ? (
+          <div className="flex justify-center items-center py-20 w-full">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#D4AF37]"></div>
+          </div>
+        ) : (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+          >
+            {universities.map((uni, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className={`bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-300 p-8 flex flex-col h-full hover:-translate-y-1.5 transition-transform duration-300 ${isAr ? 'font-arabic' : ''}`}
+              >
               {/* Header: Logo & Name */}
               <div className={`flex items-start gap-4 mb-1 ${isAr ? 'flex-row-reverse text-right' : 'text-left'}`}>
                 <img
-                  src={uni.logo}
+                  src={uni.logo_url || "/placeholder-logo.png"}
                   alt={uni.name}
                   className="w-[50px] h-[50px] object-contain shrink-0"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -108,19 +132,19 @@ export default function UniversityGrid() {
                     {uni.name}
                   </h3>
                   <div className={`text-[13px] text-gray-500 font-medium flex items-center gap-1.5 ${isAr ? 'flex-row-reverse justify-end' : ''}`}>
-                    {l(uni.location)}
+                    {uni.city ? `${uni.city}, ` : ''}{uni.country || 'Global'}
                   </div>
                 </div>
               </div>
 
               {/* Tags */}
               <div className={`text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-4 mt-6 flex-wrap flex gap-1 ${isAr ? 'justify-end' : 'justify-start'}`}>
-                {getTags(uni.id).join(' • ')}
+                {uni.tags ? uni.tags.split(',').map((tag: string) => tag.trim()).join(' • ') : getTags(uni.id).join(' • ')}
               </div>
 
               {/* Description */}
               <p className={`text-[14px] text-gray-600 leading-relaxed flex-grow mb-8 ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>
-                {l(uni.overview)}
+                {uni.description || (uni.overview && l(uni.overview))}
               </p>
 
               {/* Actions */}
@@ -143,6 +167,7 @@ export default function UniversityGrid() {
             </motion.div>
           ))}
         </motion.div>
+        )}
 
       </div>
 

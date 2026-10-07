@@ -27,7 +27,8 @@ export default function AdminProgramsPage() {
         duration: "",
         age_group: "",
         level: "",
-        price: ""
+        price: "",
+        certificate_url: ""
     });
 
     const handleAddSubmit = async (e: React.FormEvent) => {
@@ -71,7 +72,8 @@ export default function AdminProgramsPage() {
                 duration: formData.duration,
                 age_group: formData.age_group,
                 level: formData.level,
-                price: formData.price ? parseFloat(formData.price as string) : 0
+                price: formData.price ? parseFloat(formData.price as string) : 0,
+                certificate_url: formData.certificate_url
             }).eq("id", editingId);
             error = updateError;
         } else {
@@ -84,6 +86,7 @@ export default function AdminProgramsPage() {
                 age_group: formData.age_group,
                 level: formData.level,
                 price: formData.price ? parseFloat(formData.price as string) : 0,
+                certificate_url: formData.certificate_url,
                 is_published: true
             });
             error = insertError;
@@ -102,7 +105,7 @@ export default function AdminProgramsPage() {
             setImagePreview(null);
             fetchPrograms();
             // Reset form
-            setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "" });
+            setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "", certificate_url: "" });
         }
     };
 
@@ -115,7 +118,8 @@ export default function AdminProgramsPage() {
             duration: prog.duration || "",
             age_group: prog.age_group || "",
             level: prog.level || "",
-            price: prog.price || ""
+            price: prog.price || "",
+            certificate_url: prog.certificate_url || ""
         });
         setImagePreview(prog.image_url || null);
         setImageFile(null);
@@ -267,8 +271,13 @@ export default function AdminProgramsPage() {
                                 </div>
                             </div>
 
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Certificate Template URL (Optional)</label>
+                                <input type="url" value={formData.certificate_url} onChange={e => setFormData({ ...formData, certificate_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="https://example.com/certificate.pdf" />
+                            </div>
+
                             <div className="flex justify-end gap-3 mt-6">
-                                <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setImageFile(null); setImagePreview(null); setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "" }); }} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
+                                <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setImageFile(null); setImagePreview(null); setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "", certificate_url: "" }); }} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
                                 <button type="submit" disabled={isUploading} className="px-4 py-2 text-sm font-medium text-white bg-[#0B2545] hover:bg-[#0B2545]/90 rounded-lg disabled:opacity-50 flex items-center">
                                     {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                                     {isUploading ? "Uploading..." : "Save Program"}
@@ -318,7 +327,6 @@ export default function AdminProgramsPage() {
                                         <th className="px-6 py-4 font-semibold">Program</th>
                                         <th className="px-6 py-4 font-semibold">Date Applied</th>
                                         <th className="px-6 py-4 font-semibold">Status</th>
-                                        <th className="px-6 py-4 font-semibold text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -341,11 +349,6 @@ export default function AdminProgramsPage() {
                                                     }`}>
                                                     {app.status}
                                                 </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button onClick={() => handleUpdateApplicationStatus(app.id, 'accepted')} className="text-green-600 hover:text-green-800 font-medium text-xs">Approve</button>
-                                                <span className="text-gray-300 mx-2">|</span>
-                                                <button onClick={() => handleUpdateApplicationStatus(app.id, 'rejected')} className="text-red-500 hover:text-red-700 font-medium text-xs">Reject</button>
                                             </td>
                                         </tr>
                                     ))}

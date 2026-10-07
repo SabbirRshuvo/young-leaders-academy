@@ -78,13 +78,16 @@ export async function POST(req: Request) {
     const { data: application, error: applicationError } = await supabase
       .from('university_applications')
       .insert([{
+          user_id: body.userId,
+          university_id: programId,
+          status: 'pending',
+          payment_status: 'paid',
           first_name: firstName,
           last_name: lastName,
           email,
           phone,
           age: Number(age),
           school,
-          program_id: programId,
           motivation,
       }])
       .select()

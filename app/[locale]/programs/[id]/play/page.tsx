@@ -81,23 +81,9 @@ export default function CoursePlayerPage() {
         }
 
         const assembledModules = (rawModules || []).map(m => {
-            const hasModuleContent = m.video_url || m.pdf_url || m.description || m.quiz_url;
-            
-            // If the module has its own content fields, treat it as the first playable item!
-            const overviewItem = hasModuleContent ? [{
-                id: m.id, 
-                title: "Module Overview",
-                content_type: "module_overview",
-                video_url: m.video_url,
-                pdf_url: m.pdf_url,
-                body_text: m.description,
-                quiz_url: m.quiz_url,
-                order_index: -1
-            }] : [];
-
             return {
                 ...m,
-                module_contents: [...overviewItem, ...rawContents.filter((c: any) => c.module_id === m.id)]
+                module_contents: rawContents.filter((c: any) => c.module_id === m.id)
             };
         });
 
@@ -115,7 +101,7 @@ export default function CoursePlayerPage() {
         const { data: progressData, error: progressError } = await supabase
             .from("user_progress")
             .select("*")
-            .eq("student_id", session.user.id);
+            .eq("user_id", session.user.id);
             
         if (progressData) {
             setUserProgress(progressData);
@@ -142,11 +128,11 @@ export default function CoursePlayerPage() {
         setIsMarking(true);
         const completed = isContentCompleted(contentId);
         
-        const payload = { student_id: user.id, content_id: contentId, is_completed: true, completed_at: new Date().toISOString() };
+        const payload = { user_id: user.id, content_id: contentId, is_completed: true, completed_at: new Date().toISOString() };
         
         if (completed) {
             // Unmark
-            await supabase.from("user_progress").delete().match({ student_id: user.id, content_id: contentId });
+            await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
             setUserProgress(prev => prev.filter(p => p.content_id !== contentId));
         } else {
             // Mark
@@ -317,8 +303,23 @@ export default function CoursePlayerPage() {
                         </button>
 
                         <button 
-                            disabled={!nextContent}
-                            onClick={() => nextContent && setActiveContent(nextContent)}
+                            disabled={!nextContent || isMarking}
+                            onClick={async () => {
+                                if (!nextContent || !activeContent) return;
+                                
+                                // Auto-mark current as complete if not already done
+                                if (!isContentCompleted(activeContent.id)) {
+                                    await toggleContentCompletion(activeContent.id);
+                                }
+                                
+                                // Navigate to next
+                                setActiveContent(nextContent);
+                                
+                                // Expand next module if needed
+                                if (!expandedModules.includes(nextContent.module_id)) {
+                                    setExpandedModules(prev => [...prev, nextContent.module_id]);
+                                }
+                            }}
                             className="px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#b5952f] text-white font-medium text-sm flex items-center disabled:opacity-50 transition-colors w-full sm:w-auto justify-center"
                         >
                             Next <ArrowRight className="w-4 h-4 ml-2" />
@@ -370,18 +371,17 @@ export default function CoursePlayerPage() {
                         </div>
 
                         <a 
-                            href={program?.certificate_url || "#"} 
-                            target={program?.certificate_url ? "_blank" : "_self"}
+                            href={progressPercentage === 100 ? `/${locale}/programs/${programId}/certificate` : "#"} 
+                            target={progressPercentage === 100 ? "_blank" : "_self"}
                             className={`mt-5 w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center transition-colors ${
                                 progressPercentage === 100 
                                 ? "bg-[#0B2545] text-white hover:bg-[#0B2545]/90" 
                                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
                             }`}
                             onClick={(e) => {
-                                if (progressPercentage !== 100 || !program?.certificate_url) {
+                                if (progressPercentage !== 100) {
                                     e.preventDefault();
-                                    if (progressPercentage !== 100) toast.error("You must complete 100% of the course to download the certificate.");
-                                    else if (!program?.certificate_url) toast.error("Certificate template not provided by admin.");
+                                    toast.error("You must complete 100% of the course to view your certificate.");
                                 }
                             }}
                         >
