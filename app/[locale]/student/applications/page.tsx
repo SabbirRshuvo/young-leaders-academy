@@ -29,10 +29,12 @@ type Application = {
     created_at: string | null;
     status?: string | null;
     payment_status?: string | null;
+    type: 'program' | 'university';
 };
 
 export default function Page() {
     const [applications, setApplications] = useState<Application[]>([]);
+    const [activeTab, setActiveTab] = useState<'All' | 'Programs' | 'Universities'>('All');
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -63,18 +65,46 @@ export default function Page() {
                 return;
             }
 
-            // Fetch applications belonging to the logged-in user
-            const { data, error: applicationsError } = await supabase
+            // Fetch university applications
+            const { data: uniData, error: uniError } = await supabase
                 .from("university_applications")
                 .select("*")
-                .eq("user_id", user.id)
-                .order("created_at", { ascending: false });
+                .eq("user_id", user.id);
 
-            if (applicationsError) {
-                throw applicationsError;
-            }
+            // Fetch program applications without foreign key join
+            const { data: progData, error: progError } = await supabase
+                .from("program_applications")
+                .select("*")
+                .eq("student_id", user.id);
 
-            setApplications(data || []);
+            if (uniError) throw uniError;
+            if (progError) throw progError;
+
+            // Fetch current user profile manually to avoid foreign key issues
+            const { data: userProfile } = await supabase
+                .from("profiles")
+                .select("full_name, email")
+                .eq("id", user.id)
+                .single();
+
+            const mappedUni = (uniData || []).map(app => ({ ...app, type: 'university' as const }));
+            const mappedProg = (progData || []).map(app => {
+                 const fullName = userProfile?.full_name || '';
+                 const [firstName, ...lastNameArr] = fullName.split(' ');
+                 return {
+                     ...app,
+                     type: 'program' as const,
+                     first_name: firstName || 'Student',
+                     last_name: lastNameArr.join(' ') || '',
+                     email: userProfile?.email || user.email || '',
+                 };
+            });
+            
+            const allApps = [...mappedUni, ...mappedProg].sort((a, b) => {
+                return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+            });
+
+            setApplications(allApps);
         } catch (err) {
             console.error("Error fetching applications:", err);
             setError(
@@ -88,6 +118,9 @@ export default function Page() {
     };
 
     const filteredApplications = applications.filter((application) => {
+        if (activeTab === 'Programs' && application.type !== 'program') return false;
+        if (activeTab === 'Universities' && application.type !== 'university') return false;
+
         const search = searchQuery.toLowerCase().trim();
 
         if (!search) {
@@ -96,6 +129,7 @@ export default function Page() {
 
         return (
             application.program_id?.toLowerCase().includes(search) ||
+            application.university_id?.toLowerCase().includes(search) ||
             application.school?.toLowerCase().includes(search) ||
             application.first_name.toLowerCase().includes(search) ||
             application.last_name.toLowerCase().includes(search) ||
@@ -103,6 +137,9 @@ export default function Page() {
             application.id.toLowerCase().includes(search)
         );
     });
+
+    const programCount = applications.filter(a => a.type === 'program').length;
+    const uniCount = applications.filter(a => a.type === 'university').length;
 
     return (
         <main className="min-h-screen bg-gray-50/60 relative">
@@ -133,22 +170,24 @@ export default function Page() {
                 </section>
 
                 {/* STATISTICS */}
-                <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+                <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3">
                     <ApplicationStat
                         icon={FileText}
                         label="Total Applications"
                         value={applications.length}
-                        description="Applications submitted"
+                        description="All applications submitted"
+                    />
+                    <ApplicationStat
+                        icon={School}
+                        label="Program Applications"
+                        value={programCount}
+                        description="Programs applied to"
                     />
                     <ApplicationStat
                         icon={GraduationCap}
-                        label="Programs Applied To"
-                        value={
-                            new Set(
-                                applications.map((application) => application.program_id).filter(Boolean)
-                            ).size
-                        }
-                        description="Different programs"
+                        label="University Applications"
+                        value={uniCount}
+                        description="Universities applied to"
                     />
                 </section>
 
@@ -167,8 +206,8 @@ export default function Page() {
                         </div>
                     </div>
 
-                    {/* SECTION HEADING */}
-                    <div className="mb-4 flex items-center justify-between">
+                    {/* TABS & HEADING */}
+                    <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545]">
                                 Your Applications
@@ -177,6 +216,21 @@ export default function Page() {
                                 {filteredApplications.length}{" "}
                                 {filteredApplications.length === 1 ? "application" : "applications"} found
                             </p>
+                        </div>
+                        <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm shrink-0">
+                            {['All', 'Programs', 'Universities'].map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab as any)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                        activeTab === tab
+                                            ? "bg-[#0B2545] text-white shadow-sm"
+                                            : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -336,24 +390,35 @@ function ApplicationCard({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex gap-4">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0B2545]/10">
-                            <GraduationCap className="h-6 w-6 text-[#0B2545]" />
+                            {application.type === 'university' ? <GraduationCap className="h-6 w-6 text-[#0B2545]" /> : <School className="h-6 w-6 text-[#0B2545]" />}
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-[#0B2545]">
                                 {application.university_id || application.program_id || "Program not specified"}
                             </h3>
-                            <p className="mt-1 text-sm text-gray-500">
-                                Application #{application.id}
-                            </p>
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                                <span className="capitalize font-semibold text-[#D4AF37]">{application.type}</span>
+                                <span>•</span>
+                                <span>Application #{application.id.slice(0, 8)}</span>
+                            </div>
                         </div>
                     </div>
-                    {application.payment_status && (
-                        <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
-                            <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
-                                Payment: <span className={application.payment_status === 'paid' ? 'text-green-600' : 'text-amber-500'}>{application.payment_status}</span>
-                            </span>
-                        </div>
-                    )}
+                    <div className="flex gap-2">
+                        {application.status && (
+                            <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
+                                <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
+                                    Status: <span className={application.status === 'accepted' ? 'text-green-600' : application.status === 'rejected' ? 'text-red-500' : 'text-amber-500'}>{application.status}</span>
+                                </span>
+                            </div>
+                        )}
+                        {application.payment_status && (
+                            <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
+                                <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
+                                    Payment: <span className={application.payment_status === 'paid' ? 'text-green-600' : 'text-amber-500'}>{application.payment_status}</span>
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Divider */}
