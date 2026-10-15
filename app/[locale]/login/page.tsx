@@ -51,7 +51,7 @@ export default function LoginPage() {
                         .from("user_roles")
                         .select("role_id")
                         .eq("user_id", session.user.id);
-                    
+
                     if (userRoles && userRoles.length > 0) {
                         const { data: roles } = await supabase
                             .from("roles")
@@ -63,7 +63,7 @@ export default function LoginPage() {
                         }
                     }
                 }
-                
+
                 // 3. Ultimate fallback to metadata (guaranteed for admin)
                 if (!dbRole) {
                     dbRole = (session.user.user_metadata?.role || session.user.app_metadata?.role || "").toLowerCase().trim();
@@ -125,7 +125,7 @@ export default function LoginPage() {
 
             // 2 & 3. STRICT ROLE VERIFICATION BLOCK
             toast.loading("Redirecting...", { id: "redirecting" });
-            
+
             // 1. Try fetching role from profiles table (per requirements)
             const { data: profileRole } = await supabase
                 .from("profiles")
@@ -154,7 +154,7 @@ export default function LoginPage() {
                     }
                 }
             }
-            
+
             // 3. Ultimate fallback to metadata (guaranteed for admin)
             if (!dbRole) {
                 dbRole = (user.user_metadata?.role || user.app_metadata?.role || "").toLowerCase().trim();
