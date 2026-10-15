@@ -32,11 +32,12 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // i want to push the code in my github.
+
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                // 1. Try fetching role from profiles table (per requirements)
                 const { data: profile } = await supabase
                     .from("profiles")
                     .select("role")
