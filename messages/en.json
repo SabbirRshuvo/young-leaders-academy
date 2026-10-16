@@ -467,8 +467,10 @@
     "stat1Desc": "A growing network of universities, academic communities, and international education partners.",
     "stat2Title": "Academic Connections",
     "stat2Desc": "Access to leading academic environments, university communities, and global thought leaders.",
+    "stat2Val": "Ivy League & Oxbridge",
     "stat3Title": "Scholarship Guidance",
     "stat3Desc": "Structured guidance to help students identify, prepare for, and pursue competitive scholarship opportunities.",
+    "stat4Val": "Global",
     "stat4Title": "Exchange Pathways",
     "stat4Desc": "International exchange, summer immersion, academic visits, and cross-cultural leadership experiences."
   },
@@ -517,7 +519,8 @@
     "title": "Partner Universities & World-Class Institutions",
     "subtitle1": "The world's leading universities represent more than prestigious names — they are communities built around curiosity, intellectual ambition, innovation, and impact.",
     "subtitle2": "Through carefully designed academic pathways and global experiences, YLA helps students understand these environments, prepare for them, and aspire to become part of them.",
-    "viewBtn": "View Partnership"
+    "viewBtn": "View Partnership",
+    "requestInfo": "Request Info"
   },
   "ApplyPage": {
     "badge": "Join the Academy",

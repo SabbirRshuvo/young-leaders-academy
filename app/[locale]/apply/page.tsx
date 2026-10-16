@@ -418,7 +418,7 @@ function ApplyFormContent() {
                   {(!applicationType || applicationType === 'university') && (
                     <optgroup label={isAr ? "الجامعات" : "Universities"}>
                       {universitiesData.map(u => (
-                        <option key={u.id} value={u.id}>{l({ en: u.name, ar: u.name })}</option>
+                        <option key={u.id} value={u.id}>{l({ en: u.name, ar: (u as any).name_ar || u.name })}</option>
                       ))}
                     </optgroup>
                   )}

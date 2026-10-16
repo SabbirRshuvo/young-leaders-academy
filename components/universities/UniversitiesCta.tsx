@@ -4,10 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function UniversitiesCta() {
   const t = useTranslations('UniversitiesCta');
+  const locale = useLocale();
 
   return (
     <section className="relative w-full overflow-hidden flex items-center min-h-[450px] md:min-h-[500px]">
@@ -53,7 +54,7 @@ export default function UniversitiesCta() {
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <Link
-              href="/programs"
+              href={`/${locale}/programs`}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-105 group"
             >
               {t('cta1')}
@@ -61,7 +62,7 @@ export default function UniversitiesCta() {
             </Link>
 
             <Link
-              href="/contact"
+              href={`/${locale}/contact`}
               className="w-full sm:w-auto inline-flex items-center justify-center text-white font-semibold text-sm md:text-base hover:text-gray-200 transition-colors relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1.5px] after:bg-white after:transition-all hover:after:bg-gray-200"
             >
               {t('cta2')}

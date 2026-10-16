@@ -321,25 +321,27 @@ export default function Navbar() {
   |--------------------------------------------------------------------------
   */
 
+  const isAr = locale === "ar";
+
   const studentNavLinks = [
     {
-      name: "Dashboard",
+      name: isAr ? "لوحة التحكم" : "Dashboard",
       href: "/student/dashboard",
     },
     {
-      name: "Enrolled Programs",
+      name: isAr ? "البرامج المسجلة" : "Enrolled Programs",
       href: "/student/enrolled-programs",
     },
     {
-      name: "Programs",
+      name: t("programs"),
       href: "/programs",
     },
     {
-      name: "Universities",
+      name: t("universities"),
       href: "/universities",
     },
     {
-      name: "My Applications",
+      name: isAr ? "طلباتي" : "My Applications",
       href: "/student/applications",
     },
   ];
@@ -356,11 +358,11 @@ export default function Navbar() {
 
   const parentNavLinks = [
     {
-      name: "Dashboard",
+      name: isAr ? "لوحة التحكم" : "Dashboard",
       href: "/parent/dashboard",
     },
     {
-      name: "My Children",
+      name: isAr ? "أبنائي" : "My Children",
       href: "/parent/children",
     },
   ];
@@ -373,15 +375,15 @@ export default function Navbar() {
 
   const coachNavLinks = [
     {
-      name: "Dashboard",
+      name: isAr ? "لوحة التحكم" : "Dashboard",
       href: "/coach/dashboard",
     },
     {
-      name: "Students",
+      name: isAr ? "الطلاب" : "Students",
       href: "/coach/students",
     },
     {
-      name: "Programs",
+      name: t("programs"),
       href: "/programs",
     },
   ];
@@ -394,20 +396,20 @@ export default function Navbar() {
 
   const adminNavLinks = [
     {
-      name: "Dashboard",
+      name: isAr ? "لوحة التحكم" : "Dashboard",
       href: "/admin/dashboard",
     },
     {
-      name: "Users",
+      name: isAr ? "المستخدمين" : "Users",
       href: "/admin/users",
     },
     {
-      name: "Programs",
-      href: "/admin/programs",
+      name: t("programs"),
+      href: "/programs",
     },
     {
-      name: "Universities",
-      href: "/admin/universities",
+      name: t("universities"),
+      href: "/universities",
     },
   ];
 
@@ -775,7 +777,7 @@ export default function Navbar() {
                       }
                       className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
                     >
-                      My Profile
+                      {isAr ? "ملفي الشخصي" : "My Profile"}
                     </Link>
 
                     <Link
@@ -785,14 +787,14 @@ export default function Navbar() {
                       }
                       className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
                     >
-                      Settings
+                      {isAr ? "الإعدادات" : "Settings"}
                     </Link>
 
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold border-t border-gray-100"
                     >
-                      Logout
+                      {isAr ? "تسجيل الخروج" : "Logout"}
                     </button>
 
                   </div>
@@ -1014,7 +1016,7 @@ export default function Navbar() {
                       }
                       className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
                     >
-                      My Profile
+                      {isAr ? "ملفي الشخصي" : "My Profile"}
                     </Link>
 
                   )}
@@ -1028,7 +1030,7 @@ export default function Navbar() {
                     }
                     className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
                   >
-                    Settings
+                    {isAr ? "الإعدادات" : "Settings"}
                   </Link>
 
                   {/* Logout */}
@@ -1037,7 +1039,7 @@ export default function Navbar() {
                     onClick={handleLogout}
                     className="w-full rounded-full bg-gray-100 text-navy h-[48px] font-semibold border border-gray-200"
                   >
-                    Logout ({userName})
+                    {isAr ? `تسجيل الخروج (${userName})` : `Logout (${userName})`}
                   </button>
 
                 </>

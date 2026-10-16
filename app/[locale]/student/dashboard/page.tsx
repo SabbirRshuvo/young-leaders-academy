@@ -20,6 +20,7 @@ import {
     UserRound,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "next-intl";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 import { programsData } from "@/data/programs";
@@ -113,6 +114,9 @@ type ParentRequest = {
 };
 
 export default function Page() {
+    const locale = useLocale();
+    const isAr = locale === "ar";
+
     const [dashboard, setDashboard] = useState<DashboardData>({
         profile: null,
         studentProfile: null,
@@ -445,27 +449,31 @@ export default function Page() {
 
         return [
             {
-                title: "Create Profile",
-                description:
-                    "Set up your student information and personal details.",
+                title: isAr ? "إنشاء الملف الشخصي" : "Create Profile",
+                description: isAr
+                    ? "قم بإعداد معلومات الطالب والبيانات الشخصية."
+                    : "Set up your student information and personal details.",
                 completed: hasProfile,
             },
             {
-                title: "Explore Programs",
-                description:
-                    "Explore programs and identify opportunities that interest you.",
+                title: isAr ? "استكشاف البرامج" : "Explore Programs",
+                description: isAr
+                    ? "استكشف البرامج وحدد الفرص التي تهمك."
+                    : "Explore programs and identify opportunities that interest you.",
                 completed: hasApplication,
             },
             {
-                title: "Apply",
-                description:
-                    "Submit your application and provide the required information.",
+                title: isAr ? "التقديم" : "Apply",
+                description: isAr
+                    ? "قدم طلبك وقدم المعلومات المطلوبة."
+                    : "Submit your application and provide the required information.",
                 completed: hasApplication,
             },
             {
-                title: "Complete Payment",
-                description:
-                    "Complete the payment associated with your application.",
+                title: isAr ? "إتمام الدفع" : "Complete Payment",
+                description: isAr
+                    ? "أكمل عملية الدفع المرتبطة بطلبك."
+                    : "Complete the payment associated with your application.",
                 completed: hasPayment,
             },
         ].map((item, index) => ({
@@ -544,26 +552,26 @@ export default function Page() {
                         <div>
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <Sparkles className="h-4 w-4 text-[#D4AF37]" />
-                                Student Dashboard
+                                {isAr ? "لوحة تحكم الطالب" : "Student Dashboard"}
                             </div>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                Welcome back, {fullName}!
+                                {isAr ? `مرحباً بعودتك، ${fullName}!` : `Welcome back, ${fullName}!`}
                             </h1>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                Continue your Young Leaders Academy journey,
-                                track your progress, and explore your next
-                                opportunity.
+                                {isAr
+                                    ? "تابع رحلتك في أكاديمية القادة الشباب، وتتبع تقدمك، واستكشف فرصتك التالية."
+                                    : "Continue your Young Leaders Academy journey, track your progress, and explore your next opportunity."}
                             </p>
                         </div>
 
                         <Link
-                            href="/student/profile"
+                            href={locale === "en" ? "/student/profile" : `/${locale}/student/profile`}
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e2c45a]"
                         >
                             <UserRound className="h-4 w-4" />
-                            View Profile
+                            {isAr ? "عرض الملف الشخصي" : "View Profile"}
                         </Link>
 
                     </div>
@@ -607,33 +615,33 @@ export default function Page() {
 
                             <SnapshotItem
                                 icon={School}
-                                label="School"
+                                label={isAr ? "المدرسة" : "School"}
                                 value={schoolName}
                             />
 
                             <SnapshotItem
                                 icon={GraduationCap}
-                                label="Grade"
+                                label={isAr ? "المرحلة" : "Grade"}
                                 value={gradeLevel}
                             />
 
                             <SnapshotItem
                                 icon={MapPin}
-                                label="Location"
+                                label={isAr ? "الموقع" : "Location"}
                                 value={
                                     city !== "Not provided"
                                         ? `${city}, ${country}`
-                                        : country
+                                        : (isAr ? "غير متوفر" : country)
                                 }
                             />
 
                             <SnapshotItem
                                 icon={Mail}
-                                label="Email"
+                                label={isAr ? "البريد الإلكتروني" : "Email"}
                                 value={dashboard.profile?.first_name
                                     ? dashboard.applications[0]?.email ||
-                                    "Account email"
-                                    : "Account email"}
+                                    (isAr ? "بريد الحساب" : "Account email")
+                                    : (isAr ? "بريد الحساب" : "Account email")}
                             />
 
                         </div>
@@ -650,37 +658,41 @@ export default function Page() {
 
                     <DashboardStat
                         icon={TrendingUp}
-                        label="Profile Progress"
+                        label={isAr ? "اكتمال الملف" : "Profile Progress"}
                         value={`${profileCompletion}%`}
-                        description="Profile completed"
+                        description={isAr ? "تم إكمال الملف" : "Profile completed"}
                     />
 
                     <DashboardStat
                         icon={FileText}
-                        label="Applications"
+                        label={isAr ? "الطلبات" : "Applications"}
                         value={String(applicationCount)}
                         description={
-                            applicationCount === 1
-                                ? "Application submitted"
-                                : "Applications submitted"
+                            isAr
+                                ? (applicationCount === 1 ? "طلب مقدم" : "طلبات مقدمة")
+                                : (applicationCount === 1
+                                    ? "Application submitted"
+                                    : "Applications submitted")
                         }
                     />
 
                     <DashboardStat
                         icon={BookOpen}
-                        label="Programs"
+                        label={isAr ? "البرامج" : "Programs"}
                         value={String(programCount)}
-                        description="Programs applied to"
+                        description={isAr ? "البرامج المقدم عليها" : "Programs applied to"}
                     />
 
                     <DashboardStat
                         icon={CheckCircle2}
-                        label="Payments"
+                        label={isAr ? "المدفوعات" : "Payments"}
                         value={String(paidPaymentCount)}
                         description={
-                            paidPaymentCount === 1
-                                ? "Completed payment"
-                                : "Completed payments"
+                            isAr
+                                ? (paidPaymentCount === 1 ? "عملية دفع مكتملة" : "عمليات دفع مكتملة")
+                                : (paidPaymentCount === 1
+                                    ? "Completed payment"
+                                    : "Completed payments")
                         }
                     />
 
@@ -761,16 +773,17 @@ export default function Page() {
 
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-[#D4AF37]">
-                                    Your journey
+                                    {isAr ? "مسارك" : "Your journey"}
                                 </p>
 
                                 <h2 className="mt-1 text-xl font-bold text-[#0B2545]">
-                                    Learning Journey
+                                    {isAr ? "رحلة التعلم" : "Learning Journey"}
                                 </h2>
 
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Your progress based on the information
-                                    currently available in your account.
+                                    {isAr
+                                        ? "تقدمك بناءً على المعلومات المتوفرة حالياً في حسابك."
+                                        : "Your progress based on the information currently available in your account."}
                                 </p>
                             </div>
 
@@ -814,13 +827,13 @@ export default function Page() {
 
                                             {item.status === "current" && (
                                                 <span className="rounded-full bg-[#D4AF37]/15 px-2.5 py-1 text-[11px] font-semibold text-[#8a6c00]">
-                                                    Current stage
+                                                    {isAr ? "المرحلة الحالية" : "Current stage"}
                                                 </span>
                                             )}
 
                                             {item.status === "completed" && (
                                                 <span className="rounded-full bg-green-50 px-2.5 py-1 text-[11px] font-semibold text-green-700">
-                                                    Completed
+                                                    {isAr ? "مكتمل" : "Completed"}
                                                 </span>
                                             )}
 
@@ -849,12 +862,13 @@ export default function Page() {
                         </div>
 
                         <h2 className="mt-4 text-lg font-bold text-[#0B2545]">
-                            Complete Your Profile
+                            {isAr ? "أكمل ملفك الشخصي" : "Complete Your Profile"}
                         </h2>
 
                         <p className="mt-1 text-sm leading-5 text-gray-500">
-                            A complete profile helps us personalize your
-                            learning journey.
+                            {isAr
+                                ? "يساعدنا الملف الشخصي المكتمل على تخصيص تجربة التعلم الخاصة بك."
+                                : "A complete profile helps us personalize your learning journey."}
                         </p>
 
                         <div className="mt-5">
@@ -862,7 +876,7 @@ export default function Page() {
                             <div className="mb-2 flex items-center justify-between text-sm">
 
                                 <span className="font-medium text-gray-600">
-                                    Profile completion
+                                    {isAr ? "نسبة اكتمال الملف" : "Profile completion"}
                                 </span>
 
                                 <span className="font-bold text-[#0B2545]">
@@ -883,10 +897,10 @@ export default function Page() {
                         </div>
 
                         <Link
-                            href="/student/profile"
+                            href={locale === "en" ? "/student/profile" : `/${locale}/student/profile`}
                             className="mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                         >
-                            Update Profile
+                            {isAr ? "تحديث الملف الشخصي" : "Update Profile"}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
 

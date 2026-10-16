@@ -2,6 +2,7 @@ export const universitiesData = [
   {
     id: "harvard",
     name: "Harvard University",
+    name_ar: "جامعة هارفارد",
     location: {
       en: "🇺🇸 United States",
       ar: "🇺🇸 الولايات المتحدة"
@@ -58,6 +59,7 @@ export const universitiesData = [
   {
     id: "oxford",
     name: "University of Oxford",
+    name_ar: "جامعة أكسفورد",
     location: {
       en: "🇬🇧 United Kingdom",
       ar: "🇬🇧 المملكة المتحدة"
@@ -114,6 +116,7 @@ export const universitiesData = [
   {
     id: "stanford",
     name: "Stanford University",
+    name_ar: "جامعة ستانفورد",
     location: {
       en: "🇺🇸 United States",
       ar: "🇺🇸 الولايات المتحدة"
@@ -170,6 +173,7 @@ export const universitiesData = [
   {
     id: "mit",
     name: "Massachusetts Institute of Technology",
+    name_ar: "معهد ماساتشوستس للتكنولوجيا",
     location: {
       en: "🇺🇸 United States",
       ar: "🇺🇸 الولايات المتحدة"
@@ -226,6 +230,7 @@ export const universitiesData = [
   {
     id: "cambridge",
     name: "University of Cambridge",
+    name_ar: "جامعة كامبريدج",
     location: {
       en: "🇬🇧 United Kingdom",
       ar: "🇬🇧 المملكة المتحدة"
@@ -282,6 +287,7 @@ export const universitiesData = [
   {
     id: "yale",
     name: "Yale University",
+    name_ar: "جامعة ييل",
     location: {
       en: "🇺🇸 United States",
       ar: "🇺🇸 الولايات المتحدة"
@@ -338,6 +344,7 @@ export const universitiesData = [
   {
     id: "ksu",
     name: "King Saud University",
+    name_ar: "جامعة الملك سعود",
     location: {
       en: "🇸🇦 Saudi Arabia",
       ar: "🇸🇦 المملكة العربية السعودية"
@@ -390,6 +397,7 @@ export const universitiesData = [
   {
     id: "kfupm",
     name: "King Fahd University of Petroleum and Minerals",
+    name_ar: "جامعة الملك فهد للبترول والمعادن",
     location: {
       en: "🇸🇦 Saudi Arabia",
       ar: "🇸🇦 المملكة العربية السعودية"
@@ -442,6 +450,7 @@ export const universitiesData = [
   {
     id: "kaust",
     name: "King Abdullah University of Science and Technology",
+    name_ar: "جامعة الملك عبدالله للعلوم والتقنية",
     location: {
       en: "🇸🇦 Saudi Arabia",
       ar: "🇸🇦 المملكة العربية السعودية"

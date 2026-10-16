@@ -16,7 +16,7 @@ export default function UniversityStats() {
     },
     {
       icon: GraduationCap,
-      value: "Ivy League & Oxbridge",
+      value: t('stat2Val'),
       title: t('stat2Title'),
       desc: t('stat2Desc')
     },
@@ -28,7 +28,7 @@ export default function UniversityStats() {
     },
     {
       icon: Plane,
-      value: "Global",
+      value: t('stat4Val'),
       title: t('stat4Title'),
       desc: t('stat4Desc')
     }
