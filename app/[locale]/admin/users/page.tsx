@@ -18,7 +18,7 @@ export default function AdminUsersPage() {
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<"All" | "Students" | "Parents" | "Admins">("All");
+    const [activeTab, setActiveTab] = useState<"All" | "Students" | "Parents" | "Coaches" | "Admins">("All");
 
     // Student Details Modal State
     const [selectedStudent, setSelectedStudent] = useState<UserData | null>(null);
@@ -74,10 +74,36 @@ export default function AdminUsersPage() {
         }
     };
 
+    const toggleCoachRole = async (userId: string, currentRoles: string[]) => {
+        const isCurrentlyCoach = currentRoles.includes("coach");
+        const action = isCurrentlyCoach ? "remove_coach" : "make_coach";
+        
+        setProcessingId(userId);
+        try {
+            const res = await fetch("/api/admin/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, action })
+            });
+            const data = await res.json();
+            
+            if (!res.ok) throw new Error(data.error || "Failed to update coach role");
+            
+            toast.success(data.message);
+            await fetchUsers(); // Refresh the list
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message || "Failed to update coach role");
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
     const filteredUsers = users.filter((user) => {
         if (activeTab === "All") return true;
-        if (activeTab === "Students") return user.roles.includes("student") && !user.roles.includes("admin") && !user.roles.includes("parent");
+        if (activeTab === "Students") return user.roles.includes("student") && !user.roles.includes("admin") && !user.roles.includes("parent") && !user.roles.includes("coach");
         if (activeTab === "Parents") return user.roles.includes("parent") && !user.roles.includes("admin");
+        if (activeTab === "Coaches") return user.roles.includes("coach");
         if (activeTab === "Admins") return user.roles.includes("admin");
         return true;
     });
@@ -113,13 +139,13 @@ export default function AdminUsersPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-[#0B2545]">User Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage platform users and administrator roles</p>
+                    <p className="text-sm text-gray-500 mt-1">Manage platform users, coaches, and administrator roles</p>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 w-fit shadow-sm">
-                {["All", "Students", "Parents", "Admins"].map((tab) => (
+                {["All", "Students", "Parents", "Coaches", "Admins"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab as any)}
@@ -159,6 +185,7 @@ export default function AdminUsersPage() {
                                 {filteredUsers.map((user) => {
                                     const isAdmin = user.roles.includes("admin");
                                     const isMaster = user.email === "adminsabbir@gmail.com";
+                                    const isCoach = user.roles.includes("coach");
                                     const isParent = user.roles.includes("parent");
                                     
                                     return (
@@ -176,14 +203,16 @@ export default function AdminUsersPage() {
                                                 {user.email}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${
                                                     isAdmin 
                                                     ? "bg-purple-50 text-purple-700 border-purple-200" 
-                                                    : isParent
-                                                        ? "bg-teal-50 text-teal-700 border-teal-200"
-                                                        : "bg-blue-50 text-blue-700 border-blue-200"
+                                                    : isCoach
+                                                        ? "bg-amber-50 text-amber-800 border-amber-300"
+                                                        : isParent
+                                                            ? "bg-teal-50 text-teal-700 border-teal-200"
+                                                            : "bg-blue-50 text-blue-700 border-blue-200"
                                                 }`}>
-                                                    {isAdmin ? "Administrator" : isParent ? "Parent" : "Student"}
+                                                    {isAdmin ? "Administrator" : isCoach ? "Coach / Instructor" : isParent ? "Parent" : "Student"}
                                                     {isMaster && " (Master)"}
                                                 </span>
                                             </td>
@@ -196,30 +225,43 @@ export default function AdminUsersPage() {
                                                         <Eye className="h-4 w-4 mr-1.5" />
                                                         View Activity
                                                     </button>
-                                                    <button
-                                                    onClick={() => toggleAdminRole(user.id, user.roles, user.email)}
-                                                    disabled={isMaster || processingId === user.id}
-                                                    className={`inline-flex items-center justify-center px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                                        isMaster 
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400"
-                                                        : isAdmin
-                                                            ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                                                            : "bg-[#0B2545] text-white hover:bg-[#1a3a63]"
-                                                    }`}
-                                                >
-                                                    {processingId === user.id ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : isAdmin ? (
-                                                        <>
-                                                            <ShieldOff className="h-4 w-4 mr-1.5" />
-                                                            Revoke Admin
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Shield className="h-4 w-4 mr-1.5" />
-                                                            Make Admin
-                                                        </>
+                                                    {!isAdmin && !isMaster && (
+                                                        <button
+                                                            onClick={() => toggleCoachRole(user.id, user.roles)}
+                                                            disabled={processingId === user.id}
+                                                            className={`inline-flex items-center justify-center px-3 py-2 text-xs font-bold rounded-lg transition-all ${
+                                                                isCoach
+                                                                    ? "bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-300"
+                                                                    : "bg-white text-[#0B2545] border border-gray-200 hover:bg-gray-50"
+                                                            }`}
+                                                        >
+                                                            {isCoach ? "Revoke Coach" : "Make Coach"}
+                                                        </button>
                                                     )}
+                                                    <button
+                                                        onClick={() => toggleAdminRole(user.id, user.roles, user.email)}
+                                                        disabled={isMaster || processingId === user.id}
+                                                        className={`inline-flex items-center justify-center px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                                            isMaster 
+                                                            ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400"
+                                                            : isAdmin
+                                                                ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+                                                                : "bg-[#0B2545] text-white hover:bg-[#1a3a63]"
+                                                        }`}
+                                                    >
+                                                        {processingId === user.id ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : isAdmin ? (
+                                                            <>
+                                                                <ShieldOff className="h-4 w-4 mr-1.5" />
+                                                                Revoke Admin
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Shield className="h-4 w-4 mr-1.5" />
+                                                                Make Admin
+                                                            </>
+                                                        )}
                                                     </button>
                                                 </div>
                                             </td>

@@ -76,6 +76,9 @@ export default function LoginPage() {
                 } else if (dbRole === "parent") {
                     router.push(locale === "en" ? `/parent/dashboard` : `/${locale}/parent/dashboard`);
                     return;
+                } else if (dbRole === "coach" || dbRole === "instructor") {
+                    router.push(locale === "en" ? `/coach/dashboard` : `/${locale}/coach/dashboard`);
+                    return;
                 } else {
                     router.push(locale === "en" ? `/student/dashboard` : `/${locale}/student/dashboard`);
                     return;
@@ -192,6 +195,9 @@ export default function LoginPage() {
                 return;
             } else if (dbRole === "parent") {
                 router.push(locale === "en" ? `/parent/dashboard` : `/${locale}/parent/dashboard`);
+                return;
+            } else if (dbRole === "coach" || dbRole === "instructor") {
+                router.push(locale === "en" ? `/coach/dashboard` : `/${locale}/coach/dashboard`);
                 return;
             } else {
                 router.push(locale === "en" ? `/student/dashboard` : `/${locale}/student/dashboard`);

@@ -47,8 +47,9 @@ export async function middleware(request: NextRequest) {
   const isStudentRoute = path.includes('/student');
   const isParentRoute = path.includes('/parent');
   const isAdminRoute = path.includes('/admin');
+  const isCoachRoute = path.includes('/coach');
   
-  if (isStudentRoute || isParentRoute || isAdminRoute) {
+  if (isStudentRoute || isParentRoute || isAdminRoute || isCoachRoute) {
     if (!user) {
       const redirectUrl = new URL(`/${locale}/login`, request.url);
       return NextResponse.redirect(redirectUrl);
@@ -77,7 +78,9 @@ export async function middleware(request: NextRequest) {
 
     // Strict role verification based on route
     if (isAdminRoute && !isAdminUser) {
-      if (userRole === 'student') {
+      if (userRole === 'coach') {
+        return NextResponse.redirect(new URL(`/${locale}/coach/dashboard`, request.url));
+      } else if (userRole === 'student') {
         return NextResponse.redirect(new URL(`/${locale}/student/dashboard`, request.url));
       } else if (userRole === 'parent') {
         return NextResponse.redirect(new URL(`/${locale}/parent/dashboard`, request.url));
@@ -85,9 +88,21 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
     }
 
+    if (isCoachRoute && userRole !== 'coach' && !isAdminUser) {
+      if (userRole === 'student') {
+        return NextResponse.redirect(new URL(`/${locale}/student/dashboard`, request.url));
+      } else if (userRole === 'parent') {
+        return NextResponse.redirect(new URL(`/${locale}/parent/dashboard`, request.url));
+      }
+      const redirectUrl = new URL(`/${locale}/login`, request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
     if (isStudentRoute && userRole !== 'student') {
       if (isAdminUser) {
         return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, request.url));
+      } else if (userRole === 'coach') {
+        return NextResponse.redirect(new URL(`/${locale}/coach/dashboard`, request.url));
       }
       const redirectUrl = new URL(`/${locale}/login`, request.url);
       return NextResponse.redirect(redirectUrl);
@@ -96,6 +111,8 @@ export async function middleware(request: NextRequest) {
     if (isParentRoute && userRole !== 'parent') {
       if (isAdminUser) {
         return NextResponse.redirect(new URL(`/${locale}/admin/dashboard`, request.url));
+      } else if (userRole === 'coach') {
+        return NextResponse.redirect(new URL(`/${locale}/coach/dashboard`, request.url));
       }
       const redirectUrl = new URL(`/${locale}/login`, request.url);
       return NextResponse.redirect(redirectUrl);

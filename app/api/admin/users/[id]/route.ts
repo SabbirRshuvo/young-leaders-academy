@@ -3,8 +3,8 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const userId = params.id;
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id: userId } = await params;
     const cookieStore = await cookies();
     
     // Check client session

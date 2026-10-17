@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       locale = 'en',
       baseAmount = 1500,
       userId,
+      paymentMethod = 'mada',
     } = body;
 
     if (!firstName || !lastName || !email || !phone || !age || !school || !programId || !motivation) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
           vat_amount: vatAmount,
           total_amount: totalAmount,
           payment_status: 'pending',
+          payment_gateway: paymentMethod,
       }])
       .select()
       .single();

@@ -333,6 +333,10 @@ export default function Navbar() {
       href: "/student/enrolled-programs",
     },
     {
+      name: isAr ? "جلسات التوجيه" : "1-on-1 Coaching",
+      href: "/student/coaching",
+    },
+    {
       name: t("programs"),
       href: "/programs",
     },
@@ -379,12 +383,12 @@ export default function Navbar() {
       href: "/coach/dashboard",
     },
     {
-      name: isAr ? "الطلاب" : "Students",
-      href: "/coach/students",
+      name: isAr ? "جدول الجلسات" : "1-on-1 Calendar",
+      href: "/coach/sessions",
     },
     {
-      name: t("programs"),
-      href: "/programs",
+      name: isAr ? "الوحدات التدريبية" : "My Modules",
+      href: "/coach/modules",
     },
   ];
 
@@ -402,6 +406,10 @@ export default function Navbar() {
     {
       name: isAr ? "المستخدمين" : "Users",
       href: "/admin/users",
+    },
+    {
+      name: isAr ? "المدربون" : "Coaches",
+      href: "/admin/coaches",
     },
     {
       name: t("programs"),
