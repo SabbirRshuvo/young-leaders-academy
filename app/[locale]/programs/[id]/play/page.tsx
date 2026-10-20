@@ -123,6 +123,41 @@ export default function CoursePlayerPage() {
         return userProgress.some(p => (p.content_id === contentId || p.lesson_id === contentId) && p.is_completed);
     };
 
+    // Auto-mark content completed in background with instant optimistic UI update
+    const markContentCompleted = async (contentId: string) => {
+        if (!user || !contentId) return;
+        if (isContentCompleted(contentId)) return;
+
+        const payload = {
+            user_id: user.id,
+            content_id: contentId,
+            is_completed: true,
+            completed_at: new Date().toISOString()
+        };
+
+        // 1. Optimistic UI update immediately (0ms delay)
+        setUserProgress(prev => {
+            if (prev.some(p => (p.content_id === contentId || p.lesson_id === contentId) && p.is_completed)) {
+                return prev;
+            }
+            return [...prev, payload];
+        });
+
+        // 2. Asynchronous background persistence to Supabase
+        try {
+            const { error } = await supabase
+                .from("user_progress")
+                .upsert(payload, { onConflict: "user_id,content_id" });
+
+            if (error) {
+                await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
+                await supabase.from("user_progress").insert(payload);
+            }
+        } catch (err) {
+            console.error("Background progress persist error:", err);
+        }
+    };
+
     const toggleContentCompletion = async (contentId: string) => {
         if (!user) return;
         setIsMarking(true);
@@ -131,13 +166,25 @@ export default function CoursePlayerPage() {
         const payload = { user_id: user.id, content_id: contentId, is_completed: true, completed_at: new Date().toISOString() };
         
         if (completed) {
-            // Unmark
-            await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
-            setUserProgress(prev => prev.filter(p => p.content_id !== contentId));
+            // Optimistic unmark
+            setUserProgress(prev => prev.filter(p => p.content_id !== contentId && p.lesson_id !== contentId));
+            try {
+                await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
+            } catch (err) {
+                console.error("Error unmarking progress:", err);
+            }
         } else {
-            // Mark
-            await supabase.from("user_progress").insert(payload);
+            // Optimistic mark
             setUserProgress(prev => [...prev, payload]);
+            try {
+                const { error } = await supabase.from("user_progress").upsert(payload, { onConflict: "user_id,content_id" });
+                if (error) {
+                    await supabase.from("user_progress").delete().match({ user_id: user.id, content_id: contentId });
+                    await supabase.from("user_progress").insert(payload);
+                }
+            } catch (err) {
+                console.error("Error marking progress:", err);
+            }
         }
         setIsMarking(false);
     };
@@ -153,6 +200,32 @@ export default function CoursePlayerPage() {
     const currentIndex = flatContents.findIndex(c => c.id === activeContent?.id);
     const prevContent = currentIndex > 0 ? flatContents[currentIndex - 1] : null;
     const nextContent = currentIndex < flatContents.length - 1 ? flatContents[currentIndex + 1] : null;
+
+    // Fast non-blocking Next navigation with seamless background auto-completion
+    const handleNext = () => {
+        if (!nextContent || !activeContent) return;
+
+        const currentId = activeContent.id;
+
+        // 1. Immediately transition to next content and expand its module
+        setActiveContent(nextContent);
+        if (!expandedModules.includes(nextContent.module_id)) {
+            setExpandedModules(prev => [...prev, nextContent.module_id]);
+        }
+
+        // 2. Seamlessly mark current content as completed in the background
+        if (!isContentCompleted(currentId)) {
+            markContentCompleted(currentId);
+        }
+    };
+
+    const handlePrevious = () => {
+        if (!prevContent) return;
+        setActiveContent(prevContent);
+        if (!expandedModules.includes(prevContent.module_id)) {
+            setExpandedModules(prev => [...prev, prevContent.module_id]);
+        }
+    };
 
     if (loading) {
         return <div className="flex justify-center items-center min-h-screen"><Loader2 className="h-10 w-10 animate-spin text-[#D4AF37]" /></div>;
@@ -283,7 +356,7 @@ export default function CoursePlayerPage() {
                     <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-100">
                         <button 
                             disabled={!prevContent}
-                            onClick={() => prevContent && setActiveContent(prevContent)}
+                            onClick={handlePrevious}
                             className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-medium text-sm flex items-center disabled:opacity-50 hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" /> Previous
@@ -298,28 +371,17 @@ export default function CoursePlayerPage() {
                                     : "bg-[#0B2545] text-white hover:bg-[#0B2545]/90"
                             }`}
                         >
-                            {isMarking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className={`w-4 h-4 mr-2 ${isContentCompleted(activeContent.id) ? "text-green-600" : ""}`} />}
-                            {isContentCompleted(activeContent.id) ? "Completed" : "Mark as Completed"}
+                            {isMarking ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                <CheckCircle className={`w-4 h-4 mr-2 ${isContentCompleted(activeContent.id) ? "text-green-600" : ""}`} />
+                            )}
+                            {isContentCompleted(activeContent.id) ? "Completed ✓" : "Mark as Completed"}
                         </button>
 
                         <button 
-                            disabled={!nextContent || isMarking}
-                            onClick={async () => {
-                                if (!nextContent || !activeContent) return;
-                                
-                                // Auto-mark current as complete if not already done
-                                if (!isContentCompleted(activeContent.id)) {
-                                    await toggleContentCompletion(activeContent.id);
-                                }
-                                
-                                // Navigate to next
-                                setActiveContent(nextContent);
-                                
-                                // Expand next module if needed
-                                if (!expandedModules.includes(nextContent.module_id)) {
-                                    setExpandedModules(prev => [...prev, nextContent.module_id]);
-                                }
-                            }}
+                            disabled={!nextContent}
+                            onClick={handleNext}
                             className="px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#b5952f] text-white font-medium text-sm flex items-center disabled:opacity-50 transition-colors w-full sm:w-auto justify-center"
                         >
                             Next <ArrowRight className="w-4 h-4 ml-2" />

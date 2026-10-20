@@ -563,6 +563,10 @@ export default function CoursePlayerPage() {
 
     const handleNext = () => {
         if (activeLessonIndex < totalLessons - 1) {
+            // Auto-mark current lesson completed in background
+            if (activeLesson && !isLessonCompleted(activeLesson.id)) {
+                markLessonCompleted(activeLesson.id);
+            }
             const nextLesson = flatLessons[activeLessonIndex + 1];
             setCurrentLessonId(nextLesson.id);
             setExpandedModules(prev => ({ ...prev, [nextLesson.module_id]: true }));

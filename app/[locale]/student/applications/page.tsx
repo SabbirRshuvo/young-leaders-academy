@@ -60,6 +60,7 @@ function getLocalizedText(value: any, locale: string): string {
 export default function StudentApplicationsPage() {
     const params = useParams();
     const locale = (params?.locale as string) || "en";
+    const isAr = locale === "ar";
 
     const [applications, setApplications] = useState<Application[]>([]);
     const [activeTab, setActiveTab] = useState<'All' | 'Programs' | 'Universities'>('All');
@@ -70,6 +71,36 @@ export default function StudentApplicationsPage() {
 
     useEffect(() => {
         fetchApplications();
+
+        // Refresh when tab gains focus
+        const handleFocus = () => {
+            fetchApplications();
+        };
+        window.addEventListener("focus", handleFocus);
+
+        // Realtime updates when new applications are submitted or status changes
+        const channel = supabase
+            .channel("realtime-student-applications")
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "program_applications" },
+                () => {
+                    fetchApplications();
+                }
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "university_applications" },
+                () => {
+                    fetchApplications();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchApplications = async () => {
@@ -87,7 +118,7 @@ export default function StudentApplicationsPage() {
 
             if (!user) {
                 setApplications([]);
-                setError("You must be logged in to view your applications.");
+                setError(isAr ? "يجب عليك تسجيل الدخول لعرض طلباتك." : "You must be logged in to view your applications.");
                 return;
             }
 
@@ -138,7 +169,7 @@ export default function StudentApplicationsPage() {
             const mappedUni: Application[] = (uniData || []).map(app => {
                 const readableTitle = app.program_id && titleMap.has(app.program_id)
                     ? titleMap.get(app.program_id)!
-                    : app.university_id || app.program_id || "University Application";
+                    : app.university_id || app.program_id || (isAr ? "طلب جامعة" : "University Application");
 
                 return {
                     ...app,
@@ -150,7 +181,7 @@ export default function StudentApplicationsPage() {
             const mappedProg: Application[] = (progData || []).map(app => {
                 const readableTitle = app.program_id && titleMap.has(app.program_id)
                     ? titleMap.get(app.program_id)!
-                    : app.program_id ? `Program #${app.program_id.slice(0, 8)}` : "Leadership Program";
+                    : app.program_id ? `${isAr ? "برنامج" : "Program"} #${app.program_id.slice(0, 8)}` : (isAr ? "برنامج قيادي" : "Leadership Program");
 
                 return {
                     ...app,
@@ -164,7 +195,7 @@ export default function StudentApplicationsPage() {
                     age: null,
                     phone: null,
                     motivation: null,
-                    payment_status: app.status === 'accepted' ? 'paid' : 'pending'
+                    payment_status: app.status === 'accepted' || app.status === 'enrolled' ? 'paid' : 'pending'
                 };
             });
 
@@ -178,7 +209,7 @@ export default function StudentApplicationsPage() {
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Failed to load applications."
+                    : (isAr ? "فشل تحميل الطلبات." : "Failed to load applications.")
             );
         } finally {
             setLoading(false);
@@ -210,7 +241,7 @@ export default function StudentApplicationsPage() {
     // Dynamic counts
     const programCount = useMemo(() => applications.filter(a => a.type === 'program').length, [applications]);
     const uniCount = useMemo(() => applications.filter(a => a.type === 'university').length, [applications]);
-    const acceptedCount = useMemo(() => applications.filter(a => a.status === 'accepted' || a.status === 'approved').length, [applications]);
+    const acceptedCount = useMemo(() => applications.filter(a => a.status === 'accepted' || a.status === 'approved' || a.status === 'enrolled').length, [applications]);
 
     return (
         <main className="min-h-screen bg-gray-50/60 relative">
@@ -221,13 +252,15 @@ export default function StudentApplicationsPage() {
                         <div>
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <FileText className="h-4 w-4 text-[#D4AF37]" />
-                                Student Applications
+                                {isAr ? "طلبات الطلاب" : "Student Applications"}
                             </div>
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                My Applications
+                                {isAr ? "طلباتي" : "My Applications"}
                             </h1>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                Track your academic program and university applications and review real-time submission statuses.
+                                {isAr
+                                    ? "تابع طلباتك للبرامج الأكاديمية والجامعات واطلع على حالات التقديم في الوقت الفعلي."
+                                    : "Track your academic program and university applications and review real-time submission statuses."}
                             </p>
                         </div>
                         <Link
@@ -235,7 +268,7 @@ export default function StudentApplicationsPage() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-bold text-[#0B2545] transition-transform hover:scale-105 active:scale-95 shadow-sm"
                         >
                             <FileText className="h-4 w-4" />
-                            Start New Application
+                            {isAr ? "بدء طلب جديد" : "Start New Application"}
                         </Link>
                     </div>
                 </section>
@@ -244,23 +277,23 @@ export default function StudentApplicationsPage() {
                 <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3">
                     <ApplicationStat
                         icon={FileText}
-                        label="Total Applications"
+                        label={isAr ? "إجمالي الطلبات" : "Total Applications"}
                         value={applications.length}
-                        description={loading ? "Counting records..." : `${applications.length} total submissions registered`}
+                        description={loading ? (isAr ? "جاري العد..." : "Counting records...") : (isAr ? `${applications.length} إجمالي الطلبات المسجلة` : `${applications.length} total submissions registered`)}
                         loading={loading}
                     />
                     <ApplicationStat
                         icon={School}
-                        label="Program Applications"
+                        label={isAr ? "طلبات البرامج" : "Program Applications"}
                         value={programCount}
-                        description={loading ? "Counting..." : `${programCount} programs applied to`}
+                        description={loading ? (isAr ? "جاري العد..." : "Counting...") : (isAr ? `${programCount} برامج تم التقديم عليها` : `${programCount} programs applied to`)}
                         loading={loading}
                     />
                     <ApplicationStat
                         icon={GraduationCap}
-                        label="University Applications"
+                        label={isAr ? "طلبات الجامعات" : "University Applications"}
                         value={uniCount}
-                        description={loading ? "Counting..." : `${uniCount} universities applied to`}
+                        description={loading ? (isAr ? "جاري العد..." : "Counting...") : (isAr ? `${uniCount} جامعات تم التقديم عليها` : `${uniCount} universities applied to`)}
                         loading={loading}
                     />
                 </section>
@@ -436,7 +469,7 @@ export default function StudentApplicationsPage() {
                             >
                                 Close Details
                             </button>
-                            {selectedApplication.program_id && selectedApplication.status === "accepted" && (
+                            {selectedApplication.program_id && (selectedApplication.status === "accepted" || selectedApplication.payment_status === "paid" || selectedApplication.status === "approved" || selectedApplication.status === "enrolled") && (
                                 <Link
                                     href={`/${locale}/programs/${selectedApplication.program_id}/play`}
                                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 text-sm font-bold text-white transition-all hover:bg-[#D4AF37] hover:text-[#0B2545] hover:shadow-md hover:-translate-y-0.5"

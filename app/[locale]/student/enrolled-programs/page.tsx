@@ -59,9 +59,54 @@ export default function EnrolledProgramsPage() {
     const router = useRouter();
     const params = useParams();
     const locale = (params.locale as string) || "en";
+    const isAr = locale === "ar";
 
     useEffect(() => {
         fetchData();
+
+        // Auto refresh when tab regains focus
+        const handleFocus = () => {
+            fetchData();
+        };
+        window.addEventListener("focus", handleFocus);
+
+        // Realtime subscription for instant updates when learning progresses
+        const channel = supabase
+            .channel("realtime-student-enrolled-programs")
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "user_progress" },
+                () => {
+                    fetchData();
+                }
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "program_applications" },
+                () => {
+                    fetchData();
+                }
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "enrollments" },
+                () => {
+                    fetchData();
+                }
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "course_enrollments" },
+                () => {
+                    fetchData();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchData = async () => {
@@ -77,7 +122,7 @@ export default function EnrolledProgramsPage() {
             if (userError) throw userError;
 
             if (!user) {
-                setError("You must be logged in to view your enrolled programs.");
+                setError(isAr ? "يجب عليك تسجيل الدخول لعرض برامجك المسجلة." : "You must be logged in to view your enrolled programs.");
                 return;
             }
 
@@ -97,7 +142,7 @@ export default function EnrolledProgramsPage() {
                     )
                 `)
                 .eq("student_id", user.id)
-                .in("status", ["accepted", "approved", "enrolled"]);
+                .in("status", ["accepted", "approved", "enrolled", "paid", "active"]);
 
             if (appsError) throw appsError;
 
@@ -111,7 +156,7 @@ export default function EnrolledProgramsPage() {
                     created_at
                 `)
                 .eq("user_id", user.id)
-                .in("status", ["active", "enrolled"]);
+                .in("status", ["active", "enrolled", "paid"]);
 
             // 3. Fetch course enrollments from course_enrollments table
             const { data: courseEnrollments } = await supabase
@@ -123,7 +168,7 @@ export default function EnrolledProgramsPage() {
                     created_at
                 `)
                 .eq("user_id", user.id)
-                .in("status", ["active", "enrolled"]);
+                .in("status", ["active", "enrolled", "paid"]);
 
             // Collect distinct program/course IDs
             const distinctEnrollmentsMap = new Map<string, { id: string; program_id: string; status: string; source: "application" | "enrollment" | "course"; initialProgram?: any }>();
@@ -196,10 +241,29 @@ export default function EnrolledProgramsPage() {
                 console.warn("Error fetching modules for progress:", modulesError);
             }
 
+            // Resilient sequential fallback for module_contents if nested join yields no contents
+            const fallbackContentsByModule = new Map<string, string[]>();
+            if (modulesData && modulesData.length > 0) {
+                const hasNestedContents = modulesData.some(m => Array.isArray((m as any).module_contents) && (m as any).module_contents.length > 0);
+                if (!hasNestedContents) {
+                    const moduleIds = modulesData.map(m => m.id);
+                    const { data: contentsData } = await supabase
+                        .from("module_contents")
+                        .select("id, module_id")
+                        .in("module_id", moduleIds);
+
+                    (contentsData || []).forEach(c => {
+                        const existing = fallbackContentsByModule.get(c.module_id) || [];
+                        existing.push(c.id);
+                        fallbackContentsByModule.set(c.module_id, existing);
+                    });
+                }
+            }
+
             // 5. Query user_progress for the current student
             const { data: progressData, error: progressError } = await supabase
                 .from("user_progress")
-                .select("content_id, is_completed")
+                .select("*")
                 .eq("user_id", user.id)
                 .eq("is_completed", true);
 
@@ -207,9 +271,12 @@ export default function EnrolledProgramsPage() {
                 console.warn("Error fetching user_progress:", progressError);
             }
 
-            const completedContentIds = new Set(
-                (progressData || []).filter(p => p.content_id).map(p => p.content_id)
-            );
+            // Support both content_id and lesson_id
+            const completedContentIds = new Set<string>();
+            (progressData || []).forEach(p => {
+                if (p.content_id) completedContentIds.add(p.content_id);
+                if (p.lesson_id) completedContentIds.add(p.lesson_id);
+            });
 
             // 6. Calculate real-time dynamic progress per enrolled program
             const finalEnrollments: EnrolledProgramData[] = enrolledItems.map(item => {
@@ -230,7 +297,10 @@ export default function EnrolledProgramsPage() {
                 let completedContentsCount = 0;
 
                 matchingModules.forEach(mod => {
-                    const contents = (mod as any).module_contents || [];
+                    const contents = (mod as any).module_contents?.length > 0
+                        ? (mod as any).module_contents
+                        : (fallbackContentsByModule.get(mod.id)?.map(id => ({ id })) || []);
+
                     totalContentsCount += contents.length;
                     contents.forEach((content: any) => {
                         if (content?.id && completedContentIds.has(content.id)) {
@@ -265,7 +335,7 @@ export default function EnrolledProgramsPage() {
             setEnrollments(finalEnrollments);
         } catch (err) {
             console.error("Error fetching enrolled programs:", err);
-            setError(err instanceof Error ? err.message : "Failed to load enrolled programs.");
+            setError(err instanceof Error ? err.message : (isAr ? "فشل تحميل البرامج المسجلة." : "Failed to load enrolled programs."));
         } finally {
             setLoading(false);
         }

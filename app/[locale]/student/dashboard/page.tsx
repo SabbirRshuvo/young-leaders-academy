@@ -128,6 +128,7 @@ export default function Page() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [enrolledCount, setEnrolledCount] = useState<number>(0);
     const [parentRequests, setParentRequests] = useState<ParentRequest[]>([]);
     const [processingRequest, setProcessingRequest] = useState<string | null>(null);
 
@@ -219,29 +220,54 @@ export default function Page() {
                 throw studentProfileError;
             }
 
-            const { data: applications, error: applicationsError } =
-                await supabase
-                    .from("university_applications")
-                    .select(
-                        `
-                        id,
-                        first_name,
-                        last_name,
-                        email,
-                        phone,
-                        age,
-                        school,
-                        program_id,
-                        motivation,
-                        created_at
-                        `
-                    )
-                    .ilike("email", user.email || "")
-                    .order("created_at", { ascending: false });
+            const uniFilter = user.email
+                ? `user_id.eq.${user.id},email.eq.${user.email}`
+                : `user_id.eq.${user.id}`;
 
-            if (applicationsError) {
-                throw applicationsError;
-            }
+            const [uniRes, progRes, enrRes, cEnrRes] = await Promise.all([
+                supabase
+                    .from("university_applications")
+                    .select("id, first_name, last_name, email, phone, age, school, program_id, motivation, created_at")
+                    .or(uniFilter)
+                    .order("created_at", { ascending: false }),
+                supabase
+                    .from("program_applications")
+                    .select("id, program_id, created_at, status")
+                    .eq("student_id", user.id),
+                supabase
+                    .from("enrollments")
+                    .select("id, program_id, status")
+                    .eq("user_id", user.id)
+                    .in("status", ["active", "enrolled", "paid"]),
+                supabase
+                    .from("course_enrollments")
+                    .select("id, course_id, status")
+                    .eq("user_id", user.id)
+                    .in("status", ["active", "enrolled", "paid"])
+            ]);
+
+            const enrolledProgIds = new Set<string>();
+            (progRes.data || [])
+                .filter(p => ["accepted", "approved", "enrolled", "paid", "active"].includes(p.status || ""))
+                .forEach(p => p.program_id && enrolledProgIds.add(p.program_id));
+            (enrRes.data || []).forEach(e => e.program_id && enrolledProgIds.add(e.program_id));
+            (cEnrRes.data || []).forEach(ce => ce.course_id && enrolledProgIds.add(ce.course_id));
+            setEnrolledCount(enrolledProgIds.size);
+
+            const mappedProgApps: Application[] = (progRes.data || []).map(p => ({
+                id: p.id,
+                first_name: profile?.first_name || "Student",
+                last_name: profile?.last_name || "",
+                email: user.email || "",
+                phone: profile?.phone || null,
+                age: null,
+                school: studentProfile?.school_name || null,
+                program_id: p.program_id,
+                motivation: null,
+                created_at: p.created_at
+            }));
+
+            const applications = [...(uniRes.data || []), ...mappedProgApps];
 
             const { data: payments, error: paymentsError } =
                 await supabase
@@ -983,7 +1009,7 @@ export default function Page() {
                                 href="/student/enrolled-programs"
                                 icon={BookOpen}
                                 title={isAr ? "البرامج المسجلة" : "Enrolled Programs"}
-                                description={`${paidPaymentCount} active ${paidPaymentCount === 1 ? "course" : "courses"}`}
+                                description={`${enrolledCount} active ${enrolledCount === 1 ? (isAr ? "برنامج" : "course") : (isAr ? "برامج" : "courses")}`}
                                 locale={locale}
                             />
                             
