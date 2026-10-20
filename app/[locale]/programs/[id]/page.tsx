@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { supabase } from '@/lib/supabase';
 import { Clock, Calendar, Users, MonitorPlay, Banknote, ArrowRight, Lock, PlayCircle } from 'lucide-react';
+import EnrollNowButton from '@/components/programs/EnrollNowButton';
 
 export default async function ProgramDetailsPage({
   params
@@ -203,13 +204,17 @@ export default async function ProgramDetailsPage({
               </div>
 
               <div className="flex flex-col gap-4 mt-auto">
-                <Link
-                  href={`/${locale}/apply?program=${program.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-lg transition-transform duration-300 hover:scale-[1.02] shadow-lg group"
-                >
-                  {applyNowText}
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Link>
+                <EnrollNowButton
+                  program={{
+                    id: program.id,
+                    title: program.title,
+                    price: program.price ? Number(program.price) : 1500,
+                    category: program.category,
+                    duration: program.duration,
+                  }}
+                  isEnrolled={isEnrolled}
+                  locale={locale}
+                />
               </div>
             </div>
           </div>

@@ -3,13 +3,9 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-// Fallback in-memory storage for slots if table is not yet migrated in Supabase
-let memorySlots: any[] = [];
-
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const coachId = searchParams.get("coachId");
-    const moduleId = searchParams.get("moduleId");
     const all = searchParams.get("all") === "true"; // if coach wants all, else only unbooked
 
     const supabaseAdmin = createClient(
@@ -18,10 +14,10 @@ export async function GET(request: Request) {
     );
 
     try {
-        let query = supabaseAdmin.from("coach_availability_slots").select(`
+        let query = supabaseAdmin.from("coach_availability").select(`
             id,
             coach_id,
-            module_id,
+            date,
             start_time,
             end_time,
             duration_minutes,
@@ -29,30 +25,25 @@ export async function GET(request: Request) {
             zoom_link,
             notes,
             created_at,
-            coach:coach_id(first_name, last_name, email, avatar_url),
-            module:module_id(id, title)
+            coach:coach_id(first_name, last_name, email, avatar_url)
         `);
 
         if (coachId) query = query.eq("coach_id", coachId);
-        if (moduleId) query = query.eq("module_id", moduleId);
         if (!all) query = query.eq("is_booked", false);
 
-        const { data: dbSlots, error: dbErr } = await query.order("start_time", { ascending: true });
+        const { data: dbSlots, error: dbErr } = await query
+            .order("date", { ascending: true })
+            .order("start_time", { ascending: true });
 
         if (!dbErr && dbSlots) {
             return NextResponse.json({ slots: dbSlots });
         }
 
-        // Fallback to memory slots
-        let filtered = [...memorySlots];
-        if (coachId) filtered = filtered.filter(s => s.coach_id === coachId);
-        if (moduleId) filtered = filtered.filter(s => s.module_id === moduleId);
-        if (!all) filtered = filtered.filter(s => !s.is_booked);
-
-        return NextResponse.json({ slots: filtered });
+        console.error("GET /api/coach/availability DB error:", dbErr);
+        return NextResponse.json({ slots: [] });
     } catch (error: any) {
         console.error("GET /api/coach/availability error:", error);
-        return NextResponse.json({ slots: memorySlots });
+        return NextResponse.json({ slots: [] });
     }
 }
 
@@ -79,47 +70,44 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { moduleId, startTime, endTime, zoomLink, notes, duration = 45 } = body;
+        const { startTime, endTime, date, zoomLink, notes, duration = 45 } = body;
 
         if (!startTime || !endTime) {
             return NextResponse.json({ error: "Start time and end time are required" }, { status: 400 });
         }
 
-        // Ensure zoom link has default format if not provided
         const finalZoomLink = (zoomLink && zoomLink.trim()) || `https://zoom.us/j/yla-${user.id.slice(0, 6)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        const newSlot = {
-            id: `slot_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-            coach_id: user.id,
-            module_id: moduleId || null,
-            start_time: startTime,
-            end_time: endTime,
-            duration_minutes: Number(duration),
-            is_booked: false,
-            zoom_link: finalZoomLink,
-            notes: notes || "1-on-1 Academic & Leadership Coaching",
-            created_at: new Date().toISOString()
-        };
+        let slotDate = date || new Date().toISOString().split("T")[0];
+        let slotStart = startTime;
+        let slotEnd = endTime;
+
+        if (startTime.includes("T")) {
+            slotDate = startTime.split("T")[0];
+            slotStart = startTime.split("T")[1].slice(0, 5);
+        }
+        if (endTime.includes("T")) {
+            slotEnd = endTime.split("T")[1].slice(0, 5);
+        }
 
         const { data: inserted, error: dbErr } = await supabaseAdmin
-            .from("coach_availability_slots")
+            .from("coach_availability")
             .insert({
-                coach_id: newSlot.coach_id,
-                module_id: newSlot.module_id,
-                start_time: newSlot.start_time,
-                end_time: newSlot.end_time,
-                duration_minutes: newSlot.duration_minutes,
+                coach_id: user.id,
+                date: slotDate,
+                start_time: slotStart,
+                end_time: slotEnd,
+                duration_minutes: Number(duration),
                 is_booked: false,
-                zoom_link: newSlot.zoom_link,
-                notes: newSlot.notes
+                zoom_link: finalZoomLink,
+                notes: notes || "1-on-1 Academic & Leadership Coaching"
             })
             .select()
             .single();
 
         if (dbErr) {
-            console.warn("DB insert error for slots, using memory fallback:", dbErr.message);
-            memorySlots.push(newSlot);
-            return NextResponse.json({ success: true, slot: newSlot });
+            console.error("DB insert error for slots:", dbErr);
+            return NextResponse.json({ error: dbErr.message }, { status: 400 });
         }
 
         return NextResponse.json({ success: true, slot: inserted });
@@ -140,12 +128,14 @@ export async function DELETE(request: Request) {
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    try {
-        await supabaseAdmin.from("coach_availability_slots").delete().eq("id", slotId);
-        memorySlots = memorySlots.filter(s => s.id !== slotId);
-        return NextResponse.json({ success: true, message: "Slot deleted" });
-    } catch (err: any) {
-        memorySlots = memorySlots.filter(s => s.id !== slotId);
-        return NextResponse.json({ success: true, message: "Slot removed" });
+    const { error } = await supabaseAdmin
+        .from("coach_availability")
+        .delete()
+        .eq("id", slotId);
+
+    if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
     }
+
+    return NextResponse.json({ success: true });
 }

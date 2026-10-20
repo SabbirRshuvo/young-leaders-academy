@@ -41,11 +41,23 @@ function ResetPasswordForm() {
 
         const checkRecoveryToken = async () => {
             try {
-                // 1. Check if PKCE code parameter is present in URL
+                // 1. Check if PKCE code or OTP token_hash parameter is present in URL
                 const code = searchParams.get("code");
+                const token_hash = searchParams.get("token_hash");
+                const type = searchParams.get("type") as any;
+
                 if (code) {
                     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
                     if (!exchangeError) {
+                        if (isMounted) {
+                            setHasValidSession(true);
+                            setVerifyingSession(false);
+                        }
+                        return;
+                    }
+                } else if (token_hash && type) {
+                    const { error: verifyError } = await supabase.auth.verifyOtp({ token_hash, type });
+                    if (!verifyError) {
                         if (isMounted) {
                             setHasValidSession(true);
                             setVerifyingSession(false);

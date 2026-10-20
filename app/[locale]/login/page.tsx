@@ -38,34 +38,25 @@ export default function LoginPage() {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                const { data: profile } = await supabase
-                    .from("profiles")
-                    .select("role")
-                    .eq("id", session.user.id)
-                    .maybeSingle();
+                // 1. Fetch user role from user_roles
+                let dbRole = "";
+                const { data: userRoles } = await supabase
+                    .from("user_roles")
+                    .select("role_id")
+                    .eq("user_id", session.user.id);
 
-                let dbRole = profile?.role?.toLowerCase().trim() || "";
-
-                // 2. Fallback to user_roles if profiles.role is missing
-                if (!dbRole) {
-                    const { data: userRoles } = await supabase
-                        .from("user_roles")
-                        .select("role_id")
-                        .eq("user_id", session.user.id);
-
-                    if (userRoles && userRoles.length > 0) {
-                        const { data: roles } = await supabase
-                            .from("roles")
-                            .select("name")
-                            .eq("id", userRoles[0].role_id)
-                            .single();
-                        if (roles) {
-                            dbRole = roles.name?.toLowerCase().trim() || "";
-                        }
+                if (userRoles && userRoles.length > 0) {
+                    const { data: roles } = await supabase
+                        .from("roles")
+                        .select("name")
+                        .eq("id", userRoles[0].role_id)
+                        .maybeSingle();
+                    if (roles) {
+                        dbRole = roles.name?.toLowerCase().trim() || "";
                     }
                 }
 
-                // 3. Ultimate fallback to metadata (guaranteed for admin)
+                // 2. Fallback to metadata (guaranteed for admin)
                 if (!dbRole) {
                     dbRole = (session.user.user_metadata?.role || session.user.app_metadata?.role || "").toLowerCase().trim();
                 }
@@ -130,36 +121,26 @@ export default function LoginPage() {
             // 2 & 3. STRICT ROLE VERIFICATION BLOCK
             toast.loading("Redirecting...", { id: "redirecting" });
 
-            // 1. Try fetching role from profiles table (per requirements)
-            const { data: profileRole } = await supabase
-                .from("profiles")
-                .select("role")
-                .eq("id", user.id)
-                .maybeSingle();
+            // 1. Fetch user role from user_roles
+            let dbRole = "";
+            const { data: userRoles } = await supabase
+                .from("user_roles")
+                .select("role_id")
+                .eq("user_id", user.id);
 
-            let dbRole = profileRole?.role?.toLowerCase().trim() || "";
+            if (userRoles && userRoles.length > 0) {
+                const roleIds = userRoles.map((r) => r.role_id);
+                const { data: roles } = await supabase
+                    .from("roles")
+                    .select("name")
+                    .in("id", roleIds);
 
-            // 2. Fallback to user_roles if profiles.role is missing
-            if (!dbRole) {
-                const { data: userRoles } = await supabase
-                    .from("user_roles")
-                    .select("role_id")
-                    .eq("user_id", user.id);
-
-                if (userRoles && userRoles.length > 0) {
-                    const roleIds = userRoles.map((r) => r.role_id);
-                    const { data: roles } = await supabase
-                        .from("roles")
-                        .select("name")
-                        .in("id", roleIds);
-
-                    if (roles && roles.length > 0) {
-                        dbRole = roles[0].name?.toLowerCase().trim() || "";
-                    }
+                if (roles && roles.length > 0) {
+                    dbRole = roles[0].name?.toLowerCase().trim() || "";
                 }
             }
 
-            // 3. Ultimate fallback to metadata (guaranteed for admin)
+            // 2. Fallback to metadata (guaranteed for admin)
             if (!dbRole) {
                 dbRole = (user.user_metadata?.role || user.app_metadata?.role || "").toLowerCase().trim();
             }

@@ -89,17 +89,17 @@ export default function Page() {
 
             const mappedUni = (uniData || []).map(app => ({ ...app, type: 'university' as const }));
             const mappedProg = (progData || []).map(app => {
-                 const fullName = userProfile?.full_name || '';
-                 const [firstName, ...lastNameArr] = fullName.split(' ');
-                 return {
-                     ...app,
-                     type: 'program' as const,
-                     first_name: firstName || 'Student',
-                     last_name: lastNameArr.join(' ') || '',
-                     email: userProfile?.email || user.email || '',
-                 };
+                const fullName = userProfile?.full_name || '';
+                const [firstName, ...lastNameArr] = fullName.split(' ');
+                return {
+                    ...app,
+                    type: 'program' as const,
+                    first_name: firstName || 'Student',
+                    last_name: lastNameArr.join(' ') || '',
+                    email: userProfile?.email || user.email || '',
+                };
             });
-            
+
             const allApps = [...mappedUni, ...mappedProg].sort((a, b) => {
                 return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
             });
@@ -222,19 +222,16 @@ export default function Page() {
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab as any)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                        activeTab === tab
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab
                                             ? "bg-[#0B2545] text-white shadow-sm"
                                             : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
-                                    }`}
+                                        }`}
                                 >
                                     {tab}
                                 </button>
                             ))}
                         </div>
                     </div>
-
-                    {/* LOADING */}
                     {loading && (
                         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
                             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#0B2545]" />
@@ -270,29 +267,27 @@ export default function Page() {
                         </div>
                     )}
 
-                    {/* EMPTY STATE */}
                     {!loading && !error && filteredApplications.length === 0 && (
                         <EmptyApplications hasSearchQuery={Boolean(searchQuery.trim())} />
                     )}
                 </section>
             </div>
 
-            {/* APPLICATION DETAILS MODAL */}
             {selectedApplication && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div 
-                        className="fixed inset-0 bg-[#0B2545]/40 backdrop-blur-sm" 
-                        onClick={() => setSelectedApplication(null)} 
+                    <div
+                        className="fixed inset-0 bg-[#0B2545]/40 backdrop-blur-sm"
+                        onClick={() => setSelectedApplication(null)}
                     />
                     <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="absolute top-0 left-0 w-full h-2 bg-[#D4AF37]" />
-                        <button 
-                            onClick={() => setSelectedApplication(null)} 
+                        <button
+                            onClick={() => setSelectedApplication(null)}
                             className="absolute right-4 top-4 rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
                         >
                             <X className="h-5 w-5" />
                         </button>
-                        
+
                         <div className="flex items-center gap-3 mb-6 mt-2">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0B2545]/10">
                                 <FileText className="h-6 w-6 text-[#0B2545]" />
@@ -302,7 +297,7 @@ export default function Page() {
                                 <p className="text-sm font-medium text-gray-500">Ref: #{selectedApplication.id}</p>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
@@ -335,7 +330,7 @@ export default function Page() {
                                     <p className="font-bold text-[#0B2545]">{new Date(selectedApplication.created_at || "").toLocaleDateString()}</p>
                                 </div>
                             </div>
-                            
+
                             {selectedApplication.motivation && (
                                 <div className="rounded-xl bg-gray-50 p-5 border border-gray-100">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">Motivation</p>
@@ -347,8 +342,8 @@ export default function Page() {
                         </div>
 
                         <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                            <button 
-                                onClick={() => setSelectedApplication(null)} 
+                            <button
+                                onClick={() => setSelectedApplication(null)}
                                 className="rounded-xl px-5 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors"
                             >
                                 Close Details
@@ -370,9 +365,6 @@ export default function Page() {
     );
 }
 
-/* =========================================================
-   APPLICATION CARD
-========================================================= */
 
 function ApplicationCard({
     application,
@@ -490,9 +482,7 @@ function InfoItem({ icon: Icon, label, value }: { icon: React.ElementType; label
     );
 }
 
-/* =========================================================
-   APPLICATION STAT
-========================================================= */
+
 
 function ApplicationStat({ icon: Icon, label, value, description }: { icon: React.ElementType; label: string; value: number; description: string }) {
     return (
@@ -511,9 +501,6 @@ function ApplicationStat({ icon: Icon, label, value, description }: { icon: Reac
     );
 }
 
-/* =========================================================
-   EMPTY STATE
-========================================================= */
 
 function EmptyApplications({ hasSearchQuery }: { hasSearchQuery: boolean }) {
     return (

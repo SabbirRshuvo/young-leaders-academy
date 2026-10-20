@@ -170,6 +170,7 @@ function SignUpForm() {
                     data: {
                         first_name: formData.first_name.trim(),
                         last_name: formData.last_name.trim(),
+                        role: selectedRole === "admin" ? "pending_admin" : selectedRole,
                     },
                 },
             });
@@ -193,15 +194,17 @@ function SignUpForm() {
             // 2. CREATE PROFILE
             // ==========================================
 
+            const fullName = `${formData.first_name.trim()} ${formData.last_name.trim()}`.trim();
+
             const { error: profileError } = await supabase
                 .from("profiles")
                 .insert({
                     id: userId,
                     first_name: formData.first_name.trim(),
                     last_name: formData.last_name.trim(),
+                    display_name: fullName,
                     country: formData.country,
                     preferred_language: formData.preferred_language,
-                    role: selectedRole === "admin" ? "pending_admin" : selectedRole,
 
                     phone:
                         selectedRole === "parent"

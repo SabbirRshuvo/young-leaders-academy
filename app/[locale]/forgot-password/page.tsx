@@ -37,12 +37,13 @@ export default function ForgotPasswordPage() {
         try {
             setLoading(true);
 
-            // Construct site URL for redirection
+            // Construct site URL for redirection (routes cleanly through auth callback)
             const origin = typeof window !== "undefined" && window.location.origin
                 ? window.location.origin
                 : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
 
-            const redirectUrl = `${origin}/${locale}/reset-password`;
+            const targetNext = locale === "ar" ? "/ar/reset-password" : "/reset-password";
+            const redirectUrl = `${origin}/auth/callback?next=${encodeURIComponent(targetNext)}`;
 
             const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
                 redirectTo: redirectUrl,

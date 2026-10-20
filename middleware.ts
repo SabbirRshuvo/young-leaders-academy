@@ -3,6 +3,13 @@ import { NextResponse, type NextRequest } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // 0. Bypass internationalization and route protection for /auth and /api
+  if (path.startsWith('/auth') || path.startsWith('/api')) {
+    return NextResponse.next();
+  }
+
   // 1. Initialize next-intl middleware
   const intlMiddleware = createIntlMiddleware({
     locales: ['en', 'ar'],
@@ -38,7 +45,6 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   
   // 3. Route Protection Logic
-  const path = request.nextUrl.pathname;
   
   // Extract locale
   const match = path.match(/^\/(en|ar)/);
@@ -123,10 +129,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Matcher ignoring static files, api, etc.
+  // Matcher ignoring static files, api, auth, etc.
   matcher: [
     '/',
     '/(ar|en)/:path*',
-    '/((?!api|_next|_vercel|.*\\..*).*)'
+    '/((?!api|auth|_next|_vercel|.*\\..*).*)'
   ]
 };
