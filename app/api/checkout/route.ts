@@ -218,24 +218,26 @@ export async function POST(req: Request) {
             // Auto-enroll user in program / course
             if (userId) {
                 // Course enrollment
-                await supabase
-                    .from("enrollments")
-                    .upsert([{
-                        user_id: userId,
-                        program_id: programId,
-                        status: "active",
-                    }], { onConflict: "user_id,program_id" })
-                    .catch(() => {});
+                try {
+                    await supabase
+                        .from("enrollments")
+                        .upsert([{
+                            user_id: userId,
+                            program_id: programId,
+                            status: "active",
+                        }], { onConflict: "user_id,program_id" });
 
-                // Also record in course_enrollments if used
-                await supabase
-                    .from("course_enrollments")
-                    .upsert([{
-                        user_id: userId,
-                        course_id: programId,
-                        status: "active",
-                    }], { onConflict: "user_id,course_id" })
-                    .catch(() => {});
+                    // Also record in course_enrollments if used
+                    await supabase
+                        .from("course_enrollments")
+                        .upsert([{
+                            user_id: userId,
+                            course_id: programId,
+                            status: "active",
+                        }], { onConflict: "user_id,course_id" });
+                } catch {
+                    // Ignore duplicate or schema variation errors
+                }
             }
         }
 

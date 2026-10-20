@@ -292,6 +292,8 @@ export default function Navbar() {
   |--------------------------------------------------------------------------
   */
 
+  const isAr = locale === "ar";
+
   const publicNavLinks = [
     {
       name: t("home"),
@@ -304,6 +306,10 @@ export default function Navbar() {
     {
       name: t("programs"),
       href: "/programs",
+    },
+    {
+      name: isAr ? "جلسات التوجيه" : "1-on-1 Coaching",
+      href: "/student/coaching",
     },
     {
       name: t("universities"),
@@ -320,8 +326,6 @@ export default function Navbar() {
   | Student navigation
   |--------------------------------------------------------------------------
   */
-
-  const isAr = locale === "ar";
 
   const studentNavLinks = [
     {
@@ -369,6 +373,10 @@ export default function Navbar() {
       name: isAr ? "أبنائي" : "My Children",
       href: "/parent/children",
     },
+    {
+      name: isAr ? "جلسات التوجيه" : "1-on-1 Coaching",
+      href: "/student/coaching",
+    },
   ];
 
   /*
@@ -385,6 +393,10 @@ export default function Navbar() {
     {
       name: isAr ? "جدول الجلسات" : "1-on-1 Calendar",
       href: "/coach/sessions",
+    },
+    {
+      name: isAr ? "حجز جلسة" : "Book Session",
+      href: "/student/coaching",
     },
     {
       name: isAr ? "الوحدات التدريبية" : "My Modules",
@@ -410,6 +422,10 @@ export default function Navbar() {
     {
       name: isAr ? "المدربون" : "Coaches",
       href: "/admin/coaches",
+    },
+    {
+      name: isAr ? "جلسات 1-على-1" : "1-on-1 Sessions",
+      href: "/student/coaching",
     },
     {
       name: t("programs"),

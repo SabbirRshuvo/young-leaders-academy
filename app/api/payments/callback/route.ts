@@ -45,14 +45,17 @@ export async function GET(req: Request) {
 
                 const userId = profile?.id;
                 if (userId) {
-                    await supabase
-                        .from("enrollments")
-                        .upsert([{
-                            user_id: userId,
-                            program_id: payment.program_id,
-                            status: "active"
-                        }], { onConflict: "user_id,program_id" })
-                        .catch(() => {});
+                    try {
+                        await supabase
+                            .from("enrollments")
+                            .upsert([{
+                                user_id: userId,
+                                program_id: payment.program_id,
+                                status: "active"
+                            }], { onConflict: "user_id,program_id" });
+                    } catch {
+                        // Ignore duplicate or schema variation errors
+                    }
                 }
             }
         }

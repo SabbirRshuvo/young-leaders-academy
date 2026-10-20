@@ -45,13 +45,19 @@ export default function StudentCoachingPage() {
     const [bookingSubmitting, setBookingSubmitting] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    const [currentUser, setCurrentUser] = useState<any>(null);
+
     const fetchData = async () => {
         setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session } } = await supabase.auth.getSession();
+            let user: any = session?.user;
             if (!user) {
-                router.push(`/${locale}/login`);
-                return;
+                const { data: userData } = await supabase.auth.getUser();
+                user = userData?.user ?? null;
+            }
+            if (user) {
+                setCurrentUser(user);
             }
 
             // 1. Fetch available coach slots
@@ -61,11 +67,13 @@ export default function StudentCoachingPage() {
                 setAvailableSlots(data.slots || []);
             }
 
-            // 2. Fetch student's bookings
-            const resBookings = await fetch(`/api/coach/bookings?studentId=${user.id}`);
-            if (resBookings.ok) {
-                const data = await resBookings.json();
-                setMyBookings(data.bookings || []);
+            // 2. Fetch student's bookings if user is available
+            if (user?.id) {
+                const resBookings = await fetch(`/api/coach/bookings?studentId=${user.id}`);
+                if (resBookings.ok) {
+                    const data = await resBookings.json();
+                    setMyBookings(data.bookings || []);
+                }
             }
 
             // 3. Fetch modules & coaches from admin API

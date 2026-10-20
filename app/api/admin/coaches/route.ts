@@ -25,9 +25,7 @@ export async function GET(request: Request) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const role = user.user_metadata?.role;
-    if (role !== "admin" && user.email !== "adminsabbir@gmail.com") {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const isAdmin = role === "admin" || user.email === "adminsabbir@gmail.com";
 
     const supabaseAdmin = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -35,12 +33,16 @@ export async function GET(request: Request) {
     );
 
     try {
-        // 1. Fetch coach applications from customer_leads
-        const { data: leads, error: leadsErr } = await supabaseAdmin
-            .from("customer_leads")
-            .select("*")
-            .eq("target_group", "coach")
-            .order("created_at", { ascending: false });
+        // 1. Fetch coach applications from customer_leads (only for admin)
+        let leads: any[] = [];
+        if (isAdmin) {
+            const { data: leadsData } = await supabaseAdmin
+                .from("customer_leads")
+                .select("*")
+                .eq("target_group", "coach")
+                .order("created_at", { ascending: false });
+            leads = leadsData || [];
+        }
 
         // 2. Fetch coach role ID
         const { data: coachRole } = await supabaseAdmin

@@ -18,6 +18,7 @@ import {
     Target,
     TrendingUp,
     UserRound,
+    Video,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale } from "next-intl";
@@ -981,39 +982,52 @@ export default function Page() {
                             <QuickAction
                                 href="/student/enrolled-programs"
                                 icon={BookOpen}
-                                title="Enrolled Programs"
+                                title={isAr ? "البرامج المسجلة" : "Enrolled Programs"}
                                 description={`${paidPaymentCount} active ${paidPaymentCount === 1 ? "course" : "courses"}`}
+                                locale={locale}
                             />
                             
                             <QuickAction
+                                href="/student/coaching"
+                                icon={Video}
+                                title={isAr ? "جلسات التوجيه 1:1" : "1-on-1 Coaching"}
+                                description={isAr ? "حجز جلسات توجيه فردية مع المدربين" : "Book Zoom sessions with certified coaches"}
+                                locale={locale}
+                            />
+
+                            <QuickAction
                                 href="/student/applications"
                                 icon={FileText}
-                                title="Applications"
+                                title={isAr ? "الطلبات" : "Applications"}
                                 description={`${applicationCount} ${applicationCount === 1
                                     ? "application"
                                     : "applications"
                                     } submitted`}
+                                locale={locale}
                             />
 
                             <QuickAction
                                 href="/student/profile"
                                 icon={UserRound}
-                                title="My Profile"
+                                title={isAr ? "الملف الشخصي" : "My Profile"}
                                 description={`${profileCompletion}% complete`}
+                                locale={locale}
                             />
 
                             <QuickAction
                                 href="/universities"
                                 icon={GraduationCap}
-                                title="Universities"
+                                title={isAr ? "الجامعات" : "Universities"}
                                 description="Explore university opportunities"
+                                locale={locale}
                             />
 
                             <QuickAction
                                 href="/apply"
                                 icon={BookOpen}
-                                title="New Application"
+                                title={isAr ? "تقديم طلب جديد" : "New Application"}
                                 description="Start a new application"
+                                locale={locale}
                             />
 
                         </div>
@@ -1177,15 +1191,18 @@ function QuickAction({
     icon: Icon,
     title,
     description,
+    locale,
 }: {
     href: string;
     icon: React.ElementType;
     title: string;
     description: string;
+    locale?: string;
 }) {
+    const localizedHref = locale && locale !== 'en' ? `/${locale}${href}` : href;
     return (
         <Link
-            href={href}
+            href={localizedHref}
             className="group flex items-center gap-3 rounded-xl border border-gray-100 p-3 transition-colors hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5"
         >
 

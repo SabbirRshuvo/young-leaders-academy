@@ -42,7 +42,12 @@ export default function CoachSessionsPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { session } } = await supabase.auth.getSession();
+            let user: any = session?.user;
+            if (!user) {
+                const { data: userData } = await supabase.auth.getUser();
+                user = userData?.user ?? null;
+            }
             if (!user) return;
 
             // 1. Fetch slots
