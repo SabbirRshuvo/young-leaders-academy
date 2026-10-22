@@ -94,11 +94,11 @@ export default function Footer() {
           <div className="space-y-6 lg:pl-8">
             <h4 className="text-lg font-bold text-white mb-6">{t('quickLinksTitle')}</h4>
             <ul className="space-y-3 text-sm text-gray-300">
-              <li><Link href={`/${locale}`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.home')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
-              <li><Link href={`/${locale}/about`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.about')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
-              <li><Link href={`/${locale}/programs`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.programs')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
-              <li><Link href={`/${locale}/universities`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.universities')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
-              <li><Link href={`/${locale}/contact`} className={`hover:text-gold transition-colors flex items-center justify-between group ${isAr ? 'flex-row-reverse' : ''}`}>{t('nav.contact')} <span className={`opacity-0 group-hover:opacity-100 transition-opacity ${isAr ? 'rotate-180' : ''}`}>›</span></Link></li>
+              <li><Link href={`/${locale}`} className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.home')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}/about`} className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.about')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}/programs`} className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.programs')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}/universities`} className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.universities')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
+              <li><Link href={`/${locale}/contact`} className="hover:text-gold transition-colors flex items-center justify-between group">{t('nav.contact')} <span className="opacity-0 group-hover:opacity-100 transition-opacity">›</span></Link></li>
             </ul>
           </div>
 
@@ -107,7 +107,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
-                <span>Riyadh, Saudi Arabia</span>
+                <span>{t('location')}</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-gray-400 shrink-0" strokeWidth={1.5} />
@@ -169,14 +169,14 @@ export default function Footer() {
         </div>
 
         {/* Trust Markers */}
-        <div className={`mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 ${isAr ? 'md:flex-row-reverse' : ''}`}>
-          <div className={`flex flex-wrap items-center justify-center gap-6 ${isAr ? 'flex-row-reverse' : ''}`}>
-            <div className={`flex items-center gap-2 text-gray-300 ${isAr ? 'flex-row-reverse' : ''}`}>
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <div className="flex items-center gap-2 text-gray-300">
               <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
               <span className="text-sm font-semibold">{t('pdplCertified')}</span>
             </div>
             <div className="h-4 w-px bg-white/20 hidden md:block"></div>
-            <div className={`flex items-center gap-2 text-gray-300 ${isAr ? 'flex-row-reverse' : ''}`}>
+            <div className="flex items-center gap-2 text-gray-300">
               <Receipt className="w-5 h-5 text-[#D4AF37]" />
               <span className="text-sm font-semibold">{t('vatCompliant')}</span>
             </div>
@@ -192,10 +192,10 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className={`mt-8 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center ${isAr ? 'md:flex-row-reverse' : ''}`}>
+        <div className="mt-8 pt-8 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
           <p>© {new Date().getFullYear()} Young Leaders Academy. {t('rightsReserved')}</p>
           <div className="flex space-x-6 mt-4 md:mt-0 items-center">
-            <Link href={`/${locale}/privacy`} className={`hover:text-white transition-colors ${isAr ? 'ml-6' : ''}`}>{t('privacyPolicy')}</Link>
+            <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">{t('privacyPolicy')}</Link>
             <span className="text-gray-600">|</span>
             <Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('termsConditions')}</Link>
           </div>

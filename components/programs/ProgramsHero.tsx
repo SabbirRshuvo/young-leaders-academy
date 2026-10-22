@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
+import { getLocalizedCategory } from '@/lib/program-localization';
 
 interface ProgramsHeroProps {
   selectedCategory: string;
@@ -36,7 +37,7 @@ export default function ProgramsHero({ selectedCategory, setSelectedCategory }: 
         // Format for UI
         const formattedCategories = uniqueCategories.map(cat => ({
           id: cat,
-          label: cat // You might want to translate this if you have a map, but for now we display it raw
+          label: isAr ? getLocalizedCategory(cat, true) : cat
         }));
         
         setCategories([

@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function ProgramsCta() {
   const t = useTranslations('ProgramsCta');
+  const locale = useLocale();
 
   return (
     <section className="relative w-full overflow-hidden flex items-center min-h-[450px] md:min-h-[500px]">
@@ -44,7 +45,7 @@ export default function ProgramsCta() {
 
           <div>
             <Link
-              href="/programs"
+              href={`/${locale}/programs`}
               className="inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-105 group"
             >
               {t('cta')}

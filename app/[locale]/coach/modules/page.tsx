@@ -65,7 +65,7 @@ export default function CoachModulesPage() {
     };
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir={isAr ? "rtl" : "ltr"}>
+        <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir="ltr">
             <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-[#0B2545]">
                     My Assigned Modules

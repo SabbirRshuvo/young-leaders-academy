@@ -116,7 +116,7 @@ export default async function TermsConditionsPage({
           {/* Disclaimer Highlight Box */}
           <div className="bg-amber-50 border-l-4 border-[#D4AF37] p-6 md:p-8 rounded-r-2xl shadow-sm mb-12 flex gap-4 animate-fade-in-up-delay-1">
             <AlertCircle className="w-6 h-6 text-[#D4AF37] shrink-0 mt-1" />
-            <div className={`flex flex-col ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>
+            <div className="flex flex-col text-left" dir="ltr">
               <h3 className="text-lg font-bold text-amber-900 mb-2">{l(termsData.disclaimer.title)}</h3>
               <p className="text-amber-800 leading-relaxed text-sm md:text-base">
                 {l(termsData.disclaimer.text)}
@@ -139,12 +139,12 @@ export default async function TermsConditionsPage({
                   <div className="w-10 h-10 rounded-full bg-[#0B2545]/5 flex items-center justify-center text-[#0B2545] font-bold text-sm shrink-0">
                     {section.num}
                   </div>
-                  <h2 className={`text-xl md:text-2xl font-bold text-[#0B2545] ${isAr ? 'text-right w-full' : ''}`} dir={isAr ? 'rtl' : 'ltr'}>
+                  <h2 className="text-xl md:text-2xl font-bold text-[#0B2545]" dir="ltr">
                     {l(section.title)}
                   </h2>
                 </div>
 
-                <p className={`text-gray-600 leading-relaxed text-base relative z-10 ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>
+                <p className="text-gray-600 leading-relaxed text-base relative z-10 text-left" dir="ltr">
                   {l(section.content)}
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default async function TermsConditionsPage({
             <h3 className="text-2xl font-bold text-[#0B2545] mb-4">
               {isAr ? "هل لديك أسئلة حول شروطنا؟" : "Have questions about our terms?"}
             </h3>
-            <p className="text-gray-600 mb-8 max-w-lg" dir={isAr ? 'rtl' : 'ltr'}>
+            <p className="text-gray-600 mb-8 max-w-lg" dir="ltr">
               {isAr
                 ? "إذا كان لديك أي أسئلة أو مخاوف بشأن هذه الشروط والأحكام، يرجى الاتصال بفريق الدعم القانوني لدينا."
                 : "If you have any questions or concerns regarding these Terms and Conditions, please contact our legal support team."}

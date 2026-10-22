@@ -124,11 +124,11 @@ export default function StudentCoachBookingModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto" dir={isAr ? "rtl" : "ltr"}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto" dir="ltr">
             <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100">
                 <button
                     onClick={onClose}
-                    className={`absolute top-5 ${isAr ? "left-5" : "right-5"} p-2 text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full cursor-pointer`}
+                    className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full cursor-pointer"
                 >
                     <X className="w-5 h-5" />
                 </button>

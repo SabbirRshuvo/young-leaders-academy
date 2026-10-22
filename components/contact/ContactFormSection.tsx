@@ -284,18 +284,18 @@ export default function ContactFormSection() {
                     className={`w-full mt-2 inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-bold text-sm md:text-base transition-transform duration-300 shadow-md group ${isSubmitting || !isValid
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
                       : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] hover:scale-[1.01]'
-                      } ${isAr ? 'flex-row-reverse' : ''}`}
+                      }`}
                   >
                     {isSubmitting ? (
                       <div className="w-5 h-5 border-2 border-[#0B2545]/20 border-t-[#0B2545] rounded-full animate-spin"></div>
                     ) : (
-                      <ArrowRight className={`w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1 ${isAr ? 'rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0' : ''}`} />
+                      <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
                     )}
                     {isSubmitting ? (isAr ? 'جاري الإرسال...' : 'Sending...') : t('form_submit')}
                   </button>
 
                   {/* Footer Note */}
-                  <div className={`flex items-center justify-start gap-2 mt-4 text-gray-500 ${isAr ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center justify-start gap-2 mt-4 text-gray-500">
                     <Lock className="w-3.5 h-3.5" />
                     <span className="text-xs font-medium">{t('form_footer')}</span>
                   </div>

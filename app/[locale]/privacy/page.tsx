@@ -77,17 +77,17 @@ export default async function PrivacyPolicyPage({
       {/* Dark Navy Header Banner */}
       <section className="relative w-full bg-slate-900 text-white pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black opacity-80"></div>
-        <div className={`max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col animate-fade-in-up ${isAr ? 'items-end text-right' : ''}`}>
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col animate-fade-in-up items-start text-left">
           <div className="inline-flex w-max px-4 py-1.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold uppercase tracking-wider mb-6">
             {l(privacyData.header.title)}
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
             {l(privacyData.header.title)}
           </h1>
-          <p className="text-gray-300 text-lg md:text-xl max-w-2xl leading-relaxed mb-4" dir={isAr ? 'rtl' : 'ltr'}>
+          <p className="text-gray-300 text-lg md:text-xl max-w-2xl leading-relaxed mb-4" dir="ltr">
             {l(privacyData.header.subtitle)}
           </p>
-          <span className="text-sm font-medium text-gray-400" dir={isAr ? 'rtl' : 'ltr'}>
+          <span className="text-sm font-medium text-gray-400" dir="ltr">
             {l(privacyData.header.lastUpdated)}
           </span>
         </div>
@@ -101,7 +101,7 @@ export default async function PrivacyPolicyPage({
             {/* Sticky Table of Contents (Sidebar) */}
             <aside className="w-full lg:w-1/3 lg:sticky lg:top-28 animate-fade-in-up-delay-1">
               <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-200">
-                <h3 className={`text-xl font-bold text-[#0B2545] mb-6 pb-4 border-b border-gray-100 ${isAr ? 'text-right' : ''}`}>
+                <h3 className="text-xl font-bold text-[#0B2545] mb-6 pb-4 border-b border-gray-100 text-left">
                   {isAr ? "جدول المحتويات" : "Table of Contents"}
                 </h3>
                 <nav className="flex flex-col gap-3">
@@ -109,10 +109,10 @@ export default async function PrivacyPolicyPage({
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className={`text-gray-600 hover:text-[#D4AF37] transition-colors font-medium text-sm md:text-base flex items-center group ${isAr ? 'flex-row-reverse justify-start' : ''}`}
+                      className="text-gray-600 hover:text-[#D4AF37] transition-colors font-medium text-sm md:text-base flex items-center group"
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-[#D4AF37] transition-colors ${isAr ? 'ml-3' : 'mr-3'}`}></span>
-                      <span dir={isAr ? 'rtl' : 'ltr'}>{l(section.title)}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-[#D4AF37] transition-colors mr-3"></span>
+                      <span dir="ltr">{l(section.title)}</span>
                     </a>
                   ))}
                 </nav>
@@ -127,10 +127,10 @@ export default async function PrivacyPolicyPage({
                   id={section.id}
                   className={`bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-gray-200 scroll-mt-28 animate-fade-in-up-delay-${Math.min(idx + 1, 4)}`}
                 >
-                  <h2 className={`text-2xl md:text-3xl font-bold text-[#0B2545] mb-6 ${isAr ? 'text-right' : ''}`} dir={isAr ? 'rtl' : 'ltr'}>
+                  <h2 className="text-2xl md:text-3xl font-bold text-[#0B2545] mb-6 text-left" dir="ltr">
                     {l(section.title)}
                   </h2>
-                  <div className={`prose prose-lg max-w-none text-gray-600 leading-relaxed ${isAr ? 'text-right' : ''}`} dir={isAr ? 'rtl' : 'ltr'}>
+                  <div className="prose prose-lg max-w-none text-gray-600 leading-relaxed text-left" dir="ltr">
                     <p>{l(section.content)}</p>
                   </div>
                 </div>

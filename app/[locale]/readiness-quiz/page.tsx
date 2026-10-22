@@ -133,7 +133,7 @@ export default function ReadinessQuizPage() {
 
   if (status === 'success' && finalScore !== null) {
     return (
-      <main className={`min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 ${isAr ? 'font-arabic' : 'font-sans'}`} dir={isAr ? 'rtl' : 'ltr'}>
+      <main className={`min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 ${isAr ? 'font-arabic' : 'font-sans'}`} dir="ltr">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -163,7 +163,7 @@ export default function ReadinessQuizPage() {
             className="inline-flex items-center justify-center gap-2 bg-[#0B2545] text-white hover:bg-[#133055] px-8 py-4 rounded-xl font-bold transition-all shadow-md w-full sm:w-auto relative z-10 min-h-[52px]"
           >
             {t('ctaBtn')}
-            {isAr ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+            <ArrowRight className="w-5 h-5" />
           </Link>
         </motion.div>
       </main>
@@ -171,16 +171,16 @@ export default function ReadinessQuizPage() {
   }
 
   return (
-    <main className={`min-h-screen bg-[#F8F9FA] flex flex-col pt-24 pb-12 px-4 sm:px-6 lg:px-8 ${isAr ? 'font-arabic' : 'font-sans'}`} dir={isAr ? 'rtl' : 'ltr'}>
+    <main className={`min-h-screen bg-[#F8F9FA] flex flex-col pt-24 pb-12 px-4 sm:px-6 lg:px-8 ${isAr ? 'font-arabic' : 'font-sans'}`} dir="ltr">
       <div className="max-w-2xl w-full mx-auto flex-grow flex flex-col relative">
         
         {/* Header & Progress */}
         <div className="mb-8">
-          <div className={`flex items-center gap-3 mb-6 ${isAr ? 'flex-row-reverse' : ''}`}>
+          <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-[#0B2545]/5 flex items-center justify-center shrink-0">
               <Target className="w-5 h-5 text-[#0B2545]" />
             </div>
-            <div className={isAr ? 'text-right' : 'text-left'}>
+            <div className="text-left">
               <h1 className="text-xl md:text-2xl font-bold font-serif text-[#0B2545]">
                 {t('title')}
               </h1>
@@ -428,7 +428,7 @@ export default function ReadinessQuizPage() {
               className="flex items-center gap-2 px-8 py-3 min-h-[52px] rounded-xl font-bold text-sm bg-[#0B2545] text-white hover:bg-[#133055] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
             >
               {t('btnNext')}
-              {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+              <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
             <button

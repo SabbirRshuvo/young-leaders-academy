@@ -40,7 +40,7 @@ export default function EventsPage() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         
         {/* Header Section */}
-        <div className={`mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 ${isAr ? 'md:flex-row-reverse text-right' : 'text-left'}`}>
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 text-left">
           <div className="max-w-2xl">
             <h1 className="text-4xl md:text-5xl font-extrabold font-serif text-[#0B2545] mb-4">
               {t('title')}
@@ -50,8 +50,8 @@ export default function EventsPage() {
             </p>
           </div>
 
-          <div className={`relative w-full md:max-w-xs ${isAr ? 'ms-auto md:ms-0 md:me-auto' : ''}`}>
-            <div className={`absolute inset-y-0 flex items-center pointer-events-none ${isAr ? 'right-4' : 'left-4'}`}>
+          <div className="relative w-full md:max-w-xs">
+            <div className="absolute inset-y-0 flex items-center pointer-events-none left-4">
               <Search className="w-5 h-5 text-gray-400" />
             </div>
             <input
@@ -59,14 +59,14 @@ export default function EventsPage() {
               placeholder={isAr ? 'ابحث عن الفعاليات...' : 'Search events...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent ${isAr ? 'pr-12 pl-4 text-right' : 'pl-12 pr-4 text-left'}`}
+              className="w-full py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent pl-12 pr-4 text-left"
             />
           </div>
         </div>
 
         {/* Category Filters (Horizontal Scroll on Mobile) */}
         <div className="mb-10 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto pb-4 no-scrollbar">
-          <div className={`flex gap-3 min-w-max ${isAr ? 'flex-row-reverse' : ''}`}>
+          <div className="flex gap-3 min-w-max">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -92,10 +92,10 @@ export default function EventsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${isAr ? 'text-right' : 'text-left'}`}
+                className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 text-left"
               >
                 {/* Card Header (Date & Type) */}
-                <div className={`p-6 pb-0 flex justify-between items-start ${isAr ? 'flex-row-reverse' : ''}`}>
+                <div className="p-6 pb-0 flex justify-between items-start">
                   <div className="bg-[#F8F9FA] px-4 py-2 rounded-xl flex flex-col items-center justify-center border border-gray-100">
                     <span className="text-[#D4AF37] font-bold text-xl leading-none">
                       {isAr ? event.dateAr.split(' ')[0] : event.dateEn.split(' ')[1].replace(',', '')}
@@ -107,7 +107,7 @@ export default function EventsPage() {
                   
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
                     event.type === 'virtual' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
-                  } ${isAr ? 'flex-row-reverse' : ''}`}>
+                  }`}>
                     {event.type === 'virtual' ? <Monitor className="w-3.5 h-3.5" /> : <Users className="w-3.5 h-3.5" />}
                     {isAr ? event.typeLabelAr : event.typeLabelEn}
                   </span>
@@ -115,12 +115,12 @@ export default function EventsPage() {
 
                 {/* Card Body */}
                 <div className="p-6 flex-grow flex flex-col">
-                  <h3 className="text-2xl font-bold font-serif text-[#0B2545] mb-2 min-h-[64px] line-clamp-2" dir={isAr ? 'rtl' : 'ltr'}>
+                  <h3 className="text-2xl font-bold font-serif text-[#0B2545] mb-2 min-h-[64px] line-clamp-2" dir="ltr">
                     {isAr ? event.titleAr : event.titleEn}
                   </h3>
                   
                   <div className="space-y-3 mt-4">
-                    <div className={`flex items-start gap-3 text-sm text-gray-600 ${isAr ? 'flex-row-reverse' : ''}`}>
+                    <div className="flex items-start gap-3 text-sm text-gray-600">
                       <Building2 className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="block font-bold text-gray-700">{t('hostLabel')}</span>
@@ -128,14 +128,14 @@ export default function EventsPage() {
                       </div>
                     </div>
                     
-                    <div className={`flex items-start gap-3 text-sm text-gray-600 ${isAr ? 'flex-row-reverse' : ''}`}>
+                    <div className="flex items-start gap-3 text-sm text-gray-600">
                       <Calendar className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
                       <div>
                         {isAr ? event.timeAr : event.timeEn}
                       </div>
                     </div>
                     
-                    <div className={`flex items-start gap-3 text-sm text-gray-600 ${isAr ? 'flex-row-reverse' : ''}`}>
+                    <div className="flex items-start gap-3 text-sm text-gray-600">
                       <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
                       <div>
                         <span className="block font-bold text-gray-700">{t('locationLabel')}</span>
@@ -147,7 +147,7 @@ export default function EventsPage() {
 
                 {/* Card Footer */}
                 <div className="p-6 pt-0 mt-auto">
-                  <div className={`flex items-center justify-between mb-4 text-xs font-bold text-gray-500 ${isAr ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center justify-between mb-4 text-xs font-bold text-gray-500">
                     <span className="bg-gray-100 px-3 py-1 rounded-full">
                       {event.seats} {t('seats')}
                     </span>

@@ -85,7 +85,7 @@ export default function CoachDashboardPage() {
     const openSlots = slots.filter(s => !s.is_booked);
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir={isAr ? "rtl" : "ltr"}>
+        <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir="ltr">
             {/* Welcome banner */}
             <div className="bg-gradient-to-r from-[#0B2545] to-[#133055] rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
                 <div className="relative z-10 max-w-2xl">

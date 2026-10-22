@@ -13,7 +13,7 @@ export default function NotFound() {
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center bg-navy relative overflow-hidden font-sans"
-      dir={isRtl ? "rtl" : "ltr"}
+      dir="ltr"
     >
       {/* Dynamic Background Effects */}
       <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-gold/20 rounded-full blur-[120px] pointer-events-none animate-pulse duration-10000" />
@@ -51,11 +51,7 @@ export default function NotFound() {
           {/* Button Shine Effect */}
           <div className="absolute inset-0 -translate-x-full bg-white/40 skew-x-12 group-hover:animate-[shimmer_1.5s_infinite]" />
           
-          {isRtl ? (
-            <ArrowRight className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-          ) : (
-            <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-          )}
+          <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
           
           <span className="relative z-10">{t("back")}</span>
           

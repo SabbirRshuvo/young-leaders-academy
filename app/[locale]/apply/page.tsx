@@ -344,7 +344,7 @@ function ApplyFormContent() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="relative overflow-hidden" dir={isAr ? 'rtl' : 'ltr'}>
+      <form onSubmit={handleSubmit} className="relative overflow-hidden" dir="ltr">
         <AnimatePresence mode="wait" custom={1}>
 
           {step === 1 && (
@@ -495,14 +495,14 @@ function ApplyFormContent() {
         </AnimatePresence>
 
         {/* Form Navigation Buttons */}
-        <div className={`mt-10 flex items-center justify-between border-t border-gray-100 pt-8 ${isAr ? 'flex-row-reverse' : ''}`}>
+        <div className="mt-10 flex items-center justify-between border-t border-gray-100 pt-8">
           {step > 1 ? (
             <button
               type="button"
               onClick={handlePrev}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full text-[#0B2545] font-bold bg-gray-100 hover:bg-gray-200 transition-colors ${isAr ? 'flex-row-reverse' : ''}`}
+              className="flex items-center gap-2 px-6 py-3 rounded-full text-[#0B2545] font-bold bg-gray-100 hover:bg-gray-200 transition-colors"
             >
-              {isAr ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+              <ChevronLeft className="w-5 h-5" />
               {t('prevBtn')}
             </button>
           ) : (
@@ -517,10 +517,10 @@ function ApplyFormContent() {
               className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${canProceed()
                 ? 'bg-[#0B2545] text-white hover:bg-[#1a365d] cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
-                } ${isAr ? 'flex-row-reverse' : ''}`}
+                }`}
             >
               {t('nextBtn')}
-              {isAr ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+              <ChevronRight className="w-5 h-5" />
             </button>
           ) : (
             <button
@@ -529,7 +529,7 @@ function ApplyFormContent() {
               className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all shadow-md ${isSubmitting || !canProceed()
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'
                 : 'bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] hover:from-[#e3be47] hover:to-[#d6a931]'
-                } ${isAr ? 'flex-row-reverse' : ''}`}
+                }`}
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-[#0B2545]/20 border-t-[#0B2545] rounded-full animate-spin"></div>

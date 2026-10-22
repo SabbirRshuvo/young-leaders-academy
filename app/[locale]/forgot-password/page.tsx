@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center overflow-hidden py-10 px-4" dir={isAr ? "rtl" : "ltr"}>
+        <main className="min-h-screen bg-[#F8FAFC] flex items-center justify-center overflow-hidden py-10 px-4" dir="ltr">
             <div className="w-full max-w-lg">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

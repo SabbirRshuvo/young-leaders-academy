@@ -46,7 +46,7 @@ export default function PaymentMethodSelector({
     const totalAmount = amount + vatAmount;
 
     return (
-        <div className="space-y-6" dir={isAr ? "rtl" : "ltr"}>
+        <div className="space-y-6" dir="ltr">
             {/* Header */}
             <div>
                 <h3 className="text-base font-bold text-[#0B2545] flex items-center gap-2">

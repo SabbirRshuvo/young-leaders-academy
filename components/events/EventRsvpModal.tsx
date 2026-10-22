@@ -139,13 +139,13 @@ END:VCALENDAR`;
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className={`w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto my-auto ${isAr ? 'font-arabic' : 'font-sans'}`}
-              dir={isAr ? 'rtl' : 'ltr'}
+              dir="ltr"
             >
               {/* Header */}
               <div className="bg-[#0B2545] p-6 relative">
                 <button
                   onClick={closeAndReset}
-                  className={`absolute top-4 ${isAr ? 'left-4' : 'right-4'} text-white/70 hover:text-white transition-colors`}
+                  className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>

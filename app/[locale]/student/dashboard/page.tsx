@@ -21,7 +21,7 @@ import {
     Video,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 import { programsData } from "@/data/programs";
@@ -117,6 +117,7 @@ type ParentRequest = {
 export default function Page() {
     const locale = useLocale();
     const isAr = locale === "ar";
+    const t = useTranslations("StudentDashboard");
 
     const [dashboard, setDashboard] = useState<DashboardData>({
         profile: null,
@@ -172,7 +173,7 @@ export default function Page() {
             }
 
             if (!user) {
-                setError("You must be logged in to view your dashboard.");
+                setError(t("unableToLoad"));
                 return;
             }
             const { data: profile, error: profileError } =
@@ -198,6 +199,7 @@ export default function Page() {
             if (profileError) {
                 throw profileError;
             }
+
             const { data: studentProfile, error: studentProfileError } =
                 await supabase
                     .from("student_profiles")
@@ -328,7 +330,7 @@ export default function Page() {
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Failed to load your dashboard."
+                    : t("unableToLoad")
             );
         } finally {
             setLoading(false);
@@ -351,16 +353,15 @@ export default function Page() {
                 body: JSON.stringify({ requestId, status })
             });
 
-            if (res.ok) {
-                setParentRequests(prev => prev.filter(r => r.id !== requestId));
-                toast.success(`Request ${status} successfully.`);
-            } else {
-                const data = await res.json();
-                toast.error(data.error || "Failed to update request.");
+            if (!res.ok) {
+                throw new Error("Failed to process request");
             }
-        } catch (e) {
+
+            setParentRequests(prev => prev.filter(r => r.id !== requestId));
+            toast.success(status === "approved" ? "Parent connected successfully!" : "Request rejected");
+        } catch (e: any) {
             console.error(e);
-            toast.error("Error updating request.");
+            toast.error(e.message || "Failed to update request");
         } finally {
             setProcessingRequest(null);
         }
@@ -374,7 +375,7 @@ export default function Page() {
         }
 
         if (profile.display_name?.trim()) {
-            return profile.display_name;
+            return profile.display_name.trim();
         }
 
         return (
@@ -383,20 +384,22 @@ export default function Page() {
         );
     }, [dashboard.profile]);
 
+    const notProvidedStr = t("notProvided");
+
     const schoolName =
         dashboard.studentProfile?.school_name ||
         dashboard.applications[0]?.school ||
-        "Not provided";
+        notProvidedStr;
 
     const country =
         dashboard.studentProfile?.country ||
         dashboard.profile?.country ||
-        "Not provided";
+        notProvidedStr;
 
-    const city = dashboard.studentProfile?.city || "Not provided";
+    const city = dashboard.studentProfile?.city || notProvidedStr;
 
     const gradeLevel =
-        dashboard.studentProfile?.grade_level || "Not provided";
+        dashboard.studentProfile?.grade_level || notProvidedStr;
 
     const applicationCount = dashboard.applications.length;
 
@@ -412,7 +415,6 @@ export default function Page() {
     );
 
     const paidPaymentCount = paidPayments.length;
-
 
     const profileCompletion = useMemo(() => {
         const profile = dashboard.profile;
@@ -450,14 +452,12 @@ export default function Page() {
         );
     }, [dashboard.profile, dashboard.studentProfile]);
 
-
     const journey = useMemo(() => {
         const hasProfile = Boolean(
             dashboard.profile || dashboard.studentProfile
         );
 
         const hasApplication = dashboard.applications.length > 0;
-
         const hasPayment = paidPaymentCount > 0;
 
         let currentStage = 0;
@@ -476,31 +476,23 @@ export default function Page() {
 
         return [
             {
-                title: isAr ? "إنشاء الملف الشخصي" : "Create Profile",
-                description: isAr
-                    ? "قم بإعداد معلومات الطالب والبيانات الشخصية."
-                    : "Set up your student information and personal details.",
+                title: t("stageCreateProfileTitle"),
+                description: t("stageCreateProfileDesc"),
                 completed: hasProfile,
             },
             {
-                title: isAr ? "استكشاف البرامج" : "Explore Programs",
-                description: isAr
-                    ? "استكشف البرامج وحدد الفرص التي تهمك."
-                    : "Explore programs and identify opportunities that interest you.",
+                title: t("stageExploreProgramsTitle"),
+                description: t("stageExploreProgramsDesc"),
                 completed: hasApplication,
             },
             {
-                title: isAr ? "التقديم" : "Apply",
-                description: isAr
-                    ? "قدم طلبك وقدم المعلومات المطلوبة."
-                    : "Submit your application and provide the required information.",
+                title: t("stageApplyTitle"),
+                description: t("stageApplyDesc"),
                 completed: hasApplication,
             },
             {
-                title: isAr ? "إتمام الدفع" : "Complete Payment",
-                description: isAr
-                    ? "أكمل عملية الدفع المرتبطة بطلبك."
-                    : "Complete the payment associated with your application.",
+                title: t("stageCompletePaymentTitle"),
+                description: t("stageCompletePaymentDesc"),
                 completed: hasPayment,
             },
         ].map((item, index) => ({
@@ -517,20 +509,20 @@ export default function Page() {
         dashboard.studentProfile,
         dashboard.applications,
         paidPaymentCount,
+        t,
     ]);
-
 
     const recentApplications = dashboard.applications.slice(0, 3);
 
     if (loading) {
         return (
-            <main className="min-h-screen bg-gray-50/60">
+            <main className="min-h-screen bg-gray-50/60" dir="ltr">
                 <div className="mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center px-4">
                     <div className="text-center">
                         <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#0B2545]" />
 
                         <p className="mt-4 text-sm text-gray-500">
-                            Loading your dashboard...
+                            {t("loading")}
                         </p>
                     </div>
                 </div>
@@ -538,14 +530,13 @@ export default function Page() {
         );
     }
 
-
     if (error) {
         return (
-            <main className="min-h-screen bg-gray-50/60">
+            <main className="min-h-screen bg-gray-50/60" dir="ltr">
                 <div className="mx-auto flex min-h-screen w-full max-w-2xl items-center justify-center px-4">
                     <div className="w-full rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
                         <h1 className="text-xl font-bold text-red-700">
-                            Unable to load dashboard
+                            {t("unableToLoad")}
                         </h1>
 
                         <p className="mt-2 text-sm text-red-600">
@@ -557,7 +548,7 @@ export default function Page() {
                             onClick={fetchDashboard}
                             className="mt-5 inline-flex h-10 items-center justify-center rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white hover:bg-[#0B2545]/90"
                         >
-                            Try Again
+                            {t("tryAgain")}
                         </button>
                     </div>
                 </div>
@@ -566,7 +557,7 @@ export default function Page() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50/60">
+        <main className="min-h-screen bg-gray-50/60" dir="ltr">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
                 {/* =====================================================
@@ -579,17 +570,15 @@ export default function Page() {
                         <div>
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <Sparkles className="h-4 w-4 text-[#D4AF37]" />
-                                {isAr ? "لوحة تحكم الطالب" : "Student Dashboard"}
+                                {t("badge")}
                             </div>
 
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                {isAr ? `مرحباً بعودتك، ${fullName}!` : `Welcome back, ${fullName}!`}
+                                {t("welcomeBack", { name: fullName })}
                             </h1>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                {isAr
-                                    ? "تابع رحلتك في أكاديمية القادة الشباب، وتتبع تقدمك، واستكشف فرصتك التالية."
-                                    : "Continue your Young Leaders Academy journey, track your progress, and explore your next opportunity."}
+                                {t("headerDesc")}
                             </p>
                         </div>
 
@@ -598,7 +587,7 @@ export default function Page() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e2c45a]"
                         >
                             <UserRound className="h-4 w-4" />
-                            {isAr ? "عرض الملف الشخصي" : "View Profile"}
+                            {t("viewProfile")}
                         </Link>
 
                     </div>
@@ -642,33 +631,32 @@ export default function Page() {
 
                             <SnapshotItem
                                 icon={School}
-                                label={isAr ? "المدرسة" : "School"}
+                                label={t("school")}
                                 value={schoolName}
                             />
 
                             <SnapshotItem
                                 icon={GraduationCap}
-                                label={isAr ? "المرحلة" : "Grade"}
+                                label={t("grade")}
                                 value={gradeLevel}
                             />
 
                             <SnapshotItem
                                 icon={MapPin}
-                                label={isAr ? "الموقع" : "Location"}
+                                label={t("location")}
                                 value={
-                                    city !== "Not provided"
+                                    city !== notProvidedStr
                                         ? `${city}, ${country}`
-                                        : (isAr ? "غير متوفر" : country)
+                                        : notProvidedStr
                                 }
                             />
 
                             <SnapshotItem
                                 icon={Mail}
-                                label={isAr ? "البريد الإلكتروني" : "Email"}
+                                label={t("email")}
                                 value={dashboard.profile?.first_name
-                                    ? dashboard.applications[0]?.email ||
-                                    (isAr ? "بريد الحساب" : "Account email")
-                                    : (isAr ? "بريد الحساب" : "Account email")}
+                                    ? dashboard.applications[0]?.email || t("accountEmail")
+                                    : t("accountEmail")}
                             />
 
                         </div>
@@ -685,41 +673,37 @@ export default function Page() {
 
                     <DashboardStat
                         icon={TrendingUp}
-                        label={isAr ? "اكتمال الملف" : "Profile Progress"}
+                        label={t("profileProgress")}
                         value={`${profileCompletion}%`}
-                        description={isAr ? "تم إكمال الملف" : "Profile completed"}
+                        description={t("profileCompletedDesc")}
                     />
 
                     <DashboardStat
                         icon={FileText}
-                        label={isAr ? "الطلبات" : "Applications"}
+                        label={t("applications")}
                         value={String(applicationCount)}
                         description={
-                            isAr
-                                ? (applicationCount === 1 ? "طلب مقدم" : "طلبات مقدمة")
-                                : (applicationCount === 1
-                                    ? "Application submitted"
-                                    : "Applications submitted")
+                            applicationCount === 1
+                                ? t("applicationSubmitted", { count: applicationCount })
+                                : t("applicationsSubmitted", { count: applicationCount })
                         }
                     />
 
                     <DashboardStat
                         icon={BookOpen}
-                        label={isAr ? "البرامج" : "Programs"}
+                        label={t("programs")}
                         value={String(programCount)}
-                        description={isAr ? "البرامج المقدم عليها" : "Programs applied to"}
+                        description={t("programsAppliedTo")}
                     />
 
                     <DashboardStat
                         icon={CheckCircle2}
-                        label={isAr ? "المدفوعات" : "Payments"}
+                        label={t("payments")}
                         value={String(paidPaymentCount)}
                         description={
-                            isAr
-                                ? (paidPaymentCount === 1 ? "عملية دفع مكتملة" : "عمليات دفع مكتملة")
-                                : (paidPaymentCount === 1
-                                    ? "Completed payment"
-                                    : "Completed payments")
+                            paidPaymentCount === 1
+                                ? t("paymentCompleted", { count: paidPaymentCount })
+                                : t("paymentsCompleted", { count: paidPaymentCount })
                         }
                     />
 
@@ -733,10 +717,10 @@ export default function Page() {
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h2 className="text-xl font-bold text-[#0B2545]">
-                                    Parent Connection Requests
+                                    {t("parentRequestsTitle")}
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Parents are requesting to connect to your account to track your progress.
+                                    {t("parentRequestsDesc")}
                                 </p>
                             </div>
                         </div>
@@ -757,7 +741,7 @@ export default function Page() {
                                                 {req.parent?.first_name} {req.parent?.last_name}
                                             </h3>
                                             <p className="text-sm text-gray-500">
-                                                {req.parent?.email || "Parent"}
+                                                {req.parent?.email || t("parent")}
                                             </p>
                                         </div>
                                     </div>
@@ -767,7 +751,7 @@ export default function Page() {
                                             disabled={processingRequest === req.id}
                                             className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
                                         >
-                                            Reject
+                                            {t("reject")}
                                         </button>
                                         <button
                                             onClick={() => handleRequestAction(req.id, "approved")}
@@ -775,7 +759,7 @@ export default function Page() {
                                             className="flex h-10 items-center gap-2 rounded-lg bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90 disabled:opacity-50"
                                         >
                                             <CheckCircle2 className="h-4 w-4" />
-                                            Approve
+                                            {t("approve")}
                                         </button>
                                     </div>
                                 </div>
@@ -800,17 +784,15 @@ export default function Page() {
 
                             <div>
                                 <p className="text-xs font-semibold uppercase tracking-wider text-[#D4AF37]">
-                                    {isAr ? "مسارك" : "Your journey"}
+                                    {t("yourJourney")}
                                 </p>
 
                                 <h2 className="mt-1 text-xl font-bold text-[#0B2545]">
-                                    {isAr ? "رحلة التعلم" : "Learning Journey"}
+                                    {t("learningJourney")}
                                 </h2>
 
                                 <p className="mt-1 text-sm text-gray-500">
-                                    {isAr
-                                        ? "تقدمك بناءً على المعلومات المتوفرة حالياً في حسابك."
-                                        : "Your progress based on the information currently available in your account."}
+                                    {t("journeyDesc")}
                                 </p>
                             </div>
 
@@ -854,13 +836,13 @@ export default function Page() {
 
                                             {item.status === "current" && (
                                                 <span className="rounded-full bg-[#D4AF37]/15 px-2.5 py-1 text-[11px] font-semibold text-[#8a6c00]">
-                                                    {isAr ? "المرحلة الحالية" : "Current stage"}
+                                                    {t("currentStage")}
                                                 </span>
                                             )}
 
                                             {item.status === "completed" && (
                                                 <span className="rounded-full bg-green-50 px-2.5 py-1 text-[11px] font-semibold text-green-700">
-                                                    {isAr ? "مكتمل" : "Completed"}
+                                                    {t("completed")}
                                                 </span>
                                             )}
 
@@ -889,13 +871,11 @@ export default function Page() {
                         </div>
 
                         <h2 className="mt-4 text-lg font-bold text-[#0B2545]">
-                            {isAr ? "أكمل ملفك الشخصي" : "Complete Your Profile"}
+                            {t("completeProfileTitle")}
                         </h2>
 
                         <p className="mt-1 text-sm leading-5 text-gray-500">
-                            {isAr
-                                ? "يساعدنا الملف الشخصي المكتمل على تخصيص تجربة التعلم الخاصة بك."
-                                : "A complete profile helps us personalize your learning journey."}
+                            {t("completeProfileDesc")}
                         </p>
 
                         <div className="mt-5">
@@ -903,7 +883,7 @@ export default function Page() {
                             <div className="mb-2 flex items-center justify-between text-sm">
 
                                 <span className="font-medium text-gray-600">
-                                    {isAr ? "نسبة اكتمال الملف" : "Profile completion"}
+                                    {t("profileCompletionRatio")}
                                 </span>
 
                                 <span className="font-bold text-[#0B2545]">
@@ -927,15 +907,13 @@ export default function Page() {
                             href={locale === "en" ? "/student/profile" : `/${locale}/student/profile`}
                             className="mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                         >
-                            {isAr ? "تحديث الملف الشخصي" : "Update Profile"}
+                            {t("updateProfile")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
 
                     </section>
 
                 </div>
-
-
 
                 <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
 
@@ -947,10 +925,10 @@ export default function Page() {
                         <div className="flex items-center justify-between mb-5">
                             <div>
                                 <h2 className="text-xl font-bold text-[#0B2545]">
-                                    University Applications
+                                    {t("universityApplications")}
                                 </h2>
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Track your university admissions progress.
+                                    {t("universityApplicationsDesc")}
                                 </p>
                             </div>
                         </div>
@@ -959,7 +937,7 @@ export default function Page() {
                             <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center">
                                 <FileText className="mx-auto h-8 w-8 text-gray-400" />
                                 <p className="mt-3 text-sm font-medium text-gray-600">
-                                    No university applications yet
+                                    {t("noUniversityApplications")}
                                 </p>
                             </div>
                         ) : (
@@ -971,19 +949,19 @@ export default function Page() {
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <p className="text-sm font-semibold text-[#0B2545] truncate">
-                                                {application.program_id || "University not specified"}
+                                                {application.program_id || t("universityNotSpecified")}
                                             </p>
                                             <p className="mt-1 text-xs text-gray-500">
-                                                Application #{application.id}
+                                                {t("applicationNumber", { id: application.id })}
                                             </p>
                                             {application.created_at && (
                                                 <p className="mt-1 text-xs text-gray-400">
-                                                    Submitted {new Date(application.created_at).toLocaleDateString()}
+                                                    {t("submittedOn", { date: new Date(application.created_at).toLocaleDateString(locale === "ar" ? "ar-SA" : "en-US") })}
                                                 </p>
                                             )}
                                         </div>
                                         <div className="inline-flex h-7 items-center rounded-full bg-amber-50 px-2.5 text-[11px] font-semibold text-amber-600 shrink-0">
-                                            Pending
+                                            {t("pending")}
                                         </div>
                                     </div>
                                 ))}
@@ -996,11 +974,11 @@ export default function Page() {
                     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
                         <h2 className="text-xl font-bold text-[#0B2545]">
-                            Quick Access
+                            {t("quickAccess")}
                         </h2>
 
                         <p className="mt-1 text-sm text-gray-500">
-                            Jump directly to your student portal.
+                            {t("quickAccessDesc")}
                         </p>
 
                         <div className="mt-5 space-y-2.5">
@@ -1008,51 +986,48 @@ export default function Page() {
                             <QuickAction
                                 href="/student/enrolled-programs"
                                 icon={BookOpen}
-                                title={isAr ? "البرامج المسجلة" : "Enrolled Programs"}
-                                description={`${enrolledCount} active ${enrolledCount === 1 ? (isAr ? "برنامج" : "course") : (isAr ? "برامج" : "courses")}`}
+                                title={t("qaEnrolledPrograms")}
+                                description={t("qaActiveCourses", { count: enrolledCount })}
                                 locale={locale}
                             />
                             
                             <QuickAction
                                 href="/student/coaching"
                                 icon={Video}
-                                title={isAr ? "جلسات التوجيه 1:1" : "1-on-1 Coaching"}
-                                description={isAr ? "حجز جلسات توجيه فردية مع المدربين" : "Book Zoom sessions with certified coaches"}
+                                title={t("qaCoaching")}
+                                description={t("qaCoachingDesc")}
                                 locale={locale}
                             />
 
                             <QuickAction
                                 href="/student/applications"
                                 icon={FileText}
-                                title={isAr ? "الطلبات" : "Applications"}
-                                description={`${applicationCount} ${applicationCount === 1
-                                    ? "application"
-                                    : "applications"
-                                    } submitted`}
+                                title={t("qaApplications")}
+                                description={t("qaApplicationsCount", { count: applicationCount })}
                                 locale={locale}
                             />
 
                             <QuickAction
                                 href="/student/profile"
                                 icon={UserRound}
-                                title={isAr ? "الملف الشخصي" : "My Profile"}
-                                description={`${profileCompletion}% complete`}
+                                title={t("qaMyProfile")}
+                                description={t("qaProfileProgress", { percent: profileCompletion })}
                                 locale={locale}
                             />
 
                             <QuickAction
                                 href="/universities"
                                 icon={GraduationCap}
-                                title={isAr ? "الجامعات" : "Universities"}
-                                description="Explore university opportunities"
+                                title={t("qaUniversities")}
+                                description={t("qaUniversitiesDesc")}
                                 locale={locale}
                             />
 
                             <QuickAction
                                 href="/apply"
                                 icon={BookOpen}
-                                title={isAr ? "تقديم طلب جديد" : "New Application"}
-                                description="Start a new application"
+                                title={t("qaNewApplication")}
+                                description={t("qaNewApplicationDesc")}
                                 locale={locale}
                             />
 
@@ -1072,24 +1047,23 @@ export default function Page() {
 
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-[#D4AF37]">
-                                Your information
+                                {t("accountInfoTitle")}
                             </p>
 
                             <h2 className="mt-1 text-xl font-bold text-[#0B2545]">
-                                Student Account
+                                {t("studentAccount")}
                             </h2>
 
                             <p className="mt-1 text-sm text-gray-500">
-                                Information currently associated with your
-                                account.
+                                {t("accountInfoDesc")}
                             </p>
                         </div>
 
                         <Link
-                            href="/student/profile"
+                            href={locale === "en" ? "/student/profile" : `/${locale}/student/profile`}
                             className="inline-flex h-10 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-5 text-sm font-semibold text-[#0B2545] hover:bg-[#0B2545] hover:text-white"
                         >
-                            Manage Profile
+                            {t("manageProfile")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
 
@@ -1099,29 +1073,29 @@ export default function Page() {
 
                         <AccountInfo
                             icon={UserRound}
-                            label="Name"
+                            label={t("name")}
                             value={fullName}
                         />
 
                         <AccountInfo
                             icon={Mail}
-                            label="Email"
-                            value={dashboard.applications[0]?.email || "Not provided"}
+                            label={t("email")}
+                            value={dashboard.applications[0]?.email || notProvidedStr}
                         />
 
                         <AccountInfo
                             icon={Phone}
-                            label="Phone"
+                            label={t("phone")}
                             value={
                                 dashboard.profile?.phone ||
                                 dashboard.applications[0]?.phone ||
-                                "Not provided"
+                                notProvidedStr
                             }
                         />
 
                         <AccountInfo
                             icon={School}
-                            label="School"
+                            label={t("school")}
                             value={schoolName}
                         />
 

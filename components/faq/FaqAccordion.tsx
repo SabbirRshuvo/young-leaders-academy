@@ -19,11 +19,11 @@ export default function FaqAccordion({ question, answer }: FaqAccordionProps) {
     <div className={`border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 ${isAr ? 'font-arabic' : 'font-sans'}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between p-6 bg-white focus:outline-none ${isAr ? 'flex-row-reverse text-right' : 'text-left'}`}
+        className="w-full flex items-center justify-between p-6 bg-white focus:outline-none text-left"
       >
         <span className="text-lg font-bold text-[#0B2545]">{question}</span>
         <motion.div
-          animate={{ rotate: isOpen ? (isAr ? -180 : 180) : 0 }}
+          animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="text-[#D4AF37] shrink-0"
         >
@@ -39,7 +39,7 @@ export default function FaqAccordion({ question, answer }: FaqAccordionProps) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
-            <div className={`p-6 pt-0 text-gray-600 text-base leading-relaxed ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>
+            <div className="p-6 pt-0 text-gray-600 text-base leading-relaxed text-left" dir="ltr">
               {answer}
             </div>
           </motion.div>

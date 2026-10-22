@@ -63,7 +63,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
-              className={`relative bg-[#FAF7F2] rounded-3xl p-8 md:p-10 flex flex-col shadow-[0_8px_30px_rgb(11,37,69,0.08)] border border-gray-200 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgb(11,37,69,0.12)] transition-all duration-300 ${isAr ? "text-right" : "text-left"}`}
+              className="relative bg-[#FAF7F2] rounded-3xl p-8 md:p-10 flex flex-col shadow-[0_8px_30px_rgb(11,37,69,0.08)] border border-gray-200 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgb(11,37,69,0.12)] transition-all duration-300 text-left"
             >
               <Quote className="absolute top-8 right-8 w-12 h-12 text-[#D4AF37]/10" fill="currentColor" />
 

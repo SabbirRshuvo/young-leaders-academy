@@ -119,7 +119,7 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${isAr ? 'font-arabic' : 'font-sans'}`} dir={isAr ? 'rtl' : 'ltr'}>
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${isAr ? 'font-arabic' : 'font-sans'}`} dir="ltr">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -139,7 +139,7 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
             <div className="bg-[#0B2545] p-6 text-white shrink-0">
               <button
                 onClick={handleClose}
-                className="absolute top-4 start-4 p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                className="absolute top-4 right-4 p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

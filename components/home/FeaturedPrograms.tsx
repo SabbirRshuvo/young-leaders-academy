@@ -59,7 +59,7 @@ export default function FeaturedPrograms() {
   return (
     <section 
       className={`w-full py-16 md:py-24 bg-[#FAF7F2] ${isAr ? 'font-arabic' : 'font-sans'}`}
-      dir={isAr ? 'rtl' : 'ltr'}
+      dir="ltr"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-[1440px]">
 
@@ -138,7 +138,7 @@ export default function FeaturedPrograms() {
                   </div>
 
                   {/* Content Section */}
-                  <div className={`p-8 pt-12 flex flex-col flex-1 ${isAr ? 'text-right' : 'text-left'}`}>
+                  <div className="p-8 pt-12 flex flex-col flex-1 text-left">
                     <h3 className="text-xl font-serif font-bold mb-3 text-[#0B2545] leading-snug">
                       {titleText}
                     </h3>
@@ -147,13 +147,13 @@ export default function FeaturedPrograms() {
                       {descText}
                     </p>
 
-                    <div className={`mt-auto ${isAr ? 'text-right' : 'text-left'}`}>
+                    <div className="mt-auto text-left">
                       <Link
                         href={`/${locale}/programs/${prog.id}`}
                         className="inline-flex h-[42px] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#0B2545] to-[#1A3A65] hover:from-[#133055] hover:to-[#0B2545] px-6 text-[13px] font-semibold text-white shadow-md hover:shadow-lg transition-all duration-300 w-max group"
                       >
                         {isAr ? 'استكشف البرنامج' : t('viewProgram')}
-                        <ArrowRight className={`w-4 h-4 text-white transition-transform ${isAr ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
+                        <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
                   </div>
@@ -177,7 +177,7 @@ export default function FeaturedPrograms() {
             className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-transparent border-2 border-[#D4AF37] hover:bg-[#D4AF37] text-[#D4AF37] hover:text-white font-bold text-sm md:text-base transition-all duration-300 hover:shadow-xl group"
           >
             {isAr ? 'استكشف جميع البرامج' : t('exploreAll')}
-            <ArrowRight className={`w-5 h-5 transition-transform ${isAr ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
+            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </Link>
         </motion.div>
 

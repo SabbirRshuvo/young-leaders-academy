@@ -14,6 +14,7 @@ export default async function ProgramDetailsPage({
   const { locale, id } = resolvedParams;
 
   const isAr = locale === 'ar';
+  const t = await getTranslations('ProgramDetails');
   const tEnroll = await getTranslations('HowToEnroll');
 
   // Fetch program from Supabase
@@ -59,19 +60,12 @@ export default async function ProgramDetailsPage({
     console.log("Auth check error (expected if no cookies exist):", err);
   }
 
-  // Translation/Text fallbacks 
-  const applyNowText = isAr ? 'قدم الآن' : 'Apply Now';
-  const overviewTitle = isAr ? 'نظرة عامة على البرنامج' : 'Program Overview';
-  const programSpecsTitle = isAr ? 'مواصفات البرنامج' : 'Program Specs';
-  const relatedProgramsTitle = isAr ? 'برامج ذات صلة' : 'Related Programs';
-  const viewProgramText = isAr ? 'عرض البرنامج' : 'View Program';
-
   const specs = [
-    { icon: Users, label: isAr ? 'الفئة العمرية' : 'Age Group', value: program.age_group || 'All Ages' },
-    { icon: Clock, label: isAr ? 'المدة' : 'Duration', value: program.duration || 'Flexible' },
-    { icon: MonitorPlay, label: isAr ? 'النظام' : 'Mode', value: program.mode || 'Online' },
-    { icon: Calendar, label: isAr ? 'تاريخ البدء' : 'Start Date', value: program.start_date || 'Self-paced' },
-    { icon: Banknote, label: isAr ? 'الرسوم' : 'Fee', value: program.price ? `$${program.price}` : 'Free' },
+    { icon: Users, label: t('ageGroup'), value: program.age_group || t('allAges') },
+    { icon: Clock, label: t('duration'), value: program.duration || t('flexible') },
+    { icon: MonitorPlay, label: t('mode'), value: program.mode || t('online') },
+    { icon: Calendar, label: t('startDate'), value: program.start_date || t('selfPaced') },
+    { icon: Banknote, label: t('fee'), value: program.price ? `$${program.price}` : t('free') },
   ];
 
   return (
@@ -82,7 +76,7 @@ export default async function ProgramDetailsPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col space-y-6">
               <div className="inline-flex w-max px-3 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#D4AF37] text-xs md:text-sm font-bold uppercase tracking-wider">
-                {program.category || "General"}
+                {program.category || t('generalCategory')}
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
                 {program.title}
@@ -100,7 +94,7 @@ export default async function ProgramDetailsPage({
                     className="absolute inset-0 w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-slate-500 font-bold">No Cover Image</span>
+                <span className="text-slate-500 font-bold">{t('noCoverImage')}</span>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent"></div>
             </div>
@@ -116,7 +110,7 @@ export default async function ProgramDetailsPage({
             
             {/* Program Overview */}
             <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md border border-gray-300">
-              <h2 className="text-2xl md:text-3xl font-bold text-[#0B2545] mb-6">{overviewTitle}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#0B2545] mb-6">{t('overview')}</h2>
               <p className="text-gray-600 text-base md:text-lg leading-relaxed whitespace-pre-wrap">
                 {program.description}
               </p>
@@ -125,10 +119,10 @@ export default async function ProgramDetailsPage({
             {/* Curriculum / Modules (WITH LOCKING LOGIC) */}
             <div className="bg-white p-8 md:p-10 rounded-2xl shadow-md border border-gray-300">
               <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-                 <h2 className="text-2xl md:text-3xl font-bold text-[#0B2545]">Curriculum</h2>
+                 <h2 className="text-2xl md:text-3xl font-bold text-[#0B2545]">{t('curriculum')}</h2>
                  {!isEnrolled && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wider rounded-full border border-red-100">
-                      <Lock className="w-3.5 h-3.5" /> Locked
+                      <Lock className="w-3.5 h-3.5" /> {t('locked')}
                     </span>
                  )}
               </div>
@@ -148,30 +142,39 @@ export default async function ProgramDetailsPage({
                       </div>
                       
                       {isEnrolled ? (
-                        <Link href={`/${locale}/programs/${program.id}/play?module=${mod.id}`} className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[#0B2545] text-white hover:bg-[#D4AF37] transition-colors">
+                        <Link
+                          href={`/${locale}/programs/${program.id}/play?module=${mod.id}`}
+                          aria-label={t('viewCourse')}
+                          title={t('viewCourse')}
+                          className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[#0B2545] text-white hover:bg-[#D4AF37] transition-colors"
+                        >
                           <PlayCircle className="w-5 h-5" />
                         </Link>
                       ) : (
-                        <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-400">
+                        <div
+                          aria-label={t('locked')}
+                          title={t('locked')}
+                          className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 text-gray-400"
+                        >
                           <Lock className="w-5 h-5" />
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 italic">No modules available yet.</p>
+                  <p className="text-gray-500 italic">{t('noModules')}</p>
                 )}
               </div>
               
               {!isEnrolled && (
                 <div className="mt-8 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 text-center">
-                  <h3 className="text-lg font-bold text-[#0B2545] mb-2">Enroll to Unlock</h3>
-                  <p className="text-gray-600 text-sm mb-4">You must apply and be enrolled in this program to access the module content and materials.</p>
+                  <h3 className="text-lg font-bold text-[#0B2545] mb-2">{t('enrollToUnlock')}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{t('enrollToUnlockDesc')}</p>
                   <Link
                     href={`/${locale}/apply?program=${program.id}`}
                     className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#D4AF37] hover:bg-[#c5a132] text-white font-bold transition-colors"
                   >
-                    Apply Now to Access
+                    {t('applyNowToAccess')}
                   </Link>
                 </div>
               )}
@@ -183,7 +186,7 @@ export default async function ProgramDetailsPage({
           <div className="lg:col-span-1 lg:sticky lg:top-28">
             <div className="bg-white p-8 rounded-2xl shadow-md border border-gray-300 flex flex-col">
               <h3 className="text-2xl font-bold text-[#0B2545] mb-6 pb-6 border-b border-gray-100">
-                {programSpecsTitle}
+                {t('programSpecs')}
               </h3>
 
               <div className="flex flex-col gap-6 mb-8">
@@ -264,7 +267,7 @@ export default async function ProgramDetailsPage({
         <section className="w-full py-16 md:py-24 bg-gray-50">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
             <h2 className="text-3xl md:text-4xl font-bold text-[#0B2545] mb-12 text-center">
-              {relatedProgramsTitle}
+              {t('relatedPrograms')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherPrograms.map((p) => (
@@ -280,7 +283,7 @@ export default async function ProgramDetailsPage({
                         <div className="absolute inset-0 bg-gray-200"></div>
                     )}
                     <div className="absolute bottom-4 left-4 bg-[#D4AF37] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm">
-                      {p.category || "General"}
+                      {p.category || t('generalCategory')}
                     </div>
                   </div>
                   <div className="flex flex-col flex-1 p-6 md:p-8">
@@ -289,20 +292,20 @@ export default async function ProgramDetailsPage({
                     </h3>
                     <div className="flex items-center gap-4 py-4 border-y border-gray-100 mt-auto mb-6 text-sm">
                       <div className="flex flex-col">
-                        <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">{isAr ? 'المدة' : 'Duration'}</span>
-                        <span className="text-[#0B2545] font-bold">{p.duration || "4 Weeks"}</span>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">{t('duration')}</span>
+                        <span className="text-[#0B2545] font-bold">{p.duration || t('defaultDuration')}</span>
                       </div>
                       <div className="w-[1px] h-8 bg-gray-200"></div>
                       <div className="flex flex-col">
-                        <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">{isAr ? 'الرسوم' : 'Fee'}</span>
-                        <span className="text-[#0B2545] font-bold">{p.price ? `$${p.price}` : "Free"}</span>
+                        <span className="text-gray-400 font-bold uppercase tracking-wider text-[10px]">{t('fee')}</span>
+                        <span className="text-[#0B2545] font-bold">{p.price ? `$${p.price}` : t('free')}</span>
                       </div>
                     </div>
                     <Link
                       href={`/${locale}/programs/${p.id}`}
                       className="inline-flex items-center justify-center gap-2 w-max px-6 py-2.5 rounded-full bg-[#0B2545] hover:bg-[#071931] text-white font-semibold text-sm transition-colors group/btn"
                     >
-                      {viewProgramText}
+                      {t('viewProgram')}
                       <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
                   </div>

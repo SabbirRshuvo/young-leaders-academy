@@ -129,7 +129,7 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
     };
 
     return (
-        <div className="space-y-8" dir={isAr ? "rtl" : "ltr"}>
+        <div className="space-y-8" dir="ltr">
             {/* Slot Creation Form */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm">
                 <div className="flex items-center gap-2 mb-6">

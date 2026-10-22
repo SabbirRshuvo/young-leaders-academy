@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { supabase } from "@/lib/supabase";
+import { getLocalizedProgramText } from "@/lib/program-localization";
 
 type EnrolledProgramData = {
     id: string;
@@ -52,6 +54,7 @@ function getLocalizedText(value: any, locale: string): string {
 }
 
 export default function EnrolledProgramsPage() {
+    const t = useTranslations("EnrolledPrograms");
     const [enrollments, setEnrollments] = useState<EnrolledProgramData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -122,7 +125,7 @@ export default function EnrolledProgramsPage() {
             if (userError) throw userError;
 
             if (!user) {
-                setError(isAr ? "يجب عليك تسجيل الدخول لعرض برامجك المسجلة." : "You must be logged in to view your enrolled programs.");
+                setError(t("unauthorizedError"));
                 return;
             }
 
@@ -153,12 +156,18 @@ export default function EnrolledProgramsPage() {
                     id,
                     program_id,
                     status,
-                    created_at
+                    created_at,
+                    program:programs (
+                        id,
+                        title,
+                        description,
+                        image_url
+                    )
                 `)
                 .eq("user_id", user.id)
                 .in("status", ["active", "enrolled", "paid"]);
 
-            // 3. Fetch course enrollments from course_enrollments table
+            // 2.5 Fetch course_enrollments table
             const { data: courseEnrollments } = await supabase
                 .from("course_enrollments")
                 .select(`
@@ -170,82 +179,104 @@ export default function EnrolledProgramsPage() {
                 .eq("user_id", user.id)
                 .in("status", ["active", "enrolled", "paid"]);
 
-            // Collect distinct program/course IDs
-            const distinctEnrollmentsMap = new Map<string, { id: string; program_id: string; status: string; source: "application" | "enrollment" | "course"; initialProgram?: any }>();
+            // Deduplicate programs across applications, enrollments & course_enrollments
+            const enrolledItems: { id: string; program_id: string; status: string; source: "application" | "enrollment" | "course"; initialProgram?: any }[] = [];
+            const seenProgramIds = new Set<string>();
 
             (appsData || []).forEach(app => {
-                if (app.program_id) {
-                    distinctEnrollmentsMap.set(app.program_id, {
+                if (app.program_id && !seenProgramIds.has(app.program_id)) {
+                    seenProgramIds.add(app.program_id);
+                    enrolledItems.push({
                         id: app.id,
                         program_id: app.program_id,
-                        status: app.status || "active",
+                        status: app.status,
                         source: "application",
-                        initialProgram: Array.isArray(app.program) ? app.program[0] : app.program
+                        initialProgram: app.program
                     });
                 }
             });
 
             (directEnrollments || []).forEach(enr => {
-                if (enr.program_id && !distinctEnrollmentsMap.has(enr.program_id)) {
-                    distinctEnrollmentsMap.set(enr.program_id, {
+                if (enr.program_id && !seenProgramIds.has(enr.program_id)) {
+                    seenProgramIds.add(enr.program_id);
+                    enrolledItems.push({
                         id: enr.id,
                         program_id: enr.program_id,
-                        status: enr.status || "active",
-                        source: "enrollment"
+                        status: enr.status,
+                        source: "enrollment",
+                        initialProgram: enr.program
                     });
                 }
             });
 
-            (courseEnrollments || []).forEach(cEnr => {
-                if (cEnr.course_id && !distinctEnrollmentsMap.has(cEnr.course_id)) {
-                    distinctEnrollmentsMap.set(cEnr.course_id, {
-                        id: cEnr.id,
-                        program_id: cEnr.course_id,
-                        status: cEnr.status || "active",
-                        source: "course"
+            (courseEnrollments || []).forEach(ce => {
+                if (ce.course_id && !seenProgramIds.has(ce.course_id)) {
+                    seenProgramIds.add(ce.course_id);
+                    enrolledItems.push({
+                        id: ce.id,
+                        program_id: ce.course_id,
+                        status: ce.status,
+                        source: "course",
+                        initialProgram: null
                     });
                 }
             });
 
-            const enrolledItems = Array.from(distinctEnrollmentsMap.values());
+            const allTargetProgIds = Array.from(seenProgramIds);
 
-            if (enrolledItems.length === 0) {
-                setEnrollments([]);
-                setLoading(false);
-                return;
+            // Fetch any missing program details (e.g. for course_enrollments)
+            const extraProgramsMap = new Map<string, any>();
+            const missingDetailsIds = enrolledItems.filter(i => !i.initialProgram).map(i => i.program_id);
+            if (missingDetailsIds.length > 0) {
+                const { data: extraProgs } = await supabase
+                    .from("programs")
+                    .select("id, title, description, image_url")
+                    .in("id", missingDetailsIds);
+
+                (extraProgs || []).forEach(p => extraProgramsMap.set(p.id, p));
+
+                // Also check courses table
+                const stillMissing = missingDetailsIds.filter(id => !extraProgramsMap.has(id));
+                if (stillMissing.length > 0) {
+                    const { data: extraCourses } = await supabase
+                        .from("courses")
+                        .select("id, title, description, thumbnail_url")
+                        .in("id", stillMissing);
+
+                    (extraCourses || []).forEach(c => extraProgramsMap.set(c.id, {
+                        id: c.id,
+                        title: c.title,
+                        description: c.description,
+                        image_url: c.thumbnail_url
+                    }));
+                }
             }
 
-            const allProgramIds = enrolledItems.map(item => item.program_id);
+            // 4. Fetch all curriculum modules for all target programs
+            let modulesData: any[] = [];
+            if (allTargetProgIds.length > 0) {
+                const { data: mods, error: modErr } = await supabase
+                    .from("course_modules")
+                    .select(`
+                        id,
+                        program_id,
+                        course_id,
+                        module_contents (
+                            id
+                        )
+                    `)
+                    .or(allTargetProgIds.map(id => `program_id.eq.${id},course_id.eq.${id}`).join(","));
 
-            // Fetch extra program / course details if missing
-            const missingIds = enrolledItems.filter(item => !item.initialProgram).map(item => item.program_id);
-
-            let extraProgramsMap = new Map<string, any>();
-            if (missingIds.length > 0) {
-                const [progRes, coursesRes] = await Promise.all([
-                    supabase.from("programs").select("id, title, description, image_url").in("id", missingIds),
-                    supabase.from("courses").select("id, title, description, image_url").in("id", missingIds)
-                ]);
-
-                (progRes.data || []).forEach(p => extraProgramsMap.set(p.id, p));
-                (coursesRes.data || []).forEach(c => extraProgramsMap.set(c.id, c));
+                if (!modErr && mods) {
+                    modulesData = mods;
+                }
             }
 
-            // 4. Query modules for these programs (checking both program_id and course_id)
-            const { data: modulesData, error: modulesError } = await supabase
-                .from("modules")
-                .select(`id, program_id, course_id, module_contents(id)`)
-                .or(`program_id.in.(${allProgramIds.join(",")}),course_id.in.(${allProgramIds.join(",")})`);
-
-            if (modulesError) {
-                console.warn("Error fetching modules for progress:", modulesError);
-            }
-
-            // Resilient sequential fallback for module_contents if nested join yields no contents
+            // Fallback: If module_contents join was empty, query module_contents directly
             const fallbackContentsByModule = new Map<string, string[]>();
-            if (modulesData && modulesData.length > 0) {
-                const hasNestedContents = modulesData.some(m => Array.isArray((m as any).module_contents) && (m as any).module_contents.length > 0);
-                if (!hasNestedContents) {
+            if (modulesData.length > 0) {
+                const hasJoinedContents = modulesData.some(m => (m as any).module_contents && (m as any).module_contents.length > 0);
+                if (!hasJoinedContents) {
                     const moduleIds = modulesData.map(m => m.id);
                     const { data: contentsData } = await supabase
                         .from("module_contents")
@@ -335,7 +366,7 @@ export default function EnrolledProgramsPage() {
             setEnrollments(finalEnrollments);
         } catch (err) {
             console.error("Error fetching enrolled programs:", err);
-            setError(err instanceof Error ? err.message : (isAr ? "فشل تحميل البرامج المسجلة." : "Failed to load enrolled programs."));
+            setError(err instanceof Error ? err.message : t("fetchError"));
         } finally {
             setLoading(false);
         }
@@ -358,7 +389,7 @@ export default function EnrolledProgramsPage() {
             <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
                 <div className="flex flex-col items-center gap-3">
                     <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#0B2545]/20 border-t-[#0B2545]"></div>
-                    <p className="text-sm font-semibold text-[#0B2545]">Calculating course progress...</p>
+                    <p className="text-sm font-semibold text-[#0B2545]">{t("calculatingProgress")}</p>
                 </div>
             </div>
         );
@@ -368,13 +399,13 @@ export default function EnrolledProgramsPage() {
         return (
             <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4">
                 <div className="rounded-xl bg-red-50 px-6 py-5 text-sm font-medium text-red-600 border border-red-100 max-w-md text-center">
-                    <p className="font-bold mb-2">Error Loading Hub</p>
+                    <p className="font-bold mb-2">{t("errorLoading")}</p>
                     <p className="mb-4">{error}</p>
                     <button
                         onClick={fetchData}
                         className="bg-[#0B2545] text-white px-5 py-2 rounded-lg font-bold hover:bg-[#071931] transition-colors"
                     >
-                        Try Again
+                        {t("tryAgain")}
                     </button>
                 </div>
             </div>
@@ -382,7 +413,7 @@ export default function EnrolledProgramsPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50/60 relative">
+        <main className="min-h-screen bg-gray-50/60 relative" dir="ltr">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
                 {/* HEADER */}
@@ -391,13 +422,13 @@ export default function EnrolledProgramsPage() {
                         <div>
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <BookOpen className="h-4 w-4 text-[#D4AF37]" />
-                                Enrolled Programs
+                                {t("badge")}
                             </div>
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                My Learning Hub
+                                {t("title")}
                             </h1>
                             <p className="mt-2 text-sm text-white/70">
-                                Access the programs you have enrolled in and track your real-time course progress.
+                                {t("subtitle")}
                             </p>
                         </div>
                         <Link
@@ -405,7 +436,7 @@ export default function EnrolledProgramsPage() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-6 text-sm font-bold text-[#0B2545] transition-transform hover:scale-105 active:scale-95 shadow-sm"
                         >
                             <Sparkles className="h-4 w-4" />
-                            Explore More Programs
+                            {t("exploreMore")}
                         </Link>
                     </div>
                 </section>
@@ -414,46 +445,46 @@ export default function EnrolledProgramsPage() {
                 <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Enrollments</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("activeEnrollments")}</span>
                             <div className="w-8 h-8 rounded-lg bg-[#0B2545]/10 flex items-center justify-center text-[#0B2545]">
                                 <BookOpen className="w-4 h-4" />
                             </div>
                         </div>
                         <p className="text-2xl font-black text-[#0B2545] mt-2">{stats.total}</p>
-                        <p className="text-xs text-gray-500 mt-1">Total registered programs</p>
+                        <p className="text-xs text-gray-500 mt-1">{t("totalRegisteredPrograms")}</p>
                     </div>
 
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">In Progress</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("inProgress")}</span>
                             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600">
                                 <Clock className="w-4 h-4" />
                             </div>
                         </div>
                         <p className="text-2xl font-black text-amber-600 mt-2">{stats.inProgress}</p>
-                        <p className="text-xs text-gray-500 mt-1">Courses currently learning</p>
+                        <p className="text-xs text-gray-500 mt-1">{t("coursesCurrentlyLearning")}</p>
                     </div>
 
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Completed</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("completed")}</span>
                             <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600">
                                 <Trophy className="w-4 h-4" />
                             </div>
                         </div>
                         <p className="text-2xl font-black text-green-600 mt-2">{stats.completed}</p>
-                        <p className="text-xs text-gray-500 mt-1">100% finished programs</p>
+                        <p className="text-xs text-gray-500 mt-1">{t("finishedPrograms")}</p>
                     </div>
 
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Average Progress</span>
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t("averageProgress")}</span>
                             <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37]">
                                 <TrendingUp className="w-4 h-4" />
                             </div>
                         </div>
                         <p className="text-2xl font-black text-[#0B2545] mt-2">{stats.avgProgress}%</p>
-                        <p className="text-xs text-gray-500 mt-1">Across all curriculums</p>
+                        <p className="text-xs text-gray-500 mt-1">{t("acrossAllCurriculums")}</p>
                     </div>
                 </section>
 
@@ -462,7 +493,7 @@ export default function EnrolledProgramsPage() {
                     <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545] flex items-center gap-2">
-                                Active Enrollments
+                                {t("activeEnrollments")}
                                 <span className="flex items-center justify-center bg-[#D4AF37]/20 text-[#0B2545] text-xs font-bold px-2.5 py-0.5 rounded-full">
                                     {enrollments.length}
                                 </span>
@@ -473,15 +504,15 @@ export default function EnrolledProgramsPage() {
                     {enrollments.length === 0 ? (
                         <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-12 text-center">
                             <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                            <h3 className="text-lg font-bold text-[#0B2545] mb-2">No Active Enrollments</h3>
+                            <h3 className="text-lg font-bold text-[#0B2545] mb-2">{t("noActiveEnrollments")}</h3>
                             <p className="text-sm font-medium text-gray-500 max-w-md mx-auto">
-                                You are not currently enrolled in any programs. Browse our academic and leadership offerings to get started!
+                                {t("noEnrollmentsDesc")}
                             </p>
                             <Link
                                 href={`/${locale}/programs`}
                                 className="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-[#0B2545] hover:bg-[#071931] px-6 text-sm font-semibold text-white transition-colors"
                             >
-                                Browse Programs
+                                {t("browsePrograms")}
                             </Link>
                         </div>
                     ) : (
@@ -490,7 +521,7 @@ export default function EnrolledProgramsPage() {
                                 const { program, totalContentsCount, completedContentsCount, progressPercentage, program_id } = enrollment;
                                 if (!program) return null;
 
-                                const title = getLocalizedText(program.title, locale) || "Leadership Program";
+                                const title = getLocalizedProgramText(program.title, isAr, 'title', program.title) || getLocalizedText(program.title, locale) || t("defaultProgramTitle");
                                 const isCompleted = progressPercentage === 100;
 
                                 return (
@@ -518,16 +549,16 @@ export default function EnrolledProgramsPage() {
                                                 {isCompleted ? (
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-sm">
                                                         <CheckCircle2 className="w-3.5 h-3.5" />
-                                                        Completed
+                                                        {t("completed")}
                                                     </span>
                                                 ) : progressPercentage > 0 ? (
                                                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#D4AF37] text-[#0B2545] shadow-sm">
                                                         <Clock className="w-3.5 h-3.5" />
-                                                        In Progress
+                                                        {t("inProgress")}
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm">
-                                                        Not Started
+                                                        {t("notStarted")}
                                                     </span>
                                                 )}
                                             </div>
@@ -545,15 +576,15 @@ export default function EnrolledProgramsPage() {
                                             <div className="w-full mb-6">
                                                 <div className="flex justify-between items-center text-xs text-gray-600 mb-2 font-medium">
                                                     <span>
-                                                        Progress:{" "}
+                                                        {t("progressLabel")}{" "}
                                                         <strong className="text-[#0B2545] font-bold">
                                                             {completedContentsCount}
                                                         </strong>{" "}
-                                                        of{" "}
+                                                        {t("progressOf")}{" "}
                                                         <strong className="text-gray-700">
                                                             {totalContentsCount}
                                                         </strong>{" "}
-                                                        Items
+                                                        {t("items")}
                                                     </span>
                                                     <span
                                                         className={`font-black text-sm ${
@@ -581,7 +612,7 @@ export default function EnrolledProgramsPage() {
                                                     href={`/${locale}/programs/${program_id}/play`}
                                                     className="w-full inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-4 text-sm font-bold text-white transition-all hover:bg-[#071931] hover:scale-[1.01] active:scale-95 shadow-sm group/btn"
                                                 >
-                                                    {isCompleted ? "Review Course" : progressPercentage > 0 ? "Continue Learning" : "Start Program"}
+                                                    {isCompleted ? t("reviewCourse") : progressPercentage > 0 ? t("continueLearning") : t("startProgram")}
                                                     <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                                 </Link>
 
@@ -592,7 +623,7 @@ export default function EnrolledProgramsPage() {
                                                         className="w-full inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[#D4AF37] bg-[#D4AF37]/10 text-[#0B2545] px-4 text-xs font-bold transition-colors hover:bg-[#D4AF37]/20"
                                                     >
                                                         <Award className="w-4 h-4 text-[#D4AF37]" />
-                                                        Download Certificate
+                                                        {t("downloadCertificate")}
                                                     </Link>
                                                 )}
                                             </div>

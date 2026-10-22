@@ -22,8 +22,34 @@ body {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans), sans-serif;
   --font-serif: var(--font-serif), serif;
+  --font-arabic: var(--font-arabic), var(--font-sans), sans-serif;
   --color-navy: #0B2545;
   --color-gold: #D4AF37;
+}
+
+/* ==========================================================================
+   STRICT LTR LOCALIZATION OVERRIDES
+   Guarantees that UI layout, grid structures, flex alignments, and
+   container coordinates NEVER mirror/flip when Arabic is selected.
+   ========================================================================== */
+
+:root,
+html,
+body,
+[dir="rtl"],
+[dir="ltr"] {
+  direction: ltr !important;
+}
+
+/* Neutralize any RTL flex reversal or grid column reversing */
+[dir="rtl"] [class*="flex"],
+[dir="rtl"] [class*="grid"] {
+  direction: ltr !important;
+}
+
+/* Ensure Arabic text flows naturally within LTR blocks without punctuation jumping */
+p, h1, h2, h3, h4, h5, h6, span, a, button, input, textarea, label {
+  unicode-bidi: plaintext;
 }
 
 body {

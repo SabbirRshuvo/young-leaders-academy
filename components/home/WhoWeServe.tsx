@@ -49,7 +49,7 @@ export default function WhoWeServe() {
             </div>
             <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-white via-white/90 to-transparent" />
 
-            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir={isAr ? 'rtl' : 'ltr'}>
+            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir="ltr">
               <h3 className="text-3xl font-serif font-bold text-[#0B2545] mb-2">{t('studentsTitle')}</h3>
               <p className="text-sm font-semibold text-[#C59B27] mb-3 uppercase tracking-wide">{t('studentsSubtitle')}</p>
               <p className="text-sm font-sans text-gray-600 mb-6 leading-relaxed">
@@ -60,7 +60,7 @@ export default function WhoWeServe() {
                   href={`/${locale}/programs`}
                   className="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C59B27] text-[#0B2545] font-bold text-sm shadow-md hover:from-[#e3be47] hover:to-[#d6a931] transition-all cursor-pointer relative z-20"
                 >
-                  {t('exploreMore')} {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                  {t('exploreMore')} <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -79,7 +79,7 @@ export default function WhoWeServe() {
             </div>
             <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-[#0B2545] via-[#0B2545]/90 to-transparent" />
 
-            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir={isAr ? 'rtl' : 'ltr'}>
+            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir="ltr">
               <h3 className="text-3xl font-serif font-bold text-white mb-2">{t('parentsTitle')}</h3>
               <p className="text-sm font-semibold text-[#D4AF37] mb-3 uppercase tracking-wide">{t('parentsSubtitle')}</p>
               <p className="text-sm font-sans text-gray-300 mb-6 leading-relaxed">
@@ -90,7 +90,7 @@ export default function WhoWeServe() {
                   onClick={() => openModal('parent')}
                   className="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-xl border border-[#D4AF37] text-white font-bold text-sm hover:bg-white/10 transition-colors cursor-pointer relative z-20"
                 >
-                  {t('parentsBtn')} {isAr ? <ArrowLeft className="w-4 h-4 text-[#D4AF37]" /> : <ArrowRight className="w-4 h-4 text-[#D4AF37]" />}
+                  {t('parentsBtn')} <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
                 </button>
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function WhoWeServe() {
             </div>
             <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-white via-white/90 to-transparent" />
 
-            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir={isAr ? 'rtl' : 'ltr'}>
+            <div className="relative z-10 w-full h-full flex flex-col justify-end p-8 mt-auto" dir="ltr">
               <h3 className="text-3xl font-serif font-bold text-[#0B2545] mb-2">{t('universitiesTitle')}</h3>
               <p className="text-sm font-semibold text-[#C59B27] mb-3 uppercase tracking-wide">{t('universitiesSubtitle')}</p>
               <p className="text-sm font-sans text-gray-600 mb-6 leading-relaxed">
@@ -120,7 +120,7 @@ export default function WhoWeServe() {
                   onClick={() => openModal('university')}
                   className="inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-xl border border-[#0B2545] text-[#0B2545] font-bold text-sm hover:bg-[#0B2545]/5 transition-colors cursor-pointer relative z-20"
                 >
-                  {t('universitiesBtn')} {isAr ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                  {t('universitiesBtn')} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>

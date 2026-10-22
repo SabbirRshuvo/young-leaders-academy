@@ -7,6 +7,7 @@ import { Calendar, Users, Award, ArrowRight, Loader2, Banknote } from 'lucide-re
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
+import { getLocalizedProgramText, getLocalizedCategory } from '@/lib/program-localization';
 
 interface CoreProgramsGridProps {
   selectedCategory: string;
@@ -16,6 +17,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
   const t = useTranslations('CoreProgramsGrid');
   const tHero = useTranslations('ProgramsHero');
   const locale = useLocale();
+  const isAr = locale === 'ar';
 
   const [programs, setPrograms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -96,17 +98,17 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute bottom-4 left-4 bg-[#D4AF37] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm shadow-sm">
-                            {(program.category || "General").toUpperCase()}
+                            {getLocalizedCategory(program.category, isAr)}
                         </div>
                         </div>
 
                         {/* Content Box */}
                         <div className="flex flex-col flex-1 p-6 sm:p-8">
                         <h3 className="text-[#0B2545] font-serif font-bold text-xl md:text-2xl mb-3 leading-tight line-clamp-2">
-                            {program.title}
+                            {getLocalizedProgramText(program.title, isAr, 'title', program.title)}
                         </h3>
                         <p className="text-gray-600 text-sm md:text-base leading-relaxed mb-6 flex-1 line-clamp-3">
-                            {program.description}
+                            {getLocalizedProgramText(program.description, isAr, 'description', program.title)}
                         </p>
 
                         {/* Meta Grid */}
@@ -114,23 +116,23 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                             <div className="flex flex-col items-start gap-1">
                             <div className="flex items-center gap-1.5">
                                 <Calendar className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Duration</span>
+                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('duration')}</span>
                             </div>
-                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.duration || "4 Weeks"}</span>
+                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.duration || (isAr ? "4 أسابيع" : "4 Weeks")}</span>
                             </div>
                             <div className="flex flex-col items-start gap-1">
                             <div className="flex items-center gap-1.5">
                                 <Users className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Age Group</span>
+                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('ageGroup')}</span>
                             </div>
-                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.age_group || "All Ages"}</span>
+                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.age_group || (isAr ? "جميع الأعمار" : "All Ages")}</span>
                             </div>
                             <div className="flex flex-col items-start gap-1">
                             <div className="flex items-center gap-1.5">
                                 <Banknote className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Fee</span>
+                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{t('fee')}</span>
                             </div>
-                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.price ? `$${program.price}` : "Free"}</span>
+                            <span className="text-xs font-bold text-[#0B2545] ml-5.5">{program.price ? `$${program.price}` : t('free')}</span>
                             </div>
                         </div>
 
@@ -139,7 +141,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                             href={`/${locale}/programs/${program.id}`}
                             className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-[#0B2545] hover:bg-[#071931] text-white font-semibold text-sm transition-colors group/btn"
                         >
-                            View Program Details
+                            {t('viewDetails')}
                             <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                         </Link>
                         </div>

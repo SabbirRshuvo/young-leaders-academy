@@ -59,7 +59,7 @@ export default function EventsPreview() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`bg-white rounded-2xl shadow-sm border border-gray-300 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${isAr ? "text-right" : "text-left"}`}
+              className="bg-white rounded-2xl shadow-sm border border-gray-300 p-6 flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 text-left"
             >
               <div className="flex justify-between items-start mb-6">
                 <div className="flex flex-col gap-2">

@@ -24,8 +24,8 @@ export default function ReadinessQuizBanner() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none"></div>
 
-        <div className={`relative z-10 flex flex-col items-center md:items-start text-center md:text-left flex-1 ${isAr ? 'md:items-end md:text-right' : ''}`}>
-          <div className={`flex items-center gap-3 mb-4 ${isAr ? 'flex-row-reverse' : ''}`}>
+        <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left flex-1">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
               <Target className="w-5 h-5 text-[#D4AF37]" />
             </div>
@@ -33,7 +33,7 @@ export default function ReadinessQuizBanner() {
               {t("title")}
             </h3>
           </div>
-          <p className="text-gray-300 text-sm md:text-base max-w-2xl leading-relaxed" dir={isAr ? 'rtl' : 'ltr'}>
+          <p className="text-gray-300 text-sm md:text-base max-w-2xl leading-relaxed" dir="ltr">
             {t("desc")}
           </p>
         </div>
@@ -41,10 +41,10 @@ export default function ReadinessQuizBanner() {
         <div className="relative z-10 shrink-0 w-full md:w-auto">
           <Link
             href={`/${locale}/readiness-quiz`}
-            className={`flex items-center justify-center gap-3 bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-lg w-full md:w-auto ${isAr ? 'flex-row-reverse' : ''}`}
+            className="flex items-center justify-center gap-3 bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] px-8 py-4 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-lg w-full md:w-auto"
           >
             {t("btn")}
-            {isAr ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+            <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
       </motion.div>

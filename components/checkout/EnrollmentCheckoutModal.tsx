@@ -160,7 +160,7 @@ export default function EnrollmentCheckoutModal({
                     exit={{ opacity: 0, scale: 0.95, y: 15 }}
                     transition={{ duration: 0.25 }}
                     className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-8"
-                    dir={isAr ? "rtl" : "ltr"}
+                    dir="ltr"
                 >
                     {/* Top Accent Gradient Bar */}
                     <div className="h-2 w-full bg-gradient-to-r from-[#0B2545] via-[#D4AF37] to-[#007A3D]" />
@@ -170,7 +170,7 @@ export default function EnrollmentCheckoutModal({
                         onClick={onClose}
                         disabled={isProcessing}
                         aria-label="Close modal"
-                        className={`absolute top-5 ${isAr ? "left-5" : "right-5"} p-2 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors`}
+                        className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
