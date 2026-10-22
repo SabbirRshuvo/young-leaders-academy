@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
     ArrowRight,
     CalendarDays,
@@ -25,27 +25,27 @@ type UpcomingEvent = {
     type: string;
 };
 
-const upcomingEvents: UpcomingEvent[] = [
+const getUpcomingEvents = (isAr: boolean): UpcomingEvent[] => [
     {
         id: "event-1",
-        title: "Young Leaders Orientation",
-        date: "September 20, 2026",
-        time: "10:00 AM",
-        type: "Orientation",
+        title: isAr ? "لقاء تعريفي بقادة الغد" : "Young Leaders Orientation",
+        date: isAr ? "٢٠ سبتمبر ٢٠٢٦" : "September 20, 2026",
+        time: isAr ? "١٠:٠٠ ص" : "10:00 AM",
+        type: isAr ? "لقاء تعريفي" : "Orientation",
     },
     {
         id: "event-2",
-        title: "Parent Information Session",
-        date: "September 24, 2026",
-        time: "6:00 PM",
-        type: "Parent Session",
+        title: isAr ? "جلسة معلومات لأولياء الأمور" : "Parent Information Session",
+        date: isAr ? "٢٤ سبتمبر ٢٠٢٦" : "September 24, 2026",
+        time: isAr ? "٦:٠٠ م" : "6:00 PM",
+        type: isAr ? "جلسة أولياء أمور" : "Parent Session",
     },
     {
         id: "event-3",
-        title: "Global Opportunities Webinar",
-        date: "September 28, 2026",
-        time: "5:30 PM",
-        type: "Webinar",
+        title: isAr ? "ندوة الفرص والقبول العالمي" : "Global Opportunities Webinar",
+        date: isAr ? "٢٨ سبتمبر ٢٠٢٦" : "September 28, 2026",
+        time: isAr ? "٥:٣٠ م" : "5:30 PM",
+        type: isAr ? "ندوة عبر الإنترنت" : "Webinar",
     },
 ];
 
@@ -62,8 +62,13 @@ type ChildDashboard = {
 
 export default function Page() {
     const t = useTranslations("Parent");
+    const locale = useLocale();
+    const isAr = locale === "ar";
+
     const [children, setChildren] = useState<ChildDashboard[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const upcomingEvents = getUpcomingEvents(isAr);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -84,12 +89,12 @@ export default function Page() {
                 // Format all requests (pending, rejected, approved)
                 data.requests?.forEach((req: any) => {
                     const profile = req.student || {};
-                    const school = data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || "School Not Provided";
+                    const school = data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || t("schoolNotProvided");
                     
                     formattedChildren.push({
                         id: req.student_id,
                         request_id: req.id,
-                        name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Student",
+                        name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || t("studentFallback"),
                         age: "N/A",
                         school,
                         program: "N/A",
@@ -107,14 +112,14 @@ export default function Page() {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [t]);
 
     const totalChildren = children.length;
     const pendingRequests = children.filter(c => c.status === "pending").length;
     const approvedConnections = children.filter(c => c.status === "approved").length;
 
     return (
-        <main className="min-h-screen bg-gray-50/60">
+        <main className={`min-h-screen bg-gray-50/60 ${isAr ? "font-arabic" : "font-sans"}`} dir="ltr">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
                 {/* =====================================================
@@ -139,7 +144,7 @@ export default function Page() {
                         </div>
 
                         <Link
-                            href="/parent/children"
+                            href={`/${locale}/parent/children`}
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#e2c45a]"
                         >
                             <Users className="h-4 w-4" />
@@ -157,30 +162,30 @@ export default function Page() {
 
                     <DashboardStat
                         icon={Users}
-                        label="Total Children"
+                        label={t("totalChildren")}
                         value={totalChildren}
-                        description="Connected or pending"
+                        description={t("totalChildrenDesc")}
                     />
 
                     <DashboardStat
                         icon={CheckCircle2}
-                        label="Approved"
+                        label={t("approvedConnections")}
                         value={approvedConnections}
-                        description="Active child connections"
+                        description={t("approvedConnectionsDesc")}
                     />
 
                     <DashboardStat
                         icon={Clock}
-                        label="Pending Requests"
+                        label={t("pendingRequests")}
                         value={pendingRequests}
-                        description="Awaiting student approval"
+                        description={t("pendingRequestsDesc")}
                     />
 
                     <DashboardStat
                         icon={CalendarDays}
-                        label="Upcoming Events"
+                        label={t("upcomingEvents")}
                         value={upcomingEvents.length}
-                        description="Events coming up"
+                        description={t("upcomingEventsDesc")}
                     />
 
                 </section>
@@ -203,16 +208,16 @@ export default function Page() {
 
                                 <div>
                                     <h2 className="text-lg font-bold text-[#0B2545]">
-                                        My Children & Requests
+                                        {t("myChildrenAndRequests")}
                                     </h2>
 
                                     <p className="mt-1 text-sm text-gray-500">
-                                        Monitor your children's connections and requests.
+                                        {t("myChildrenDesc")}
                                     </p>
                                 </div>
 
                                 <Link
-                                    href="/parent/children"
+                                    href={`/${locale}/parent/children`}
                                     className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
                                 >
                                     {t("viewAll")}
@@ -229,7 +234,7 @@ export default function Page() {
                                     </div>
                                 ) : children.length === 0 ? (
                                     <div className="p-8 text-center text-gray-500">
-                                        No children or requests found.
+                                        {t("noChildrenOrRequests")}
                                     </div>
                                 ) : (
                                     children.slice(0, 4).map((child) => (
@@ -259,11 +264,11 @@ export default function Page() {
 
                                                 <div className="flex flex-col items-start gap-2 sm:items-end">
 
-                                                    <ConnectionBadge status={child.status} />
+                                                    <ConnectionBadge status={child.status} t={t} />
 
                                                     {child.status === "approved" && (
                                                         <p className="text-xs text-gray-400">
-                                                            Active Connection
+                                                            {t("activeConnection")}
                                                         </p>
                                                     )}
 
@@ -274,7 +279,7 @@ export default function Page() {
                                             {child.status === "approved" && (
                                                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                                                     <Link
-                                                        href={`/parent/children/${child.id}`}
+                                                        href={`/${locale}/parent/children/${child.id}`}
                                                         className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                                                     >
                                                         {t("viewProfile")}
@@ -361,7 +366,7 @@ export default function Page() {
                             <div className="border-t border-gray-100 p-4">
 
                                 <Link
-                                    href="/events"
+                                    href={`/${locale}/events`}
                                     className="flex h-10 items-center justify-center gap-2 rounded-full border border-[#0B2545] text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                                 >
                                     {t("viewAllEvents")}
@@ -395,31 +400,31 @@ export default function Page() {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                         <QuickAction
-                            href="/parent/children"
+                            href={`/${locale}/parent/children`}
                             icon={Users}
-                            title="My Children"
-                            description="View your children's profiles"
+                            title={t("actionChildren")}
+                            description={t("actionChildrenDesc")}
                         />
 
                         <QuickAction
-                            href="/parent/applications"
+                            href={`/${locale}/parent/applications`}
                             icon={FileText}
-                            title="Applications"
-                            description="Review application activity"
+                            title={t("actionApplications")}
+                            description={t("actionApplicationsDesc")}
                         />
 
                         <QuickAction
-                            href="/events"
+                            href={`/${locale}/events`}
                             icon={CalendarDays}
-                            title="Events"
-                            description="Explore upcoming events"
+                            title={t("actionEvents")}
+                            description={t("actionEventsDesc")}
                         />
 
                         <QuickAction
-                            href="/parent/profile"
+                            href={`/${locale}/parent/profile`}
                             icon={Mail}
-                            title="My Profile"
-                            description="Manage your account details"
+                            title={t("actionProfile")}
+                            description={t("actionProfileDesc")}
                         />
 
                     </div>
@@ -480,8 +485,10 @@ function DashboardStat({
 
 function ConnectionBadge({
     status,
+    t,
 }: {
     status: string;
+    t: any;
 }) {
     const styles: Record<string, string> = {
         approved: "border-green-200 bg-green-50 text-green-700",
@@ -489,9 +496,9 @@ function ConnectionBadge({
         rejected: "border-red-200 bg-red-50 text-red-700",
     };
     const labels: Record<string, string> = {
-        approved: "Approved",
-        pending: "Pending",
-        rejected: "Rejected",
+        approved: t("statusApproved"),
+        pending: t("statusPending"),
+        rejected: t("statusRejected"),
     };
 
     return (

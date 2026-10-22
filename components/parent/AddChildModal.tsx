@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { UserRound, Mail, X, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, X, Loader2, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
 
@@ -25,7 +25,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
         e.preventDefault();
         
         if (!email.trim()) {
-            setError("Email is required");
+            setError(t("emailRequired"));
             return;
         }
 
@@ -52,7 +52,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
             }
 
             setSuccess(true);
-            toast.success("Connection request sent successfully!");
+            toast.success(t("requestSentSuccess"));
             
             setTimeout(() => {
                 onSuccess();
@@ -74,14 +74,14 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" dir="ltr">
             <div 
                 className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl transition-all"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h2 className="text-xl font-bold text-[#0B2545]">
-                        Add Your Child
+                        {t("modalAddTitle")}
                     </h2>
                     <button 
                         onClick={onClose}
@@ -98,15 +98,15 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 mb-4">
                                 <CheckCircle2 className="h-8 w-8" />
                             </div>
-                            <h3 className="text-lg font-bold text-[#0B2545]">Request Sent!</h3>
+                            <h3 className="text-lg font-bold text-[#0B2545]">{t("modalSuccessTitle")}</h3>
                             <p className="mt-2 text-sm text-gray-500">
-                                Your connection request has been sent successfully. Waiting for student approval.
+                                {t("modalSuccessDesc")}
                             </p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <p className="text-sm text-gray-600 mb-4">
-                                Enter your child&apos;s email address associated with their Young Leaders Academy account to send a connection request.
+                                {t("modalInputDesc")}
                             </p>
 
                             {error && (
@@ -117,7 +117,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
 
                             <div>
                                 <label htmlFor="studentEmail" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Student Email Address <span className="text-red-500">*</span>
+                                    {t("studentEmailLabel")} <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -141,7 +141,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                                     className="flex h-12 flex-1 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
                                     disabled={loading}
                                 >
-                                    Cancel
+                                    {t("cancel")}
                                 </button>
                                 <button
                                     type="submit"
@@ -151,7 +151,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                                     {loading ? (
                                         <Loader2 className="h-5 w-5 animate-spin" />
                                     ) : (
-                                        "Send Request"
+                                        t("sendRequest")
                                     )}
                                 </button>
                             </div>

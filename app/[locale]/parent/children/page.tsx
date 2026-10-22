@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
     ArrowRight,
     CalendarDays,
@@ -45,8 +45,10 @@ type Child = {
 
 export default function Page() {
     const t = useTranslations("Parent");
-    const [searchQuery, setSearchQuery] = useState("");
+    const locale = useLocale();
+    const isAr = locale === "ar";
 
+    const [searchQuery, setSearchQuery] = useState("");
     const [children, setChildren] = useState<Child[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -81,13 +83,13 @@ export default function Page() {
                 formattedChildren.push({
                     id: req.student_id,
                     request_id: req.id,
-                    first_name: profile.first_name || "Unknown",
+                    first_name: profile.first_name || (isAr ? "طالب" : "Student"),
                     last_name: profile.last_name || "",
                     email: studentEmail,
                     phone: profile.phone || "N/A",
                     school: data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || "N/A",
                     applications: data.studentApplications?.filter((a: any) => a.email === studentEmail).length || 0,
-                    joined: new Date(req.created_at).toLocaleDateString(),
+                    joined: new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US"),
                     status: req.status
                 });
             });
@@ -120,7 +122,7 @@ export default function Page() {
     });
 
     return (
-        <main className="min-h-screen bg-gray-50/60">
+        <main className={`min-h-screen bg-gray-50/60 ${isAr ? "font-arabic" : "font-sans"}`} dir="ltr">
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <section className="rounded-2xl bg-[#0B2545] px-6 py-7 text-white shadow-sm sm:px-8">
 
@@ -149,7 +151,7 @@ export default function Page() {
                                 className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-6 text-sm font-bold text-[#0B2545] transition-all hover:bg-[#e6c045] hover:shadow-lg active:scale-95"
                             >
                                 <Plus className="h-5 w-5" />
-                                Add Child
+                                {t("addChild")}
                             </button>
                         </div>
 
@@ -165,23 +167,23 @@ export default function Page() {
 
                     <SummaryCard
                         icon={Users}
-                        label="Total Children"
+                        label={t("totalChildren")}
                         value={children.length}
-                        description="Connected to your account"
+                        description={t("connectedToAccount")}
                     />
 
                     <SummaryCard
                         icon={FileText}
-                        label="Pending Requests"
+                        label={t("pendingRequests")}
                         value={children.filter((child) => child.status === "pending").length}
-                        description="Awaiting student approval"
+                        description={t("pendingRequestsDesc")}
                     />
 
                     <SummaryCard
                         icon={CheckCircle2Icon}
-                        label="Approved Connections"
+                        label={t("approvedConnections")}
                         value={children.filter((child) => child.status === "approved").length}
-                        description="Successfully connected"
+                        description={t("successfullyConnected")}
                     />
 
                 </section>
@@ -230,14 +232,13 @@ export default function Page() {
                             <p className="mt-1 text-sm text-gray-500">
                                 {filteredChildren.length}{" "}
                                 {filteredChildren.length === 1
-                                    ? "child"
-                                    : "children"}{" "}
-                                found
+                                    ? t("childFound")
+                                    : t("childrenFound")}
                             </p>
                         </div>
 
                         <Link
-                            href="/parent/profile"
+                            href={`/${locale}/parent/dashboard`}
                             className="inline-flex items-center gap-1 text-sm font-semibold text-[#0B2545] hover:text-[#D4AF37]"
                         >
                             {t("parentDashboard")}
@@ -261,12 +262,14 @@ export default function Page() {
                                 <ChildCard
                                     key={child.request_id || child.id}
                                     child={child}
+                                    locale={locale}
+                                    t={t}
                                 />
                             ))}
 
                         </div>
                     ) : (
-                        <EmptyChildren onAddChild={() => setIsAddModalOpen(true)} />
+                        <EmptyChildren onAddChild={() => setIsAddModalOpen(true)} t={t} />
                     )}
 
                 </section>
@@ -308,10 +311,13 @@ function CheckCircle2Icon(props: React.SVGProps<SVGSVGElement>) {
 
 function ChildCard({
     child,
+    locale,
+    t,
 }: {
     child: Child;
+    locale: string;
+    t: any;
 }) {
-    const t = useTranslations("Parent");
     return (
         <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
 
@@ -334,7 +340,7 @@ function ChildCard({
                             </h3>
 
                             <p className="mt-1 text-sm text-gray-500">
-                                {child.email || "No email provided"}
+                                {child.email || t("noEmailProvided")}
                             </p>
 
                         </div>
@@ -343,6 +349,7 @@ function ChildCard({
 
                     <StatusBadge
                         status={child.status || "approved"}
+                        t={t}
                     />
 
                 </div>
@@ -355,28 +362,28 @@ function ChildCard({
 
                 <InfoItem
                     icon={School}
-                    label="School"
+                    label={t("school")}
                     value={child.school}
                 />
 
                 <InfoItem
                     icon={Phone}
-                    label="Phone"
+                    label={t("phone")}
                     value={child.phone || "N/A"}
                 />
 
                 <InfoItem
                     icon={FileText}
-                    label="Applications"
+                    label={t("applications")}
                     value={`${child.applications} ${child.applications === 1
-                        ? "application"
-                        : "applications"
+                        ? t("singleApplication")
+                        : t("multipleApplications")
                         }`}
                 />
 
                 <InfoItem
                     icon={CalendarDays}
-                    label="Request Date"
+                    label={t("requestDate")}
                     value={child.joined}
                 />
 
@@ -387,7 +394,7 @@ function ChildCard({
             <div className="flex flex-col gap-3 border-t border-gray-100 bg-gray-50/60 p-5 sm:flex-row sm:p-6">
 
                 <Link
-                    href={`/parent/children/${child.id}`}
+                    href={`/${locale}/parent/children/${child.id}`}
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                 >
                     {t("viewProfile")}
@@ -395,7 +402,7 @@ function ChildCard({
                 </Link>
 
                 <Link
-                    href="/parent/applications"
+                    href={`/${locale}/parent/applications`}
                     className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                 >
                     {t("applications")}
@@ -499,8 +506,10 @@ function SummaryCard({
 
 function StatusBadge({
     status,
+    t,
 }: {
     status: string;
+    t: any;
 }) {
     const styles: Record<string, string> = {
         approved: "border-green-200 bg-green-50 text-green-700",
@@ -509,9 +518,9 @@ function StatusBadge({
     };
 
     const labels: Record<string, string> = {
-        approved: "Approved",
-        pending: "Pending",
-        rejected: "Rejected",
+        approved: t("statusApproved"),
+        pending: t("statusPending"),
+        rejected: t("statusRejected"),
     };
 
     return (
@@ -528,8 +537,7 @@ function StatusBadge({
    EMPTY STATE
 ========================================================= */
 
-function EmptyChildren({ onAddChild }: { onAddChild: () => void }) {
-    const t = useTranslations("Parent");
+function EmptyChildren({ onAddChild, t }: { onAddChild: () => void; t: any }) {
     return (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
 
@@ -550,7 +558,7 @@ function EmptyChildren({ onAddChild }: { onAddChild: () => void }) {
                 className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 text-sm font-bold text-white transition-all hover:bg-[#0B2545]/90 hover:shadow-md active:scale-95"
             >
                 <Plus className="h-5 w-5" />
-                Add Your Child
+                {t("addYourChild")}
             </button>
 
         </div>

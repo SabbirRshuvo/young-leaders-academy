@@ -140,9 +140,9 @@ export default function StudentCoachingPage() {
     };
 
     const parseTitle = (title: any) => {
-        if (!title) return isAr ? "وحدة المنهج" : "Curriculum Module";
+        if (!title) return t("curriculumModule");
         if (typeof title === "object" && title !== null) {
-            return isAr && title.ar ? title.ar : (title.en || title.ar || "Curriculum Module");
+            return isAr && title.ar ? title.ar : (title.en || title.ar || t("curriculumModule"));
         }
         if (typeof title === "string") {
             try {
@@ -152,11 +152,11 @@ export default function StudentCoachingPage() {
                 return title;
             }
         }
-        return title.en || title.ar || (isAr ? "وحدة المنهج" : "Curriculum Module");
+        return title.en || title.ar || t("curriculumModule");
     };
 
     return (
-        <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir="ltr">
+        <div className={`space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 ${isAr ? "font-arabic" : "font-sans"}`} dir="ltr">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -245,7 +245,7 @@ export default function StudentCoachingPage() {
                                                 {coach.professional_title}
                                             </p>
                                             <p className="text-xs text-gray-500 mt-2 line-clamp-2">
-                                                {coach.bio || t("bioDefault", { specialization: coach.specialization || (isAr ? "القيادة" : "Leadership") })}
+                                                {coach.bio || t("bioDefault", { specialization: coach.specialization || t("leadership") })}
                                             </p>
 
                                             {/* Assigned module tags */}
@@ -339,7 +339,7 @@ export default function StudentCoachingPage() {
                         </div>
                     ) : (
                         myBookings.map((b) => {
-                            const coachName = b.coach ? `${b.coach.first_name || ""} ${b.coach.last_name || ""}`.trim() : (isAr ? "المدرب" : "Coach");
+                            const coachName = b.coach ? `${b.coach.first_name || ""} ${b.coach.last_name || ""}`.trim() : t("coachDefault");
                             const meetingDate = new Date(b.meeting_time);
                             const isCompleted = b.status === "completed";
 
