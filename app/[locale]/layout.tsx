@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter, Cairo } from "next/font/google";
-import "../globals.css";
+import "@/app/globals.css";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import { Providers } from "@/components/layout/Providers";
 import { NextIntlClientProvider } from 'next-intl';

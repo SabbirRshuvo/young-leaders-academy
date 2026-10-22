@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShieldCheck, Lock, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
@@ -36,6 +37,25 @@ export default function EnrollmentCheckoutModal({
     onSuccess,
 }: EnrollmentCheckoutModalProps) {
     const isAr = locale === "ar";
+
+    // Track client mounting for React Portal
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Prevent background scrolling while modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
 
     // Form / Billing details
     const [studentName, setStudentName] = useState(user?.name || "");
@@ -149,42 +169,50 @@ export default function EnrollmentCheckoutModal({
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
+            <div
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-16 pb-8 sm:pt-20 sm:pb-12 md:py-16 bg-black/60 backdrop-blur-sm overflow-y-auto"
+                onClick={(e) => {
+                    if (e.target === e.currentTarget && !isProcessing) {
+                        onClose();
+                    }
+                }}
+            >
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95, y: 15 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 15 }}
                     transition={{ duration: 0.25 }}
-                    className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-8"
+                    className="relative z-10 w-full max-w-2xl max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-7rem)] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-auto"
                     dir="ltr"
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {/* Top Accent Gradient Bar */}
-                    <div className="h-2 w-full bg-gradient-to-r from-[#0B2545] via-[#D4AF37] to-[#007A3D]" />
+                    <div className="h-2 w-full bg-gradient-to-r from-[#0B2545] via-[#D4AF37] to-[#007A3D] shrink-0" />
 
                     {/* Modal Close Button */}
                     <button
                         onClick={onClose}
                         disabled={isProcessing}
                         aria-label="Close modal"
-                        className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
+                        className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50/80 hover:bg-gray-100 rounded-full transition-colors z-20 cursor-pointer"
                     >
                         <X className="w-5 h-5" />
                     </button>
 
-                    <div className="p-6 sm:p-8">
+                    <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-1 overscroll-contain">
                         {/* Header: Program Summary */}
-                        <div className="mb-6 pb-6 border-b border-gray-100">
+                        <div className="mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-gray-100 pr-8">
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#0B2545]/5 text-[#0B2545]">
                                     <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                                     {program.category || (isAr ? "برنامج تدريبي" : "Academy Program")}
                                 </span>
                             </div>
-                            <h2 className="text-xl sm:text-2xl font-black text-[#0B2545]">
+                            <h2 className="text-lg sm:text-2xl font-black text-[#0B2545] break-words">
                                 {program.title}
                             </h2>
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -321,6 +349,7 @@ export default function EnrollmentCheckoutModal({
                     </div>
                 </motion.div>
             </div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }

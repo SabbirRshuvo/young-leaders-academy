@@ -87,7 +87,70 @@ export const CATEGORY_TRANSLATIONS: Record<string, string> = {
   "Executive": "تنفيذي",
   "Mentorship": "إرشاد وتوجيه",
   "High School": "المرحلة الثانوية",
+  "Featured Program": "برنامج مميز",
+  "Featured": "مميز",
   "General": "عام"
+};
+
+export const SPEC_TRANSLATIONS: Record<string, string> = {
+  // Age Groups
+  "18-35 Years": "١٨ - ٣٥ سنة",
+  "20-40 Years": "٢٠ - ٤٠ سنة",
+  "16-35 Years": "١٦ - ٣٥ سنة",
+  "18-40 Years": "١٨ - ٤٠ سنة",
+  "18-30 Years": "١٨ - ٣٠ سنة",
+  "14-18 Years": "١٤ - ١٨ سنة",
+  "16-22 Years": "١٦ - ٢٢ سنة",
+  "All Ages": "جميع الأعمار",
+
+  // Durations
+  "2 Weeks": "أسبوعين",
+  "4 Weeks": "٤ أسابيع",
+  "6 Weeks": "٦ أسابيع",
+  "8 Weeks": "٨ أسابيع",
+  "12 Weeks": "١٢ أسبوعاً",
+  "16 Weeks": "١٦ أسبوعاً",
+  "Flexible": "مرن",
+
+  // Modes
+  "Online": "عبر الإنترنت",
+  "Online Interactive": "عبر الإنترنت (تفاعلي)",
+  "In-Person": "حضور شخصي",
+  "In-Person + Online": "حضور شخصي + عبر الإنترنت",
+  "Hybrid": "تعليم مدمج",
+  "Self-paced": "ذاتي التعلم",
+
+  // Start Date / Admissions
+  "Rolling Admissions": "قبول مستمر",
+  "Flexible Start": "بداية مرنة",
+  "Immediate": "فوري",
+};
+
+export const MODULE_TRANSLATIONS: Record<string, { title: string; description?: string }> = {
+  "Module 1 Basics": {
+    title: "الوحدة الأولى: الأساسيات والمفاهيم",
+    description: "المقدمة والإعداد الأساسي للدورة والمنهج التدريبي"
+  },
+  "Module 2 Practice": {
+    title: "الوحدة الثانية: التطبيق العملي",
+    description: "التدريب العملي والتطبيقي المباشر وورش العمل"
+  },
+  "Module 3 Advanced": {
+    title: "الوحدة الثالثة: المستوى المتقدم",
+    description: "المواضيع المتقدمة والمشاريع النهائية"
+  },
+  "Introduction and core setup": {
+    title: "المقدمة والإعداد الأساسي",
+    description: "المقدمة والإعداد الأساسي للدورة والمنهج التدريبي"
+  },
+  "Practical hands on training": {
+    title: "التدريب العملي والتطبيقي",
+    description: "التدريب العملي والتطبيقي المباشر وورش العمل"
+  },
+  "Advanced topics and project": {
+    title: "المواضيع المتقدمة والمشروع",
+    description: "المواضيع المتقدمة والمشاريع النهائية"
+  }
 };
 
 export function getLocalizedProgramText(
@@ -168,9 +231,76 @@ export function getLocalizedProgramText(
 }
 
 export function getLocalizedCategory(cat: string | undefined, isAr: boolean): string {
-  if (!cat) return isAr ? "برنامج معتمد" : "CERTIFIED";
+  if (!cat) return isAr ? "عام" : "General";
   if (isAr) {
     return CATEGORY_TRANSLATIONS[cat] || cat;
   }
-  return cat.toUpperCase();
+  return cat;
+}
+
+export function getLocalizedSpecValue(
+  value: string | undefined | null,
+  isAr: boolean,
+  fallback: string = ""
+): string {
+  if (!value) return fallback;
+  if (!isAr) return value;
+
+  const trimmed = value.trim();
+  if (SPEC_TRANSLATIONS[trimmed]) {
+    return SPEC_TRANSLATIONS[trimmed];
+  }
+
+  // Handle Weeks pattern dynamically (e.g., "X Weeks")
+  const weeksMatch = trimmed.match(/^(\d+)\s*Weeks?$/i);
+  if (weeksMatch) {
+    const num = weeksMatch[1];
+    if (num === "1") return "أسبوع واحد";
+    if (num === "2") return "أسبوعين";
+    return `${num} أسابيع`;
+  }
+
+  // Handle Years pattern dynamically (e.g., "X-Y Years")
+  const yearsMatch = trimmed.match(/^(\d+)-(\d+)\s*Years?$/i);
+  if (yearsMatch) {
+    return `${yearsMatch[1]} - ${yearsMatch[2]} سنة`;
+  }
+
+  return value;
+}
+
+export function getLocalizedModuleText(
+  value: any,
+  isAr: boolean,
+  field: "title" | "description" = "title"
+): string {
+  if (!value) return "";
+
+  // 1. If it's already an object { en, ar }
+  if (typeof value === "object" && value !== null) {
+    if (isAr && value.ar) return value.ar;
+    if (value.en) return value.en;
+  }
+
+  // 2. If it's a JSON string '{"en": "...", "ar": "..."}'
+  if (typeof value === "string" && value.trim().startsWith("{")) {
+    try {
+      const parsed = JSON.parse(value);
+      if (isAr && parsed.ar) return parsed.ar;
+      if (parsed.en) return parsed.en;
+    } catch {
+      // Ignore JSON parse error and fallback
+    }
+  }
+
+  const str = typeof value === "string" ? value.trim() : String(value);
+  if (!isAr) return str;
+
+  if (MODULE_TRANSLATIONS[str]) {
+    return field === "title" 
+      ? MODULE_TRANSLATIONS[str].title 
+      : (MODULE_TRANSLATIONS[str].description || MODULE_TRANSLATIONS[str].title);
+  }
+
+  return str;
 }

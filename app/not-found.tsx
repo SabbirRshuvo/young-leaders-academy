@@ -1,6 +1,6 @@
 "use client";
 
-import "./globals.css";
+import "@/app/globals.css";
 import Link from "next/link";
 import { ArrowLeft, Compass } from "lucide-react";
 import Image from "next/image";

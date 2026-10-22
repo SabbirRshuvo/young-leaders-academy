@@ -194,7 +194,7 @@ export default function PaymentMethodSelector({
                     </div>
 
                     {/* Expiry & CVV */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs font-bold text-[#0B2545] mb-1.5 uppercase">
                                 {isAr ? "تاريخ الانتهاء" : "Expiry Date"} (MM/YY) *
