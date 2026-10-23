@@ -55,17 +55,45 @@ export default function AdminDashboardPage() {
       // Fetch recent course enrollments
       const { data: recentEnrollments } = await supabase
         .from("course_enrollments")
-        .select(`
-          id,
-          user_id,
-          course_id,
-          status,
-          created_at,
-          profiles:user_id(first_name, last_name, email),
-          courses:course_id(title)
-        `)
+        .select("id, user_id, course_id, status, created_at")
         .order("created_at", { ascending: false })
         .limit(5);
+
+      if (recentEnrollments && recentEnrollments.length > 0) {
+        const userIds = Array.from(new Set(recentEnrollments.map((e: any) => e.user_id).filter(Boolean)));
+        const courseIds = Array.from(new Set(recentEnrollments.map((e: any) => e.course_id).filter(Boolean)));
+
+        const profileMap: Record<string, any> = {};
+        if (userIds.length > 0) {
+          const { data: profs } = await supabase
+            .from("profiles")
+            .select("id, first_name, last_name")
+            .in("id", userIds);
+          if (profs) {
+            profs.forEach((p: any) => { profileMap[p.id] = p; });
+          }
+        }
+
+        const courseMap: Record<string, any> = {};
+        if (courseIds.length > 0) {
+          const { data: courses } = await supabase
+            .from("courses")
+            .select("id, title")
+            .in("id", courseIds);
+          if (courses) {
+            courses.forEach((c: any) => { courseMap[c.id] = c; });
+          }
+        }
+
+        const formattedEnrollments = recentEnrollments.map((e: any) => ({
+          ...e,
+          profiles: profileMap[e.user_id] || null,
+          courses: courseMap[e.course_id] || null,
+        }));
+        setEnrollments(formattedEnrollments);
+      } else {
+        setEnrollments([]);
+      }
 
       // Fetch recent university applications
       const { data: recentApplications } = await supabase
@@ -82,7 +110,6 @@ export default function AdminDashboardPage() {
         .order("created_at", { ascending: false })
         .limit(5);
 
-      if (recentEnrollments) setEnrollments(recentEnrollments);
       if (recentApplications) setApplications(recentApplications);
 
       // Fetch student progress
@@ -223,7 +250,7 @@ export default function AdminDashboardPage() {
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex items-center justify-between">
             <h2 className="text-lg font-bold text-[#0B2545]">Recent Uni Applications</h2>
-            <Link href={`/${locale}/admin/applications`} className="text-sm font-medium text-[#D4AF37] hover:text-[#b5952f] flex items-center">
+            <Link href={`/${locale}/admin/programs?tab=Applications`} className="text-sm font-medium text-[#D4AF37] hover:text-[#b5952f] flex items-center">
               View all <ArrowUpRight className="h-4 w-4 ml-1" />
             </Link>
           </div>

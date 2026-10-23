@@ -971,7 +971,12 @@
     "accountInfoDesc": "المعلومات المرتبطة بحسابك حالياً.",
     "manageProfile": "إدارة الملف الشخصي",
     "name": "الاسم",
-    "phone": "رقم الهاتف"
+    "phone": "رقم الهاتف",
+    "studentFallback": "طالب",
+    "parentConnectedSuccess": "تم ربط حساب ولي الأمر بنجاح!",
+    "requestRejectedSuccess": "تم رفض الطلب",
+    "failedToUpdateRequest": "فشل في تحديث الطلب",
+    "failedToProcessRequest": "فشل في معالجة الطلب"
   },
   "EnrolledPrograms": {
     "calculatingProgress": "جارٍ حساب تقدم الدورة التدريبية...",
@@ -1099,7 +1104,8 @@
     "cancel": "إلغاء",
     "sendRequest": "إرسال الطلب",
     "emailRequired": "البريد الإلكتروني مطلوب",
-    "requestSentSuccess": "تم إرسال طلب الربط بنجاح!"
+    "requestSentSuccess": "تم إرسال طلب الربط بنجاح!",
+    "notAvailable": "غير متوفر"
   },
   "StudentCoaching": {
     "badge": "جلسات التوجيه الفردية",

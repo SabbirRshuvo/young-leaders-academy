@@ -71,6 +71,9 @@ export default function AdminCoachesPage() {
     const [selectedCoach, setSelectedCoach] = useState<CoachUser | null>(null);
     const [selectedModuleId, setSelectedModuleId] = useState<string>("");
 
+    // Approved coach credentials modal state
+    const [approvedCredentials, setApprovedCredentials] = useState<{ email: string; fullName: string; tempPassword?: string } | null>(null);
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -113,7 +116,16 @@ export default function AdminCoachesPage() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to approve application");
 
-            toast.success(data.message);
+            if (data.tempPassword) {
+                setApprovedCredentials({
+                    email: app.email,
+                    fullName: app.full_name,
+                    tempPassword: data.tempPassword
+                });
+                toast.success(`Approved! Temporary password: ${data.tempPassword}`, { duration: 8000 });
+            } else {
+                toast.success(data.message);
+            }
             await fetchData();
         } catch (error: any) {
             console.error(error);
@@ -460,6 +472,79 @@ export default function AdminCoachesPage() {
                             >
                                 {processingId === selectedCoach.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                                 Confirm Assignment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Coach Credentials Modal */}
+            {approvedCredentials && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 relative animate-in fade-in zoom-in-95 duration-200">
+                        <button
+                            onClick={() => setApprovedCredentials(null)}
+                            className="absolute top-5 right-5 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                            <ShieldCheck className="w-8 h-8" />
+                        </div>
+
+                        <h3 className="text-xl font-bold text-[#0B2545]">
+                            Coach Account Activated!
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Coach application approved for <span className="font-semibold text-gray-800">{approvedCredentials.fullName}</span>. Please copy and provide these credentials to the coach directly:
+                        </p>
+
+                        <div className="mt-5 space-y-3 bg-gray-50 rounded-2xl p-4 border border-gray-200 text-xs">
+                            <div>
+                                <span className="text-gray-400 block mb-0.5 font-medium">Login Email</span>
+                                <span className="font-bold text-[#0B2545] text-sm select-all">{approvedCredentials.email}</span>
+                            </div>
+                            <div>
+                                <span className="text-gray-400 block mb-0.5 font-medium">Temporary Password</span>
+                                <div className="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200">
+                                    <span className="font-mono font-bold text-sm text-emerald-600 select-all">
+                                        {approvedCredentials.tempPassword}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (approvedCredentials.tempPassword) {
+                                                navigator.clipboard.writeText(approvedCredentials.tempPassword);
+                                                toast.success("Password copied to clipboard!");
+                                            }
+                                        }}
+                                        className="px-2.5 py-1 rounded-lg bg-[#0B2545] text-white font-bold text-[11px] hover:bg-[#133055] transition-colors"
+                                    >
+                                        Copy Password
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const text = `Young Leaders Academy Coach Credentials:\nEmail: ${approvedCredentials.email}\nTemporary Password: ${approvedCredentials.tempPassword}\nLogin at: ${window.location.origin}/login`;
+                                    navigator.clipboard.writeText(text);
+                                    toast.success("Full credentials copied!");
+                                }}
+                                className="flex-1 py-3 px-4 rounded-xl bg-[#D4AF37] text-[#0B2545] font-bold text-xs hover:bg-[#c4a132] transition-colors text-center"
+                            >
+                                Copy All Details
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setApprovedCredentials(null)}
+                                className="py-3 px-5 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs hover:bg-gray-200 transition-colors"
+                            >
+                                Done
                             </button>
                         </div>
                     </div>

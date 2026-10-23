@@ -100,6 +100,40 @@ export default function StudentCoachingPage() {
         fetchData();
     }, []);
 
+    const parseDateTime = (item?: { meeting_date?: string; date?: string; start_time?: string; meeting_time?: string } | null) => {
+        if (!item) return new Date();
+        const raw = item.meeting_time || (item.start_time?.includes("T") ? item.start_time : null);
+        if (raw) {
+            const d = new Date(raw);
+            if (!isNaN(d.getTime())) return d;
+        }
+        const dVal = item.meeting_date || item.date;
+        const tVal = item.start_time;
+        if (dVal && tVal) {
+            const cleanTime = tVal.includes("T") ? tVal.split("T")[1] : tVal;
+            const d = new Date(`${dVal.split("T")[0]}T${cleanTime.length === 5 ? cleanTime + ":00" : cleanTime}`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        if (dVal) {
+            const d = new Date(dVal.includes("T") ? dVal : `${dVal}T00:00:00`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        return new Date();
+    };
+
+    const formatTimeRange = (item?: { start_time?: string; end_time?: string; meeting_time?: string } | null) => {
+        if (!item) return "";
+        const clean = (t?: string) => {
+            if (!t) return "";
+            return t.includes("T") ? t.split("T")[1].slice(0, 5) : t.slice(0, 5);
+        };
+        if (item.start_time && item.end_time) {
+            return `${clean(item.start_time)} - ${clean(item.end_time)}`;
+        }
+        if (item.start_time) return clean(item.start_time);
+        return parseDateTime(item).toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" });
+    };
+
     const handleConfirmBooking = async () => {
         if (!selectedSlot || !selectedCoach) return;
 
@@ -288,7 +322,7 @@ export default function StudentCoachingPage() {
                                             ) : (
                                                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                                                     {coachSlots.map((slot) => {
-                                                        const sDate = new Date(slot.start_time);
+                                                        const sDate = parseDateTime(slot);
                                                         return (
                                                             <div
                                                                 key={slot.id}
@@ -299,7 +333,7 @@ export default function StudentCoachingPage() {
                                                                         {sDate.toLocaleDateString(isAr ? "ar-SA" : "en-US", { weekday: "short", month: "short", day: "numeric" })}
                                                                     </div>
                                                                     <div className="text-gray-500">
-                                                                        {sDate.toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                                                                        {formatTimeRange(slot)}
                                                                         {" "}({slot.duration_minutes || 45} {t("mins")})
                                                                     </div>
                                                                 </div>
@@ -340,7 +374,7 @@ export default function StudentCoachingPage() {
                     ) : (
                         myBookings.map((b) => {
                             const coachName = b.coach ? `${b.coach.first_name || ""} ${b.coach.last_name || ""}`.trim() : t("coachDefault");
-                            const meetingDate = new Date(b.meeting_time);
+                            const meetingDate = parseDateTime(b);
                             const isCompleted = b.status === "completed";
 
                             return (
@@ -380,7 +414,7 @@ export default function StudentCoachingPage() {
                                                 </span>
                                                 <span className="flex items-center gap-1 text-gray-500">
                                                     <Clock className="w-3.5 h-3.5" />
-                                                    {meetingDate.toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                                                    {formatTimeRange(b)}
                                                 </span>
                                             </div>
                                         </div>
@@ -450,15 +484,13 @@ export default function StudentCoachingPage() {
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">{t("date")}</span>
                                         <span className="font-bold text-[#0B2545]">
-                                            {new Date(selectedSlot.start_time).toLocaleDateString(isAr ? "ar-SA" : "en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+                                            {parseDateTime(selectedSlot).toLocaleDateString(isAr ? "ar-SA" : "en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">{t("time")}</span>
                                         <span className="font-bold text-[#0B2545]">
-                                            {new Date(selectedSlot.start_time).toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}
-                                            {" - "}
-                                            {new Date(selectedSlot.end_time).toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                                            {formatTimeRange(selectedSlot)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">

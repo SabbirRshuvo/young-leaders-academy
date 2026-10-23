@@ -25,7 +25,7 @@ export async function GET(request: Request) {
             zoom_link,
             notes,
             created_at,
-            coach:coach_id(first_name, last_name, email, avatar_url)
+            coach:coach_id(first_name, last_name, avatar_url)
         `);
 
         if (coachId) query = query.eq("coach_id", coachId);

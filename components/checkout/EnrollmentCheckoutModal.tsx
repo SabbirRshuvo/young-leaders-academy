@@ -7,6 +7,7 @@ import { X, ShieldCheck, Lock, Loader2, Sparkles, AlertCircle } from "lucide-rea
 import toast from "react-hot-toast";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import { PaymentMethodType, MadaCardDetails } from "@/lib/payments/mada-applepay";
+import { getLocalizedProgramText, getLocalizedCategory } from "@/lib/program-localization";
 
 export interface EnrollmentCheckoutModalProps {
     isOpen: boolean;
@@ -171,10 +172,13 @@ export default function EnrollmentCheckoutModal({
 
     if (!isOpen || !mounted) return null;
 
+    const displayTitle = getLocalizedProgramText(program.title, isAr, 'title', program.title) || program.title;
+    const displayCategory = getLocalizedCategory(program.category, isAr) || (isAr ? "برنامج تدريبي" : "Academy Program");
+
     return createPortal(
         <AnimatePresence>
             <div
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-16 pb-8 sm:pt-20 sm:pb-12 md:py-16 bg-black/60 backdrop-blur-sm overflow-y-auto"
+                className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 pt-20 pb-8 sm:pt-24 sm:pb-12 bg-black/60 backdrop-blur-sm overflow-y-auto"
                 onClick={(e) => {
                     if (e.target === e.currentTarget && !isProcessing) {
                         onClose();
@@ -186,7 +190,7 @@ export default function EnrollmentCheckoutModal({
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 15 }}
                     transition={{ duration: 0.25 }}
-                    className="relative z-10 w-full max-w-2xl max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-7rem)] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-auto"
+                    className="relative z-10 w-full max-w-2xl max-h-[calc(100vh-6rem)] sm:max-h-[calc(100vh-7rem)] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden my-auto mt-4 sm:mt-0"
                     dir="ltr"
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -209,11 +213,11 @@ export default function EnrollmentCheckoutModal({
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#0B2545]/5 text-[#0B2545]">
                                     <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-                                    {program.category || (isAr ? "برنامج تدريبي" : "Academy Program")}
+                                    {displayCategory}
                                 </span>
                             </div>
                             <h2 className="text-lg sm:text-2xl font-black text-[#0B2545] break-words">
-                                {program.title}
+                                {displayTitle}
                             </h2>
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                 {isAr

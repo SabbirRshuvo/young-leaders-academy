@@ -84,6 +84,38 @@ export default function CoachDashboardPage() {
     const upcomingBookings = bookings.filter(b => b.status === "confirmed");
     const openSlots = slots.filter(s => !s.is_booked);
 
+    const parseMeetingDate = (b: any) => {
+        const rawDate = b.meeting_date || b.date;
+        const time = b.start_time;
+        if (rawDate && time) {
+            const cleanTime = time.includes("T") ? time.split("T")[1] : time;
+            const d = new Date(`${rawDate.split("T")[0]}T${cleanTime.length === 5 ? cleanTime + ":00" : cleanTime}`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        if (rawDate) {
+            const d = new Date(rawDate.includes("T") ? rawDate : `${rawDate}T00:00:00`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        if (b.meeting_time) {
+            const d = new Date(b.meeting_time);
+            if (!isNaN(d.getTime())) return d;
+        }
+        return new Date();
+    };
+
+    const formatMeetingTime = (b: any) => {
+        if (b.start_time) {
+            const start = b.start_time.includes("T") ? b.start_time.split("T")[1].slice(0, 5) : b.start_time.slice(0, 5);
+            if (b.end_time) {
+                const end = b.end_time.includes("T") ? b.end_time.split("T")[1].slice(0, 5) : b.end_time.slice(0, 5);
+                return `${start} - ${end}`;
+            }
+            return start;
+        }
+        const d = parseMeetingDate(b);
+        return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    };
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8" dir="ltr">
             {/* Welcome banner */}
@@ -228,10 +260,10 @@ export default function CoachDashboardPage() {
                                             </td>
                                             <td className="px-6 py-4 text-xs text-gray-600">
                                                 <div className="font-semibold text-gray-800">
-                                                    {new Date(b.meeting_time).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                                                    {parseMeetingDate(b).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                                                 </div>
                                                 <div className="text-gray-400">
-                                                    {new Date(b.meeting_time).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })} ({b.duration_minutes || 45} mins)
+                                                    {formatMeetingTime(b)} ({b.duration_minutes || 45} mins)
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

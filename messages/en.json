@@ -971,7 +971,12 @@
     "accountInfoDesc": "Information currently associated with your account.",
     "manageProfile": "Manage Profile",
     "name": "Name",
-    "phone": "Phone"
+    "phone": "Phone",
+    "studentFallback": "Student",
+    "parentConnectedSuccess": "Parent connected successfully!",
+    "requestRejectedSuccess": "Request rejected",
+    "failedToUpdateRequest": "Failed to update request",
+    "failedToProcessRequest": "Failed to process request"
   },
   "EnrolledPrograms": {
     "calculatingProgress": "Calculating course progress...",
@@ -1099,7 +1104,8 @@
     "cancel": "Cancel",
     "sendRequest": "Send Request",
     "emailRequired": "Email is required",
-    "requestSentSuccess": "Connection request sent successfully!"
+    "requestSentSuccess": "Connection request sent successfully!",
+    "notAvailable": "N/A"
   },
   "StudentCoaching": {
     "badge": "1-on-1 Mentorship",

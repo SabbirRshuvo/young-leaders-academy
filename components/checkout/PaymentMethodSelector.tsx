@@ -173,7 +173,7 @@ export default function PaymentMethodSelector({
                                 disabled={isProcessing}
                                 className="w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-sm text-[#0B2545] font-mono tracking-wider outline-none focus:border-[#0B2545] focus:ring-1 focus:ring-[#0B2545]"
                             />
-                            <CreditCard className={`absolute ${isAr ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none`} />
+                            <CreditCard className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                         </div>
                     </div>
 

@@ -58,7 +58,13 @@ export async function GET(request: Request) {
             .order("start_time", { ascending: true });
 
         if (!dbErr && dbBookings) {
-            return NextResponse.json({ bookings: dbBookings });
+            const formatted = (dbBookings || []).map((b: any) => ({
+                ...b,
+                meeting_time: b.meeting_date && b.start_time
+                    ? `${b.meeting_date}T${b.start_time.includes("T") ? b.start_time.split("T")[1] : (b.start_time.length === 5 ? b.start_time + ":00" : b.start_time)}`
+                    : b.created_at
+            }));
+            return NextResponse.json({ bookings: formatted });
         }
 
         console.error("GET /api/coach/bookings error:", dbErr);

@@ -35,15 +35,19 @@ export async function GET(req: Request) {
                 })
                 .eq("id", paymentId);
 
-            // Auto enroll user if user_id exists on record or profiles
+            // Auto enroll user if user_id exists on record or via parent_email
             if (payment.program_id) {
-                const { data: profile } = await supabase
-                    .from("profiles")
-                    .select("id")
-                    .eq("email", payment.parent_email)
-                    .maybeSingle();
+                let userId = payment.user_id;
+                if (!userId && payment.parent_email) {
+                    const { data: authUsers } = await supabase.auth.admin.listUsers();
+                    const matchingUser = authUsers?.users?.find(
+                        (u) => u.email?.toLowerCase() === payment.parent_email.toLowerCase()
+                    );
+                    if (matchingUser) {
+                        userId = matchingUser.id;
+                    }
+                }
 
-                const userId = profile?.id;
                 if (userId) {
                     try {
                         await supabase
@@ -51,7 +55,6 @@ export async function GET(req: Request) {
                             .upsert([{
                                 user_id: userId,
                                 program_id: payment.program_id,
-                                status: "active"
                             }], { onConflict: "user_id,program_id" });
                     } catch {
                         // Ignore duplicate or schema variation errors

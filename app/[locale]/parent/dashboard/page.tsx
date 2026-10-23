@@ -95,10 +95,10 @@ export default function Page() {
                         id: req.student_id,
                         request_id: req.id,
                         name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || t("studentFallback"),
-                        age: "N/A",
+                        age: t("notAvailable"),
                         school,
-                        program: "N/A",
-                        applicationStatus: "N/A",
+                        program: t("notAvailable"),
+                        applicationStatus: t("notAvailable"),
                         status: req.status
                     });
                 });
@@ -279,7 +279,7 @@ export default function Page() {
                                             {child.status === "approved" && (
                                                 <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                                                     <Link
-                                                        href={`/${locale}/parent/children/${child.id}`}
+                                                        href={`/${locale}/parent/children`}
                                                         className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
                                                     >
                                                         {t("viewProfile")}
@@ -407,7 +407,7 @@ export default function Page() {
                         />
 
                         <QuickAction
-                            href={`/${locale}/parent/applications`}
+                            href={`/${locale}/parent/children`}
                             icon={FileText}
                             title={t("actionApplications")}
                             description={t("actionApplicationsDesc")}

@@ -162,11 +162,11 @@ export async function POST(request: Request) {
             const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
             let authUser = listData.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
+            // Generate a secure temporary password
+            const tempPassword = "CoachPassword" + Math.floor(1000 + Math.random() * 9000) + "!";
             let userId: string;
 
             if (!authUser) {
-                // Create user with a secure temporary password
-                const tempPassword = "CoachPassword" + Math.floor(1000 + Math.random() * 9000) + "!";
                 const names = (fullName || "").trim().split(" ");
                 const firstName = names[0] || "Coach";
                 const lastName = names.slice(1).join(" ") || "Expert";
@@ -192,6 +192,7 @@ export async function POST(request: Request) {
             } else {
                 userId = authUser.id;
                 await supabaseAdmin.auth.admin.updateUserById(userId, {
+                    password: tempPassword,
                     user_metadata: { ...authUser.user_metadata, role: "coach" }
                 });
             }
@@ -219,7 +220,10 @@ export async function POST(request: Request) {
 
             return NextResponse.json({
                 success: true,
-                message: `Coach application approved for ${fullName} (${email}). Coach account is active.`
+                message: `Coach application approved for ${fullName} (${email}). Coach account is active.`,
+                tempPassword,
+                email,
+                fullName
             });
         }
 

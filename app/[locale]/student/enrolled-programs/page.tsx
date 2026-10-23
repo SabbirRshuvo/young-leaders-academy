@@ -155,7 +155,6 @@ export default function EnrolledProgramsPage() {
                 .select(`
                     id,
                     program_id,
-                    status,
                     created_at,
                     program:programs (
                         id,
@@ -164,8 +163,7 @@ export default function EnrolledProgramsPage() {
                         image_url
                     )
                 `)
-                .eq("user_id", user.id)
-                .in("status", ["active", "enrolled", "paid"]);
+                .eq("user_id", user.id);
 
             // 2.5 Fetch course_enrollments table
             const { data: courseEnrollments } = await supabase
@@ -202,7 +200,7 @@ export default function EnrolledProgramsPage() {
                     enrolledItems.push({
                         id: enr.id,
                         program_id: enr.program_id,
-                        status: enr.status,
+                        status: (enr as any).status || "active",
                         source: "enrollment",
                         initialProgram: enr.program
                     });
@@ -256,7 +254,7 @@ export default function EnrolledProgramsPage() {
             let modulesData: any[] = [];
             if (allTargetProgIds.length > 0) {
                 const { data: mods, error: modErr } = await supabase
-                    .from("course_modules")
+                    .from("modules")
                     .select(`
                         id,
                         program_id,
@@ -314,7 +312,7 @@ export default function EnrolledProgramsPage() {
                 const progId = item.program_id;
                 const programDetails = item.initialProgram || extraProgramsMap.get(progId) || {
                     id: progId,
-                    title: "Program",
+                    title: t("defaultProgramTitle"),
                     description: "",
                     image_url: null
                 };

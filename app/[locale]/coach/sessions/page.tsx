@@ -90,6 +90,37 @@ export default function CoachSessionsPage() {
         setDate(tomorrow.toISOString().split("T")[0]);
     }, []);
 
+    const parseSlotDateTime = (s: any) => {
+        const dVal = s.meeting_date || s.date;
+        const tVal = s.start_time;
+        if (dVal && tVal) {
+            const cleanTime = tVal.includes("T") ? tVal.split("T")[1] : tVal;
+            const d = new Date(`${dVal.split("T")[0]}T${cleanTime.length === 5 ? cleanTime + ":00" : cleanTime}`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        if (dVal) {
+            const d = new Date(dVal.includes("T") ? dVal : `${dVal}T00:00:00`);
+            if (!isNaN(d.getTime())) return d;
+        }
+        if (s.meeting_time) {
+            const d = new Date(s.meeting_time);
+            if (!isNaN(d.getTime())) return d;
+        }
+        return new Date();
+    };
+
+    const formatSlotTime = (s: any) => {
+        const clean = (t?: string) => {
+            if (!t) return "";
+            return t.includes("T") ? t.split("T")[1].slice(0, 5) : t.slice(0, 5);
+        };
+        if (s.start_time && s.end_time) {
+            return `${clean(s.start_time)} - ${clean(s.end_time)}`;
+        }
+        if (s.start_time) return clean(s.start_time);
+        return parseSlotDateTime(s).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    };
+
     const handleCreateSlot = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!date || !startTime || !endTime) {
@@ -343,7 +374,7 @@ export default function CoachSessionsPage() {
                                 </div>
                             ) : (
                                 slots.filter(s => !s.is_booked).map((s) => {
-                                    const slotDate = new Date(s.start_time);
+                                    const slotDate = parseSlotDateTime(s);
                                     return (
                                         <div
                                             key={s.id}
@@ -364,9 +395,7 @@ export default function CoachSessionsPage() {
                                                     </div>
                                                     <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5">
                                                         <Clock className="w-3.5 h-3.5 text-gray-400" />
-                                                        {new Date(s.start_time).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
-                                                        {" - "}
-                                                        {new Date(s.end_time).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                                                        {formatSlotTime(s)}
                                                         {" "}({s.duration_minutes || 45} mins)
                                                     </p>
                                                     {s.notes && (
@@ -451,10 +480,10 @@ export default function CoachSessionsPage() {
 
                                                 <div className="text-right sm:text-right">
                                                     <div className="text-sm font-bold text-[#0B2545]">
-                                                        {new Date(b.meeting_time).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                                                        {parseSlotDateTime(b).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" })}
                                                     </div>
                                                     <div className="text-xs text-gray-500">
-                                                        {new Date(b.meeting_time).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}
+                                                        {formatSlotTime(b)}
                                                     </div>
                                                 </div>
                                             </div>

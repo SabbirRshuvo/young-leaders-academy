@@ -238,9 +238,8 @@ export default function Page() {
                     .eq("student_id", user.id),
                 supabase
                     .from("enrollments")
-                    .select("id, program_id, status")
-                    .eq("user_id", user.id)
-                    .in("status", ["active", "enrolled", "paid"]),
+                    .select("id, program_id")
+                    .eq("user_id", user.id),
                 supabase
                     .from("course_enrollments")
                     .select("id, course_id, status")
@@ -258,7 +257,7 @@ export default function Page() {
 
             const mappedProgApps: Application[] = (progRes.data || []).map(p => ({
                 id: p.id,
-                first_name: profile?.first_name || "Student",
+                first_name: profile?.first_name || t("studentFallback"),
                 last_name: profile?.last_name || "",
                 email: user.email || "",
                 phone: profile?.phone || null,
@@ -354,14 +353,14 @@ export default function Page() {
             });
 
             if (!res.ok) {
-                throw new Error("Failed to process request");
+                throw new Error(t("failedToProcessRequest"));
             }
 
             setParentRequests(prev => prev.filter(r => r.id !== requestId));
-            toast.success(status === "approved" ? "Parent connected successfully!" : "Request rejected");
+            toast.success(status === "approved" ? t("parentConnectedSuccess") : t("requestRejectedSuccess"));
         } catch (e: any) {
             console.error(e);
-            toast.error(e.message || "Failed to update request");
+            toast.error(e.message || t("failedToUpdateRequest"));
         } finally {
             setProcessingRequest(null);
         }
@@ -371,7 +370,7 @@ export default function Page() {
         const profile = dashboard.profile;
 
         if (!profile) {
-            return "Student";
+            return t("studentFallback");
         }
 
         if (profile.display_name?.trim()) {
@@ -380,9 +379,9 @@ export default function Page() {
 
         return (
             `${profile.first_name ?? ""} ${profile.last_name ?? ""}`.trim() ||
-            "Student"
+            t("studentFallback")
         );
-    }, [dashboard.profile]);
+    }, [dashboard.profile, t]);
 
     const notProvidedStr = t("notProvided");
 
@@ -731,7 +730,7 @@ export default function Page() {
                                     <div className="flex items-center gap-4">
                                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0B2545]/10">
                                             {req.parent?.avatar_url ? (
-                                                <img src={req.parent.avatar_url} alt="Parent" className="h-full w-full rounded-full object-cover" />
+                                                <img src={req.parent.avatar_url} alt={t("parent")} className="h-full w-full rounded-full object-cover" />
                                             ) : (
                                                 <UserRound className="h-6 w-6 text-[#0B2545]" />
                                             )}

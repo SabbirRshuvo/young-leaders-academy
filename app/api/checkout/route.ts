@@ -224,7 +224,6 @@ export async function POST(req: Request) {
                         .upsert([{
                             user_id: userId,
                             program_id: programId,
-                            status: "active",
                         }], { onConflict: "user_id,program_id" });
 
                     // Also record in course_enrollments if used

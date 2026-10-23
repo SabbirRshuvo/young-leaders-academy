@@ -429,11 +429,11 @@ export default function Navbar() {
     },
     {
       name: t("programs"),
-      href: "/programs",
+      href: "/admin/programs",
     },
     {
       name: t("universities"),
-      href: "/universities",
+      href: "/admin/universities",
     },
   ];
 

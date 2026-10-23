@@ -83,11 +83,11 @@ export default function Page() {
                 formattedChildren.push({
                     id: req.student_id,
                     request_id: req.id,
-                    first_name: profile.first_name || (isAr ? "طالب" : "Student"),
+                    first_name: profile.first_name || t("studentFallback"),
                     last_name: profile.last_name || "",
                     email: studentEmail,
-                    phone: profile.phone || "N/A",
-                    school: data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || "N/A",
+                    phone: profile.phone || t("notAvailable"),
+                    school: data.studentProfiles?.find((p: any) => p.id === req.student_id)?.school_name || t("schoolNotProvided"),
                     applications: data.studentApplications?.filter((a: any) => a.email === studentEmail).length || 0,
                     joined: new Date(req.created_at).toLocaleDateString(isAr ? "ar-SA" : "en-US"),
                     status: req.status
@@ -369,7 +369,7 @@ function ChildCard({
                 <InfoItem
                     icon={Phone}
                     label={t("phone")}
-                    value={child.phone || "N/A"}
+                    value={child.phone || t("notAvailable")}
                 />
 
                 <InfoItem
@@ -386,28 +386,6 @@ function ChildCard({
                     label={t("requestDate")}
                     value={child.joined}
                 />
-
-            </div>
-
-            {/* Actions */}
-
-            <div className="flex flex-col gap-3 border-t border-gray-100 bg-gray-50/60 p-5 sm:flex-row sm:p-6">
-
-                <Link
-                    href={`/${locale}/parent/children/${child.id}`}
-                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border-2 border-[#0B2545] px-4 text-sm font-semibold text-[#0B2545] transition-colors hover:bg-[#0B2545] hover:text-white"
-                >
-                    {t("viewProfile")}
-                    <ChevronRight className="h-4 w-4" />
-                </Link>
-
-                <Link
-                    href={`/${locale}/parent/applications`}
-                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
-                >
-                    {t("applications")}
-                    <FileText className="h-4 w-4" />
-                </Link>
 
             </div>
 

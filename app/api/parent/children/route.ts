@@ -39,42 +39,58 @@ export async function GET(req: Request) {
         }
 
         // Also fetch from parent_student_relationships for any approved connections
-        const { data: relationships, error: relError } = await supabaseAdmin
+        const { data: relationshipsRaw, error: relError } = await supabaseAdmin
             .from("parent_student_relationships")
-            .select(`
-                *,
-                student:profiles!student_id(
-                    id, first_name, last_name, avatar_url
-                )
-            `)
+            .select("*")
             .eq("parent_id", user.id);
 
         if (relError) {
             console.error("Error fetching relationships:", relError);
         }
 
-        // Fetch student profiles for school/grade info
-        const studentIds = [
+        // Fetch student profiles and basic profile info
+        const studentIds = Array.from(new Set([
             ...(requests || []).map(r => r.student_id),
-            ...(relationships || []).map(r => r.student_id)
-        ];
+            ...(relationshipsRaw || []).map(r => r.student_id)
+        ])).filter(Boolean);
 
         let studentProfiles: any[] = [];
+        const profilesMap = new Map<string, any>();
+
         if (studentIds.length > 0) {
-            const { data: sp } = await supabaseAdmin
-                .from("student_profiles")
-                .select("id, school_name, grade_level, city")
-                .in("id", studentIds);
-            if (sp) studentProfiles = sp;
+            const [spRes, pRes] = await Promise.all([
+                supabaseAdmin
+                    .from("student_profiles")
+                    .select("id, school_name, grade_level, city")
+                    .in("id", studentIds),
+                supabaseAdmin
+                    .from("profiles")
+                    .select("id, first_name, last_name, avatar_url")
+                    .in("id", studentIds)
+            ]);
+
+            if (spRes.data) studentProfiles = spRes.data;
+            if (pRes.data) {
+                pRes.data.forEach(p => profilesMap.set(p.id, p));
+            }
         }
+
+        // Format relationships with the student profile object expected by frontend
+        const relationships = (relationshipsRaw || []).map(rel => ({
+            ...rel,
+            student: profilesMap.get(rel.student_id) || null
+        }));
+
+        // Format requests ensuring student profile is attached
+        const formattedRequests = (requests || []).map(req => ({
+            ...req,
+            student: req.student || profilesMap.get(req.student_id) || null
+        }));
 
         // Fetch applications for these students to count them
         let studentApplications: any[] = [];
-        // Applications are tied by email, so we need the emails of students
-        // We will do our best by fetching all applications and mapping (if we can find the emails)
-        // Since we don't have emails directly from the join, we can fetch users by ID
         const { data: { users: allUsers } } = await supabaseAdmin.auth.admin.listUsers();
-        const studentEmails = allUsers
+        const studentEmails = (allUsers || [])
             .filter(u => studentIds.includes(u.id))
             .map(u => u.email)
             .filter(Boolean);
@@ -88,11 +104,11 @@ export async function GET(req: Request) {
         }
 
         return NextResponse.json({
-            requests: requests || [],
-            relationships: relationships || [],
+            requests: formattedRequests,
+            relationships,
             studentProfiles,
             studentApplications,
-            users: allUsers.filter(u => studentIds.includes(u.id)).map(u => ({ id: u.id, email: u.email }))
+            users: (allUsers || []).filter(u => studentIds.includes(u.id)).map(u => ({ id: u.id, email: u.email }))
         });
     } catch (error) {
         console.error("GET /api/parent/children error:", error);
