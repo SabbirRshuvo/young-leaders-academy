@@ -10,14 +10,12 @@ import {
     School,
     UserRound,
     X,
-    Clock,
-    CheckCircle2,
-    AlertCircle
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useTranslations } from "next-intl";
 
 type Application = {
     id: string;
@@ -58,6 +56,7 @@ function getLocalizedText(value: any, locale: string): string {
 }
 
 export default function StudentApplicationsPage() {
+    const t = useTranslations("StudentApplications");
     const params = useParams();
     const locale = (params?.locale as string) || "en";
     const isAr = locale === "ar";
@@ -68,6 +67,26 @@ export default function StudentApplicationsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+
+    const getStatusLabel = (status: string | null | undefined) => {
+        if (!status) return t("statusPending");
+        const s = status.toLowerCase();
+        if (s === "accepted") return t("statusAccepted");
+        if (s === "approved") return t("statusApproved");
+        if (s === "enrolled") return t("statusEnrolled");
+        if (s === "rejected") return t("statusRejected");
+        if (s === "pending") return t("statusPending");
+        return status;
+    };
+
+    const getPaymentLabel = (payment: string | null | undefined) => {
+        if (!payment) return t("paymentUnpaid");
+        const p = payment.toLowerCase();
+        if (p === "paid") return t("paymentPaid");
+        if (p === "pending") return t("paymentPending");
+        if (p === "unpaid") return t("paymentUnpaid");
+        return payment;
+    };
 
     useEffect(() => {
         fetchApplications();
@@ -118,7 +137,7 @@ export default function StudentApplicationsPage() {
 
             if (!user) {
                 setApplications([]);
-                setError(isAr ? "يجب عليك تسجيل الدخول لعرض طلباتك." : "You must be logged in to view your applications.");
+                setError(t("loginRequired"));
                 return;
             }
 
@@ -162,14 +181,17 @@ export default function StudentApplicationsPage() {
                 titleMap.set(c.id, getLocalizedText(c.title, locale));
             });
 
-            const studentFirstName = userProfile?.first_name || userProfile?.display_name?.split(" ")[0] || "Student";
+            const studentFirstName = userProfile?.first_name || userProfile?.display_name?.split(" ")[0] || t("studentDefault");
             const studentLastName = userProfile?.last_name || userProfile?.display_name?.split(" ").slice(1).join(" ") || "";
             const studentEmail = userProfile?.email || user.email || "";
+
+            const defaultUniTitle = t("defaultUniTitle");
+            const defaultProgTitle = t("defaultProgramTitle");
 
             const mappedUni: Application[] = (uniData || []).map(app => {
                 const readableTitle = app.program_id && titleMap.has(app.program_id)
                     ? titleMap.get(app.program_id)!
-                    : app.university_id || app.program_id || (isAr ? "طلب جامعة" : "University Application");
+                    : app.university_id || app.program_id || defaultUniTitle;
 
                 return {
                     ...app,
@@ -181,7 +203,7 @@ export default function StudentApplicationsPage() {
             const mappedProg: Application[] = (progData || []).map(app => {
                 const readableTitle = app.program_id && titleMap.has(app.program_id)
                     ? titleMap.get(app.program_id)!
-                    : app.program_id ? `${isAr ? "برنامج" : "Program"} #${app.program_id.slice(0, 8)}` : (isAr ? "برنامج قيادي" : "Leadership Program");
+                    : app.program_id ? t("programWithId", { id: app.program_id.slice(0, 8) }) : defaultProgTitle;
 
                 return {
                     ...app,
@@ -209,7 +231,7 @@ export default function StudentApplicationsPage() {
             setError(
                 err instanceof Error
                     ? err.message
-                    : (isAr ? "فشل تحميل الطلبات." : "Failed to load applications.")
+                    : t("failedToLoad")
             );
         } finally {
             setLoading(false);
@@ -241,10 +263,9 @@ export default function StudentApplicationsPage() {
     // Dynamic counts
     const programCount = useMemo(() => applications.filter(a => a.type === 'program').length, [applications]);
     const uniCount = useMemo(() => applications.filter(a => a.type === 'university').length, [applications]);
-    const acceptedCount = useMemo(() => applications.filter(a => a.status === 'accepted' || a.status === 'approved' || a.status === 'enrolled').length, [applications]);
 
     return (
-        <main className="min-h-screen bg-gray-50/60 relative">
+        <main dir="ltr" className={`min-h-screen bg-gray-50/60 relative ${isAr ? "font-arabic" : "font-sans"}`}>
             <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 {/* HEADER */}
                 <section className="rounded-2xl bg-[#0B2545] px-6 py-7 text-white shadow-sm sm:px-8">
@@ -252,15 +273,13 @@ export default function StudentApplicationsPage() {
                         <div>
                             <div className="mb-2 flex items-center gap-2 text-sm text-white/70">
                                 <FileText className="h-4 w-4 text-[#D4AF37]" />
-                                {isAr ? "طلبات الطلاب" : "Student Applications"}
+                                {t("badge")}
                             </div>
                             <h1 className="text-2xl font-bold sm:text-3xl">
-                                {isAr ? "طلباتي" : "My Applications"}
+                                {t("title")}
                             </h1>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
-                                {isAr
-                                    ? "تابع طلباتك للبرامج الأكاديمية والجامعات واطلع على حالات التقديم في الوقت الفعلي."
-                                    : "Track your academic program and university applications and review real-time submission statuses."}
+                                {t("subtitle")}
                             </p>
                         </div>
                         <Link
@@ -268,7 +287,7 @@ export default function StudentApplicationsPage() {
                             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#D4AF37] px-5 text-sm font-bold text-[#0B2545] transition-transform hover:scale-105 active:scale-95 shadow-sm"
                         >
                             <FileText className="h-4 w-4" />
-                            {isAr ? "بدء طلب جديد" : "Start New Application"}
+                            {t("startNewApplication")}
                         </Link>
                     </div>
                 </section>
@@ -277,23 +296,23 @@ export default function StudentApplicationsPage() {
                 <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3">
                     <ApplicationStat
                         icon={FileText}
-                        label={isAr ? "إجمالي الطلبات" : "Total Applications"}
+                        label={t("totalApplications")}
                         value={applications.length}
-                        description={loading ? (isAr ? "جاري العد..." : "Counting records...") : (isAr ? `${applications.length} إجمالي الطلبات المسجلة` : `${applications.length} total submissions registered`)}
+                        description={loading ? t("countingRecords") : t("totalRegistered", { count: applications.length })}
                         loading={loading}
                     />
                     <ApplicationStat
                         icon={School}
-                        label={isAr ? "طلبات البرامج" : "Program Applications"}
+                        label={t("programApplications")}
                         value={programCount}
-                        description={loading ? (isAr ? "جاري العد..." : "Counting...") : (isAr ? `${programCount} برامج تم التقديم عليها` : `${programCount} programs applied to`)}
+                        description={loading ? t("counting") : t("programsApplied", { count: programCount })}
                         loading={loading}
                     />
                     <ApplicationStat
                         icon={GraduationCap}
-                        label={isAr ? "طلبات الجامعات" : "University Applications"}
+                        label={t("universityApplications")}
                         value={uniCount}
-                        description={loading ? (isAr ? "جاري العد..." : "Counting...") : (isAr ? `${uniCount} جامعات تم التقديم عليها` : `${uniCount} universities applied to`)}
+                        description={loading ? t("counting") : t("universitiesApplied", { count: uniCount })}
                         loading={loading}
                     />
                 </section>
@@ -305,7 +324,7 @@ export default function StudentApplicationsPage() {
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search by title, university, school, or application ID..."
+                                placeholder={t("searchPlaceholder")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm text-gray-700 outline-none transition-colors focus:border-[#D4AF37] focus:bg-white"
@@ -317,18 +336,17 @@ export default function StudentApplicationsPage() {
                     <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-[#0B2545]">
-                                Your Applications
+                                {t("yourApplications")}
                             </h2>
                             <p className="mt-1 text-sm text-gray-500">
-                                {filteredApplications.length}{" "}
-                                {filteredApplications.length === 1 ? "application" : "applications"} found
+                                {t("applicationsFound", { count: filteredApplications.length })}
                             </p>
                         </div>
                         <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm shrink-0">
                             {[
-                                { key: 'All', label: `All (${applications.length})` },
-                                { key: 'Programs', label: `Programs (${programCount})` },
-                                { key: 'Universities', label: `Universities (${uniCount})` }
+                                { key: 'All', label: t("tabAll", { count: applications.length }) },
+                                { key: 'Programs', label: t("tabPrograms", { count: programCount }) },
+                                { key: 'Universities', label: t("tabUniversities", { count: uniCount }) }
                             ].map((tab) => (
                                 <button
                                     key={tab.key}
@@ -349,21 +367,21 @@ export default function StudentApplicationsPage() {
                     {loading && (
                         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
                             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#0B2545]" />
-                            <p className="mt-4 text-sm font-medium text-gray-500">Loading your applications...</p>
+                            <p className="mt-4 text-sm font-medium text-gray-500">{t("loading")}</p>
                         </div>
                     )}
 
                     {/* ERROR STATE */}
                     {!loading && error && (
                         <div className="rounded-2xl border border-red-200 bg-red-50 px-6 py-12 text-center">
-                            <h3 className="text-lg font-bold text-red-700">Unable to load applications</h3>
+                            <h3 className="text-lg font-bold text-red-700">{t("unableToLoad")}</h3>
                             <p className="mx-auto mt-2 max-w-lg text-sm text-red-600">{error}</p>
                             <button
                                 type="button"
                                 onClick={fetchApplications}
                                 className="mt-5 inline-flex h-10 items-center justify-center rounded-full bg-[#0B2545] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90 cursor-pointer"
                             >
-                                Try Again
+                                {t("tryAgain")}
                             </button>
                         </div>
                     )}
@@ -412,49 +430,51 @@ export default function StudentApplicationsPage() {
                                 <FileText className="h-6 w-6 text-[#0B2545]" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-[#0B2545]">Application Details</h2>
-                                <p className="text-sm font-medium text-gray-500">Ref: #{selectedApplication.id}</p>
+                                <h2 className="text-2xl font-black text-[#0B2545]">{t("modalTitle")}</h2>
+                                <p className="text-sm font-medium text-gray-500">{t("modalRef", { id: selectedApplication.id })}</p>
                             </div>
                         </div>
 
                         <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Applicant Name</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("applicantName")}</p>
                                     <p className="font-bold text-[#0B2545] text-base">{selectedApplication.first_name} {selectedApplication.last_name}</p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Target Program / University</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("targetEntity")}</p>
                                     <p className="font-bold text-[#0B2545] text-base truncate" title={selectedApplication.program_title || ""}>
-                                        {selectedApplication.program_title || "Not specified"}
+                                        {selectedApplication.program_title || t("notSpecified")}
                                     </p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Type</p>
-                                    <p className="font-bold text-[#0B2545] capitalize">{selectedApplication.type} Application</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("applicationType")}</p>
+                                    <p className="font-bold text-[#0B2545] capitalize">
+                                        {selectedApplication.type === 'university' ? t("universityApplication") : t("programApplication")}
+                                    </p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Application Status</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("applicationStatus")}</p>
                                     <p className={`font-bold capitalize ${
-                                        selectedApplication.status === 'accepted' ? 'text-green-600' :
+                                        selectedApplication.status === 'accepted' || selectedApplication.status === 'approved' ? 'text-green-600' :
                                         selectedApplication.status === 'rejected' ? 'text-red-500' : 'text-amber-500'
                                     }`}>
-                                        {selectedApplication.status || "Pending Review"}
+                                        {getStatusLabel(selectedApplication.status)}
                                     </p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Date Submitted</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("dateSubmitted")}</p>
                                     <p className="font-bold text-[#0B2545]">{new Date(selectedApplication.created_at || "").toLocaleDateString()}</p>
                                 </div>
                                 <div className="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Contact Email</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">{t("contactEmail")}</p>
                                     <p className="font-bold text-[#0B2545] truncate">{selectedApplication.email || "N/A"}</p>
                                 </div>
                             </div>
 
                             {selectedApplication.motivation && (
                                 <div className="rounded-xl bg-gray-50 p-5 border border-gray-100">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">Statement of Motivation</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2">{t("statementOfMotivation")}</p>
                                     <p className="text-sm text-gray-700 leading-relaxed italic border-l-2 border-[#D4AF37] pl-4">
                                         "{selectedApplication.motivation}"
                                     </p>
@@ -467,14 +487,14 @@ export default function StudentApplicationsPage() {
                                 onClick={() => setSelectedApplication(null)}
                                 className="rounded-xl px-5 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
                             >
-                                Close Details
+                                {t("closeDetails")}
                             </button>
                             {selectedApplication.program_id && (selectedApplication.status === "accepted" || selectedApplication.payment_status === "paid" || selectedApplication.status === "approved" || selectedApplication.status === "enrolled") && (
                                 <Link
                                     href={`/${locale}/programs/${selectedApplication.program_id}/play`}
                                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 text-sm font-bold text-white transition-all hover:bg-[#D4AF37] hover:text-[#0B2545] hover:shadow-md hover:-translate-y-0.5"
                                 >
-                                    Open Learning Hub
+                                    {t("openLearningHub")}
                                     <ChevronRight className="h-4 w-4" />
                                 </Link>
                             )}
@@ -495,8 +515,29 @@ function ApplicationCard({
     locale: string;
     onViewDetails: () => void;
 }) {
+    const t = useTranslations("StudentApplications");
     const fullName = `${application.first_name} ${application.last_name}`.trim();
-    const displayTitle = application.program_title || application.university_id || application.program_id || "Application";
+    const displayTitle = application.program_title || application.university_id || application.program_id || (application.type === 'university' ? t("defaultUniTitle") : t("defaultProgramTitle"));
+
+    const getStatusLabel = (status: string | null | undefined) => {
+        if (!status) return t("statusPending");
+        const s = status.toLowerCase();
+        if (s === "accepted") return t("statusAccepted");
+        if (s === "approved") return t("statusApproved");
+        if (s === "enrolled") return t("statusEnrolled");
+        if (s === "rejected") return t("statusRejected");
+        if (s === "pending") return t("statusPending");
+        return status;
+    };
+
+    const getPaymentLabel = (payment: string | null | undefined) => {
+        if (!payment) return t("paymentUnpaid");
+        const p = payment.toLowerCase();
+        if (p === "paid") return t("paymentPaid");
+        if (p === "pending") return t("paymentPending");
+        if (p === "unpaid") return t("paymentUnpaid");
+        return payment;
+    };
 
     return (
         <article className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
@@ -516,9 +557,11 @@ function ApplicationCard({
                                 {displayTitle}
                             </h3>
                             <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
-                                <span className="capitalize font-semibold text-[#D4AF37]">{application.type} Application</span>
+                                <span className="capitalize font-semibold text-[#D4AF37]">
+                                    {application.type === 'university' ? t("universityApplication") : t("programApplication")}
+                                </span>
                                 <span>•</span>
-                                <span>Ref #{application.id.slice(0, 8)}</span>
+                                <span>{t("ref", { id: application.id.slice(0, 8) })}</span>
                             </div>
                         </div>
                     </div>
@@ -526,7 +569,7 @@ function ApplicationCard({
                         {application.status && (
                             <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
                                 <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
-                                    Status:{" "}
+                                    {t("statusLabel")}
                                     <span
                                         className={
                                             application.status === 'accepted' || application.status === 'approved'
@@ -536,7 +579,7 @@ function ApplicationCard({
                                                 : 'text-amber-500'
                                         }
                                     >
-                                        {application.status}
+                                        {getStatusLabel(application.status)}
                                     </span>
                                 </span>
                             </div>
@@ -544,7 +587,7 @@ function ApplicationCard({
                         {application.payment_status && (
                             <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
                                 <span className="text-xs font-bold uppercase tracking-wide text-gray-600">
-                                    Payment:{" "}
+                                    {t("paymentLabel")}
                                     <span
                                         className={
                                             application.payment_status === 'paid'
@@ -552,7 +595,7 @@ function ApplicationCard({
                                                 : 'text-amber-500'
                                         }
                                     >
-                                        {application.payment_status}
+                                        {getPaymentLabel(application.payment_status)}
                                     </span>
                                 </span>
                             </div>
@@ -565,16 +608,16 @@ function ApplicationCard({
 
                 {/* APPLICANT INFORMATION */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <InfoItem icon={UserRound} label="Applicant" value={fullName || "Student"} />
-                    <InfoItem icon={School} label="School" value={application.school || "Not specified"} />
-                    <InfoItem icon={Mail} label="Email" value={application.email || "Not specified"} />
-                    <InfoItem icon={Phone} label="Phone" value={application.phone || "Not specified"} />
+                    <InfoItem icon={UserRound} label={t("colApplicant")} value={fullName || t("studentDefault")} />
+                    <InfoItem icon={School} label={t("colSchool")} value={application.school || t("notSpecified")} />
+                    <InfoItem icon={Mail} label={t("colEmail")} value={application.email || t("notSpecified")} />
+                    <InfoItem icon={Phone} label={t("colPhone")} value={application.phone || t("notSpecified")} />
                 </div>
 
                 {/* BOTTOM ACTIONS */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-2 pt-4 border-t border-gray-50">
                     <div className="text-xs text-gray-400 font-medium">
-                        Submitted: {new Date(application.created_at || "").toLocaleDateString()}
+                        {t("submittedOn", { date: new Date(application.created_at || "").toLocaleDateString() })}
                     </div>
 
                     <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -583,14 +626,14 @@ function ApplicationCard({
                                 href={`/${locale}/programs/${application.program_id}/play`}
                                 className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-5 text-sm font-bold text-[#0B2545] transition-all hover:bg-[#e3be47] hover:shadow-md hover:-translate-y-0.5"
                             >
-                                Start Learning
+                                {t("startLearning")}
                             </Link>
                         )}
                         <button
                             onClick={onViewDetails}
                             className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl border-2 border-[#0B2545] px-5 text-sm font-bold text-[#0B2545] transition-all hover:bg-[#0B2545] hover:text-white hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
                         >
-                            View Details
+                            {t("viewDetails")}
                         </button>
                     </div>
                 </div>
@@ -653,25 +696,24 @@ function EmptyApplications({
     hasSearchQuery: boolean;
     locale: string;
 }) {
+    const t = useTranslations("StudentApplications");
     return (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0B2545]/10">
                 <FileText className="h-7 w-7 text-[#0B2545]" />
             </div>
             <h3 className="mt-5 text-lg font-bold text-[#0B2545]">
-                {hasSearchQuery ? "No applications found" : "No applications yet"}
+                {hasSearchQuery ? t("emptySearchTitle") : t("emptyDefaultTitle")}
             </h3>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-                {hasSearchQuery
-                    ? "No applications match your current search criteria."
-                    : "You don't have any applications yet. Start a new application to begin your journey."}
+                {hasSearchQuery ? t("emptySearchDesc") : t("emptyDefaultDesc")}
             </p>
             {!hasSearchQuery && (
                 <Link
                     href={`/${locale}/apply`}
                     className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#0B2545] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#0B2545]/90"
                 >
-                    Start an Application
+                    {t("startAnApplication")}
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             )}
