@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Users, Shield, ShieldOff, Loader2, Eye, BookOpen, CheckCircle, Clock, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type UserData = {
     id: string;
@@ -15,6 +15,7 @@ type UserData = {
 };
 
 export default function AdminUsersPage() {
+    const t = useTranslations("Admin");
     const [users, setUsers] = useState<UserData[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -25,6 +26,17 @@ export default function AdminUsersPage() {
     const [studentDetails, setStudentDetails] = useState<{ profile: any, enrollments: any[], progress: any[] } | null>(null);
     const [loadingDetails, setLoadingDetails] = useState(false);
 
+    const getTabLabel = (tab: string) => {
+        switch (tab) {
+            case "All": return t("tabAll");
+            case "Students": return t("tabStudents");
+            case "Parents": return t("tabParents");
+            case "Coaches": return t("tabCoaches");
+            case "Admins": return t("tabAdmins");
+            default: return tab;
+        }
+    };
+
     const fetchUsers = async () => {
         setLoading(true);
         try {
@@ -34,7 +46,7 @@ export default function AdminUsersPage() {
             setUsers(data.users || []);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load users");
+            toast.error(t("toastLoadUsersError"));
         } finally {
             setLoading(false);
         }
@@ -46,7 +58,7 @@ export default function AdminUsersPage() {
 
     const toggleAdminRole = async (userId: string, currentRoles: string[], email: string) => {
         if (email === "adminsabbir@gmail.com") {
-            toast.error("Cannot modify the Master Admin account!");
+            toast.error(t("toastMasterAdminError"));
             return;
         }
 
@@ -62,13 +74,13 @@ export default function AdminUsersPage() {
             });
             const data = await res.json();
             
-            if (!res.ok) throw new Error(data.error || "Failed to update role");
+            if (!res.ok) throw new Error(data.error || t("toastUpdateRoleError"));
             
             toast.success(data.message);
             await fetchUsers(); // Refresh the list
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Failed to update role");
+            toast.error(error.message || t("toastUpdateRoleError"));
         } finally {
             setProcessingId(null);
         }
@@ -87,13 +99,13 @@ export default function AdminUsersPage() {
             });
             const data = await res.json();
             
-            if (!res.ok) throw new Error(data.error || "Failed to update coach role");
+            if (!res.ok) throw new Error(data.error || t("toastUpdateCoachError"));
             
             toast.success(data.message);
             await fetchUsers(); // Refresh the list
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Failed to update coach role");
+            toast.error(error.message || t("toastUpdateCoachError"));
         } finally {
             setProcessingId(null);
         }
@@ -138,24 +150,24 @@ export default function AdminUsersPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#0B2545]">User Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage platform users, coaches, and administrator roles</p>
+                    <h1 className="text-2xl font-bold text-[#0B2545]">{t("userManagement")}</h1>
+                    <p className="text-sm text-gray-500 mt-1">{t("userManagementDesc")}</p>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 w-fit shadow-sm">
-                {["All", "Students", "Parents", "Coaches", "Admins"].map((tab) => (
+                {(["All", "Students", "Parents", "Coaches", "Admins"] as const).map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => setActiveTab(tab as any)}
+                        onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                             activeTab === tab
                                 ? "bg-[#0B2545] text-white shadow-sm"
                                 : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
                         }`}
                     >
-                        {tab}
+                        {getTabLabel(tab)}
                     </button>
                 ))}
             </div>
@@ -163,7 +175,7 @@ export default function AdminUsersPage() {
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-5 border-b border-gray-100 flex items-center bg-gray-50/50">
                     <Users className="h-5 w-5 text-[#0B2545] mr-2" />
-                    <h2 className="text-lg font-bold text-[#0B2545]">{activeTab} Users</h2>
+                    <h2 className="text-lg font-bold text-[#0B2545]">{t("usersListTitle", { tab: getTabLabel(activeTab) })}</h2>
                 </div>
                 
                 <div className="overflow-x-auto">
@@ -175,10 +187,10 @@ export default function AdminUsersPage() {
                         <table className="w-full text-sm text-left">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                 <tr>
-                                    <th className="px-6 py-4 font-semibold">User</th>
-                                    <th className="px-6 py-4 font-semibold">Email</th>
-                                    <th className="px-6 py-4 font-semibold">Current Role</th>
-                                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colUser")}</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colEmail")}</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colCurrentRole")}</th>
+                                    <th className="px-6 py-4 font-semibold text-right">{t("colActions")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -193,10 +205,10 @@ export default function AdminUsersPage() {
                                             <td className="px-6 py-4">
                                                 <div className="font-medium text-[#0B2545]">
                                                     {user.first_name} {user.last_name}
-                                                    {!user.first_name && !user.last_name && "Unnamed User"}
+                                                    {!user.first_name && !user.last_name && t("unnamedUser")}
                                                 </div>
                                                 <div className="text-xs text-gray-400 mt-0.5">
-                                                    Joined: {new Date(user.created_at).toLocaleDateString()}
+                                                    {t("joinedOn", { date: new Date(user.created_at).toLocaleDateString() })}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-gray-600">
@@ -212,8 +224,8 @@ export default function AdminUsersPage() {
                                                             ? "bg-teal-50 text-teal-700 border-teal-200"
                                                             : "bg-blue-50 text-blue-700 border-blue-200"
                                                 }`}>
-                                                    {isAdmin ? "Administrator" : isCoach ? "Coach / Instructor" : isParent ? "Parent" : "Student"}
-                                                    {isMaster && " (Master)"}
+                                                    {isAdmin ? t("roleAdmin") : isCoach ? t("roleCoach") : isParent ? t("roleParent") : t("roleStudent")}
+                                                    {isMaster && t("roleMaster")}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
@@ -223,7 +235,7 @@ export default function AdminUsersPage() {
                                                         className="inline-flex items-center justify-center px-3 py-2 text-xs font-bold rounded-lg transition-all bg-gray-100 text-[#0B2545] hover:bg-gray-200"
                                                     >
                                                         <Eye className="h-4 w-4 mr-1.5" />
-                                                        View Activity
+                                                        {t("viewActivity")}
                                                     </button>
                                                     {!isAdmin && !isMaster && (
                                                         <button
@@ -235,7 +247,7 @@ export default function AdminUsersPage() {
                                                                     : "bg-white text-[#0B2545] border border-gray-200 hover:bg-gray-50"
                                                             }`}
                                                         >
-                                                            {isCoach ? "Revoke Coach" : "Make Coach"}
+                                                            {isCoach ? t("revokeCoach") : t("makeCoach")}
                                                         </button>
                                                     )}
                                                     <button
@@ -254,12 +266,12 @@ export default function AdminUsersPage() {
                                                         ) : isAdmin ? (
                                                             <>
                                                                 <ShieldOff className="h-4 w-4 mr-1.5" />
-                                                                Revoke Admin
+                                                                {t("revokeAdmin")}
                                                             </>
                                                         ) : (
                                                             <>
                                                                 <Shield className="h-4 w-4 mr-1.5" />
-                                                                Make Admin
+                                                                {t("makeAdmin")}
                                                             </>
                                                         )}
                                                     </button>
@@ -271,7 +283,7 @@ export default function AdminUsersPage() {
                                 {filteredUsers.length === 0 && (
                                     <tr>
                                         <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                                            No {activeTab.toLowerCase()} found.
+                                            {t("noUsersFound", { tab: getTabLabel(activeTab) })}
                                         </td>
                                     </tr>
                                 )}
@@ -305,7 +317,7 @@ export default function AdminUsersPage() {
                                             ? "bg-green-500 animate-pulse" 
                                             : "bg-gray-400"
                                         }`}></span>
-                                        {(studentDetails.profile.is_online || studentDetails.profile.status === 'active') ? "Online / Active" : "Offline"}
+                                        {(studentDetails.profile.is_online || studentDetails.profile.status === 'active') ? t("onlineActive") : t("offline")}
                                     </span>
                                 )}
                             </div>
@@ -322,7 +334,7 @@ export default function AdminUsersPage() {
                             {loadingDetails ? (
                                 <div className="flex flex-col items-center justify-center py-12">
                                     <Loader2 className="w-8 h-8 animate-spin text-[#D4AF37] mb-2" />
-                                    <p className="text-sm text-gray-500">Loading student activity...</p>
+                                    <p className="text-sm text-gray-500">{t("loadingStudentActivity")}</p>
                                 </div>
                             ) : studentDetails ? (
                                 <div className="space-y-6">
@@ -332,14 +344,14 @@ export default function AdminUsersPage() {
                                         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-3">
                                             <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><BookOpen className="w-5 h-5" /></div>
                                             <div>
-                                                <div className="text-sm text-gray-500 font-medium">Enrollments</div>
+                                                <div className="text-sm text-gray-500 font-medium">{t("enrollmentsCount")}</div>
                                                 <div className="text-xl font-bold text-[#0B2545]">{studentDetails.enrollments.length}</div>
                                             </div>
                                         </div>
                                         <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center gap-3">
                                             <div className="bg-green-100 p-2 rounded-lg text-green-600"><CheckCircle className="w-5 h-5" /></div>
                                             <div>
-                                                <div className="text-sm text-gray-500 font-medium">Completed Items</div>
+                                                <div className="text-sm text-gray-500 font-medium">{t("completedItems")}</div>
                                                 <div className="text-xl font-bold text-[#0B2545]">{studentDetails.progress.length}</div>
                                             </div>
                                         </div>
@@ -347,19 +359,19 @@ export default function AdminUsersPage() {
 
                                     {/* Enrollments List */}
                                     <div>
-                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Enrolled Programs</h3>
+                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">{t("enrolledPrograms")}</h3>
                                         {studentDetails.enrollments.length === 0 ? (
                                             <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg text-center border border-gray-100">
-                                                This student is not enrolled in any programs.
+                                                {t("studentNotEnrolled")}
                                             </p>
                                         ) : (
                                             <div className="space-y-3">
                                                 {studentDetails.enrollments.map((enrollment, idx) => (
                                                     <div key={idx} className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center hover:border-blue-200 transition-colors">
                                                         <div>
-                                                            <div className="font-bold text-[#0B2545]">{enrollment.program?.title || "Unknown Program"}</div>
+                                                            <div className="font-bold text-[#0B2545]">{enrollment.program?.title || t("unknownProgram")}</div>
                                                             <div className="text-xs text-gray-500 flex items-center mt-1">
-                                                                <Clock className="w-3 h-3 mr-1" /> Enrolled on {new Date(enrollment.created_at).toLocaleDateString()}
+                                                                <Clock className="w-3 h-3 mr-1" /> {t("enrolledOn", { date: new Date(enrollment.created_at).toLocaleDateString() })}
                                                             </div>
                                                         </div>
                                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
@@ -367,7 +379,7 @@ export default function AdminUsersPage() {
                                                                 ? "bg-green-50 text-green-700 border-green-200" 
                                                                 : "bg-gray-100 text-gray-600 border-gray-200"
                                                         }`}>
-                                                            {enrollment.status}
+                                                            {enrollment.status === 'active' ? t("active") : enrollment.status}
                                                         </span>
                                                     </div>
                                                 ))}
@@ -377,7 +389,7 @@ export default function AdminUsersPage() {
                                     
                                 </div>
                             ) : (
-                                <div className="text-center py-8 text-red-500">Failed to load data.</div>
+                                <div className="text-center py-8 text-red-500">{t("failedToLoadData")}</div>
                             )}
                         </div>
                     </div>

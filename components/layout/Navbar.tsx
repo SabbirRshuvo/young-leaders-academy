@@ -804,16 +804,6 @@ export default function Navbar() {
                       {isAr ? "ملفي الشخصي" : "My Profile"}
                     </Link>
 
-                    <Link
-                      href={getLocalizedHref("/settings")}
-                      onClick={() =>
-                        setIsProfileMenuOpen(false)
-                      }
-                      className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
-                    >
-                      {isAr ? "الإعدادات" : "Settings"}
-                    </Link>
-
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold border-t border-gray-100"
@@ -1044,18 +1034,6 @@ export default function Navbar() {
                     </Link>
 
                   )}
-
-                  {/* Settings */}
-
-                  <Link
-                    href={getLocalizedHref("/settings")}
-                    onClick={() =>
-                      setIsMobileMenuOpen(false)
-                    }
-                    className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
-                  >
-                    {isAr ? "الإعدادات" : "Settings"}
-                  </Link>
 
                   {/* Logout */}
 

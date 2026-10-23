@@ -5,9 +5,10 @@ import { GraduationCap, Plus, Loader2, FileText, LayoutList } from "lucide-react
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function AdminProgramsPage() {
+    const t = useTranslations("Admin");
     const [activeTab, setActiveTab] = useState<"Applications" | "Manage">("Applications");
     const [programs, setPrograms] = useState<any[]>([]);
     const [applications, setApplications] = useState<any[]>([]);
@@ -31,6 +32,18 @@ export default function AdminProgramsPage() {
         certificate_url: ""
     });
 
+    const getStatusLabel = (status: string) => {
+        const s = (status || "").toLowerCase();
+        if (s === "active") return t("active");
+        if (s === "draft") return t("draft");
+        if (s === "paid") return t("paid");
+        if (s === "unpaid") return t("unpaid");
+        if (s === "pending") return t("pending");
+        if (s === "accepted") return t("accepted");
+        if (s === "rejected") return t("rejected");
+        return status;
+    };
+
     const handleAddSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsUploading(true);
@@ -49,7 +62,7 @@ export default function AdminProgramsPage() {
 
             if (uploadError) {
                 console.error("Upload Error:", uploadError);
-                toast.error(`Failed to upload image: ${uploadError.message}`);
+                toast.error(`${t("toastUploadImageError")}: ${uploadError.message}`);
                 setIsUploading(false);
                 return;
             }
@@ -96,9 +109,9 @@ export default function AdminProgramsPage() {
 
         if (error) {
             console.error("Save Error:", error);
-            toast.error(`Failed to save program: ${error.message || 'Unknown error'}`);
+            toast.error(`${t("toastSaveProgramError")}: ${error.message || t("unknown")}`);
         } else {
-            toast.success(editingId ? "Program updated successfully" : "Program added successfully");
+            toast.success(editingId ? t("toastProgramUpdated") : t("toastProgramAdded"));
             setIsAdding(false);
             setEditingId(null);
             setImageFile(null);
@@ -128,14 +141,14 @@ export default function AdminProgramsPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this program?")) return;
+        if (!confirm(t("confirmDeleteProgram"))) return;
 
         const { error } = await supabase.from("programs").delete().eq("id", id);
         if (error) {
             console.error("Delete Error:", error);
-            toast.error(`Failed to delete program: ${error.message || 'Unknown error'}`);
+            toast.error(`${t("toastDeleteProgramError")}: ${error.message || t("unknown")}`);
         } else {
-            toast.success("Program deleted successfully");
+            toast.success(t("toastProgramDeleted"));
             fetchPrograms();
         }
     };
@@ -144,7 +157,7 @@ export default function AdminProgramsPage() {
         setLoading(true);
         const { data, error } = await supabase.from("programs").select("*").order("created_at", { ascending: false });
         if (error) {
-            toast.error("Failed to load programs");
+            toast.error(t("toastLoadProgramsError"));
         } else {
             setPrograms(data || []);
         }
@@ -160,7 +173,7 @@ export default function AdminProgramsPage() {
             .order("created_at", { ascending: false });
 
         if (error) {
-            toast.error("Failed to load applications");
+            toast.error(t("toastLoadApplicationsError"));
             setApplications([]);
             setLoading(false);
             return;
@@ -200,9 +213,9 @@ export default function AdminProgramsPage() {
     const handleUpdateApplicationStatus = async (id: string, status: string) => {
         const { error } = await supabase.from("program_applications").update({ status }).eq("id", id);
         if (error) {
-            toast.error(`Failed to update status: ${error.message}`);
+            toast.error(`${t("toastUpdateStatusError")}: ${error.message}`);
         } else {
-            toast.success("Status updated");
+            toast.success(t("toastStatusUpdated"));
             fetchApplications();
         }
     };
@@ -220,17 +233,17 @@ export default function AdminProgramsPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-[#0B2545] flex items-center gap-3">
-                        Programs & Courses
-                        {!loading && <span className="bg-gray-100 text-gray-700 text-sm py-1 px-3 rounded-full font-medium">{programs.length} Total</span>}
+                        {t("programsTitle")}
+                        {!loading && <span className="bg-gray-100 text-gray-700 text-sm py-1 px-3 rounded-full font-medium">{t("totalBadge", { count: programs.length })}</span>}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">Manage program applications and curriculum database</p>
+                    <p className="text-sm text-gray-500 mt-1">{t("programsDesc")}</p>
                 </div>
                 {activeTab === "Manage" && (
                     <button
                         onClick={() => setIsAdding(true)}
                         className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[#D4AF37] hover:bg-[#b5952f] rounded-lg transition-colors"
                     >
-                        <Plus className="h-4 w-4 mr-2" /> Add Program
+                        <Plus className="h-4 w-4 mr-2" /> {t("addProgram")}
                     </button>
                 )}
             </div>
@@ -238,10 +251,10 @@ export default function AdminProgramsPage() {
             {isAdding && (
                 <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold text-[#0B2545] mb-4">{editingId ? "Edit Program" : "Add New Program"}</h2>
+                        <h2 className="text-xl font-bold text-[#0B2545] mb-4">{editingId ? t("editProgram") : t("addNewProgram")}</h2>
                         <form onSubmit={handleAddSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t("coverImage")}</label>
                                 <div className="flex items-center gap-4">
                                     {imagePreview && (
                                         <img src={imagePreview} alt="Preview" className="w-16 h-16 rounded object-cover border border-gray-200" />
@@ -263,49 +276,49 @@ export default function AdminProgramsPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                    <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. Global Young Leaders Fellowship" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("title")}</label>
+                                    <input required type="text" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("titlePlaceholder")} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                    <input required type="text" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. HIGH SCHOOL LEADERSHIP" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("category")}</label>
+                                    <input required type="text" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("categoryPlaceholder")} />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" rows={3} placeholder="A transformative program..."></textarea>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t("description")}</label>
+                                <textarea required value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" rows={3} placeholder={t("programDescPlaceholder")}></textarea>
                             </div>
 
                             <div className="grid grid-cols-4 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                    <input type="text" value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. 4 Weeks" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("duration")}</label>
+                                    <input type="text" value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("durationPlaceholder")} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
-                                    <input type="text" value={formData.age_group} onChange={e => setFormData({ ...formData, age_group: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. 14 - 18" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("ageGroup")}</label>
+                                    <input type="text" value={formData.age_group} onChange={e => setFormData({ ...formData, age_group: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("ageGroupPlaceholder")} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
-                                    <input type="text" value={formData.level} onChange={e => setFormData({ ...formData, level: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="e.g. Beginner" />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("level")}</label>
+                                    <input type="text" value={formData.level} onChange={e => setFormData({ ...formData, level: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("levelPlaceholder")} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("price")}</label>
                                     <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="0.00" />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Certificate Template URL (Optional)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t("certificateTemplateUrl")}</label>
                                 <input type="url" value={formData.certificate_url} onChange={e => setFormData({ ...formData, certificate_url: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="https://example.com/certificate.pdf" />
                             </div>
 
                             <div className="flex justify-end gap-3 mt-6">
-                                <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setImageFile(null); setImagePreview(null); setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "", certificate_url: "" }); }} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
+                                <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setImageFile(null); setImagePreview(null); setFormData({ image_url: "", category: "", title: "", description: "", duration: "", age_group: "", level: "", price: "", certificate_url: "" }); }} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">{t("cancel")}</button>
                                 <button type="submit" disabled={isUploading} className="px-4 py-2 text-sm font-medium text-white bg-[#0B2545] hover:bg-[#0B2545]/90 rounded-lg disabled:opacity-50 flex items-center">
                                     {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                                    {isUploading ? "Uploading..." : "Save Program"}
+                                    {isUploading ? t("uploading") : t("saveProgram")}
                                 </button>
                             </div>
                         </form>
@@ -315,16 +328,16 @@ export default function AdminProgramsPage() {
 
             {/* Tabs */}
             <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 w-fit shadow-sm">
-                {["Applications", "Manage"].map((tab) => (
+                {(["Applications", "Manage"] as const).map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => setActiveTab(tab as any)}
+                        onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab
                             ? "bg-[#0B2545] text-white shadow-sm"
                             : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
                             }`}
                     >
-                        {tab === "Manage" ? "Curriculum Database" : "Student Applications"}
+                        {tab === "Manage" ? t("curriculumDatabase") : t("tabStudentApplications")}
                     </button>
                 ))}
             </div>
@@ -334,7 +347,7 @@ export default function AdminProgramsPage() {
                 <div className="p-5 border-b border-gray-100 flex items-center bg-gray-50/50">
                     {activeTab === "Manage" ? <LayoutList className="h-5 w-5 text-[#0B2545] mr-2" /> : <FileText className="h-5 w-5 text-[#0B2545] mr-2" />}
                     <h2 className="text-lg font-bold text-[#0B2545]">
-                        {activeTab === "Manage" ? "Programs Directory" : "Pending Applications"}
+                        {activeTab === "Manage" ? t("programsDirectory") : t("pendingApplications")}
                     </h2>
                 </div>
 
@@ -342,27 +355,27 @@ export default function AdminProgramsPage() {
                     {activeTab === "Applications" ? (
                         applications.length === 0 ? (
                             <div className="p-12 text-center text-gray-500">
-                                No program applications pending at this time.
+                                {t("noPendingProgramApplications")}
                             </div>
                         ) : (
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                     <tr>
-                                        <th className="px-6 py-4 font-semibold">Student</th>
-                                        <th className="px-6 py-4 font-semibold">Program</th>
-                                        <th className="px-6 py-4 font-semibold">Date Applied</th>
-                                        <th className="px-6 py-4 font-semibold">Status</th>
+                                        <th className="px-6 py-4 font-semibold">{t("colStudent")}</th>
+                                        <th className="px-6 py-4 font-semibold">{t("colProgram")}</th>
+                                        <th className="px-6 py-4 font-semibold">{t("colDateApplied")}</th>
+                                        <th className="px-6 py-4 font-semibold">{t("colStatus")}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {applications.map(app => (
                                         <tr key={app.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
-                                                <div className="font-medium text-[#0B2545]">{app.profile?.full_name || 'Unknown Student'}</div>
+                                                <div className="font-medium text-[#0B2545]">{app.profile?.full_name || t("unknownStudent")}</div>
                                                 <div className="text-xs text-gray-500">{app.profile?.email || app.student_id}</div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="font-medium text-gray-800">{app.program?.title || 'Unknown Program'}</div>
+                                                <div className="font-medium text-gray-800">{app.program?.title || t("unknownProgram")}</div>
                                             </td>
                                             <td className="px-6 py-4 text-gray-500 text-xs">
                                                 {new Date(app.created_at).toLocaleDateString()}
@@ -372,7 +385,7 @@ export default function AdminProgramsPage() {
                                                     app.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
                                                         'bg-yellow-50 text-yellow-700 border-yellow-200'
                                                     }`}>
-                                                    {app.status}
+                                                    {getStatusLabel(app.status)}
                                                 </span>
                                             </td>
                                         </tr>
@@ -388,17 +401,17 @@ export default function AdminProgramsPage() {
                         <table className="w-full text-sm text-left">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                 <tr>
-                                    <th className="px-6 py-4 font-semibold">Program</th>
-                                    <th className="px-6 py-4 font-semibold">Description</th>
-                                    <th className="px-6 py-4 font-semibold">Details</th>
-                                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colProgram")}</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colDescription")}</th>
+                                    <th className="px-6 py-4 font-semibold">{t("colDetails")}</th>
+                                    <th className="px-6 py-4 font-semibold text-right">{t("colActions")}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {programs.map((prog) => {
                                     // Handle JSON title object if present, else fallback to string (for backwards compatibility)
-                                    const title = typeof prog.title === 'string' ? prog.title : prog.title?.en || "Unknown";
-                                    const desc = typeof prog.description === 'string' ? prog.description : prog.description?.en || "";
+                                    const title = typeof prog.title === 'string' ? prog.title : (locale === 'ar' ? (prog.title?.ar || prog.title?.en) : (prog.title?.en || t("unknown")));
+                                    const desc = typeof prog.description === 'string' ? prog.description : (locale === 'ar' ? (prog.description?.ar || prog.description?.en) : (prog.description?.en || ""));
 
                                     return (
                                         <tr key={prog.id} className="hover:bg-gray-50 transition-colors">
@@ -415,25 +428,25 @@ export default function AdminProgramsPage() {
                                                 {desc}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-xs">
-                                                <div>Duration: {prog.duration || 'N/A'}</div>
-                                                <div>Ages: {prog.age_group || 'N/A'}</div>
-                                                <div>Level: {prog.level || 'N/A'}</div>
+                                                <div>{t("durationLabel")} {prog.duration || t("na")}</div>
+                                                <div>{t("agesLabel")} {prog.age_group || t("na")}</div>
+                                                <div>{t("levelLabel")} {prog.level || t("na")}</div>
                                                 <div className="font-bold text-[#0B2545] mt-1">${prog.price || '0.00'}</div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <Link href={`/${locale}/admin/modules?programId=${prog.id}`} className="text-[#0B2545] hover:underline font-medium text-xs">Manage Modules</Link>
+                                                <Link href={`/${locale}/admin/modules?programId=${prog.id}`} className="text-[#0B2545] hover:underline font-medium text-xs">{t("manageModules")}</Link>
                                                 <span className="text-gray-300 mx-2">|</span>
-                                                <button onClick={() => handleEdit(prog)} className="text-[#D4AF37] hover:text-[#b5952f] font-medium text-xs">Edit</button>
+                                                <button onClick={() => handleEdit(prog)} className="text-[#D4AF37] hover:text-[#b5952f] font-medium text-xs">{t("edit")}</button>
                                                 <span className="text-gray-300 mx-2">|</span>
-                                                <button onClick={() => handleDelete(prog.id)} className="text-red-500 hover:text-red-700 font-medium text-xs">Delete</button>
+                                                <button onClick={() => handleDelete(prog.id)} className="text-red-500 hover:text-red-700 font-medium text-xs">{t("delete")}</button>
                                             </td>
                                         </tr>
                                     );
                                 })}
                                 {programs.length === 0 && (
                                     <tr>
-                                        <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
-                                            No programs found in the database.
+                                        <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                                            {t("noPrograms")}
                                         </td>
                                     </tr>
                                 )}

@@ -6,17 +6,15 @@ import {
     GraduationCap,
     BookOpen,
     CheckCircle,
-    Clock,
     Plus,
     X,
     Loader2,
-    Calendar,
     Mail,
     Phone,
-    ShieldCheck,
-    AlertCircle
+    ShieldCheck
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useLocale, useTranslations } from "next-intl";
 
 type CoachApplication = {
     id: string;
@@ -58,6 +56,9 @@ type Assignment = {
 };
 
 export default function AdminCoachesPage() {
+    const t = useTranslations("Admin");
+    const locale = useLocale();
+
     const [activeTab, setActiveTab] = useState<"coaches" | "applications">("coaches");
     const [coaches, setCoaches] = useState<CoachUser[]>([]);
     const [applications, setApplications] = useState<CoachApplication[]>([]);
@@ -78,7 +79,7 @@ export default function AdminCoachesPage() {
         setLoading(true);
         try {
             const res = await fetch("/api/admin/coaches");
-            if (!res.ok) throw new Error("Failed to load coaches data");
+            if (!res.ok) throw new Error(t("toastLoadCoachesError"));
             const data = await res.json();
             setCoaches(data.coaches || []);
             setApplications(data.applications || []);
@@ -86,7 +87,7 @@ export default function AdminCoachesPage() {
             setAssignments(data.assignments || []);
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Error loading coaches data");
+            toast.error(error.message || t("toastLoadCoachesError"));
         } finally {
             setLoading(false);
         }
@@ -114,7 +115,7 @@ export default function AdminCoachesPage() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to approve application");
+            if (!res.ok) throw new Error(data.error || t("toastApproveApplicationError"));
 
             if (data.tempPassword) {
                 setApprovedCredentials({
@@ -122,14 +123,14 @@ export default function AdminCoachesPage() {
                     fullName: app.full_name,
                     tempPassword: data.tempPassword
                 });
-                toast.success(`Approved! Temporary password: ${data.tempPassword}`, { duration: 8000 });
+                toast.success(t("toastApprovedWithPassword", { password: data.tempPassword }), { duration: 8000 });
             } else {
                 toast.success(data.message);
             }
             await fetchData();
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Failed to approve application");
+            toast.error(error.message || t("toastApproveApplicationError"));
         } finally {
             setProcessingId(null);
         }
@@ -137,7 +138,7 @@ export default function AdminCoachesPage() {
 
     const handleAssignModule = async () => {
         if (!selectedCoach || !selectedModuleId) {
-            toast.error("Please select a module to assign");
+            toast.error(t("toastSelectModuleWarning"));
             return;
         }
 
@@ -154,7 +155,7 @@ export default function AdminCoachesPage() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to assign module");
+            if (!res.ok) throw new Error(data.error || t("toastAssignModuleError"));
 
             toast.success(data.message);
             setSelectedCoach(null);
@@ -162,7 +163,7 @@ export default function AdminCoachesPage() {
             await fetchData();
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Failed to assign module");
+            toast.error(error.message || t("toastAssignModuleError"));
         } finally {
             setProcessingId(null);
         }
@@ -182,29 +183,29 @@ export default function AdminCoachesPage() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to remove assignment");
+            if (!res.ok) throw new Error(data.error || t("toastRemoveAssignmentError"));
 
             toast.success(data.message);
             await fetchData();
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || "Failed to remove assignment");
+            toast.error(error.message || t("toastRemoveAssignmentError"));
         } finally {
             setProcessingId(null);
         }
     };
 
     const parseTitle = (title: any) => {
-        if (!title) return "Untitled";
+        if (!title) return t("untitled");
         if (typeof title === "string") {
             try {
                 const parsed = JSON.parse(title);
-                return parsed.en || parsed.ar || title;
+                return locale === "ar" ? (parsed.ar || parsed.en || title) : (parsed.en || parsed.ar || title);
             } catch {
                 return title;
             }
         }
-        return title.en || title.ar || "Untitled";
+        return locale === "ar" ? (title.ar || title.en || t("untitled")) : (title.en || title.ar || t("untitled"));
     };
 
     return (
@@ -212,9 +213,9 @@ export default function AdminCoachesPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#0B2545]">Coach Management & Module Assignments</h1>
+                    <h1 className="text-2xl font-bold text-[#0B2545]">{t("coachManagementTitle")}</h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        Review mentor applications, manage coach profiles, and assign certified modules for 1-on-1 scheduling
+                        {t("coachManagementDesc")}
                     </p>
                 </div>
             </div>
@@ -230,7 +231,7 @@ export default function AdminCoachesPage() {
                     }`}
                 >
                     <GraduationCap className="w-4 h-4" />
-                    Active Coaches ({coaches.length})
+                    {t("tabActiveCoaches", { count: coaches.length })}
                 </button>
                 <button
                     onClick={() => setActiveTab("applications")}
@@ -241,7 +242,7 @@ export default function AdminCoachesPage() {
                     }`}
                 >
                     <Users className="w-4 h-4" />
-                    Pending Applications ({applications.length})
+                    {t("tabPendingApplications", { count: applications.length })}
                 </button>
             </div>
 
@@ -255,9 +256,9 @@ export default function AdminCoachesPage() {
                     {coaches.length === 0 ? (
                         <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
                             <GraduationCap className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                            <h3 className="text-lg font-bold text-[#0B2545]">No Active Coaches Yet</h3>
+                            <h3 className="text-lg font-bold text-[#0B2545]">{t("noActiveCoaches")}</h3>
                             <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
-                                Approve incoming coach applications or promote existing platform users to the Coach role.
+                                {t("noActiveCoachesDesc")}
                             </p>
                         </div>
                     ) : (
@@ -274,7 +275,7 @@ export default function AdminCoachesPage() {
                                                 <div>
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 mb-2">
                                                         <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                                                        Certified Coach
+                                                        {t("certifiedCoach")}
                                                     </span>
                                                     <h3 className="text-lg font-bold text-[#0B2545]">
                                                         {coach.first_name} {coach.last_name}
@@ -286,24 +287,24 @@ export default function AdminCoachesPage() {
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-[#0B2545] text-white hover:bg-[#133055] transition-colors"
                                                 >
                                                     <Plus className="w-3.5 h-3.5" />
-                                                    Assign Module
+                                                    {t("assignModule")}
                                                 </button>
                                             </div>
 
                                             <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-600 space-y-1.5">
-                                                <p><span className="font-semibold text-gray-700">Specialization:</span> {coach.specialization}</p>
-                                                <p><span className="font-semibold text-gray-700">Title:</span> {coach.professional_title}</p>
+                                                <p><span className="font-semibold text-gray-700">{t("specializationLabel")}</span> {coach.specialization}</p>
+                                                <p><span className="font-semibold text-gray-700">{t("titleLabel")}</span> {coach.professional_title}</p>
                                             </div>
 
                                             {/* Assigned Modules List */}
                                             <div className="mt-5">
                                                 <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider mb-2 flex items-center gap-1.5">
                                                     <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-                                                    Assigned Modules ({coachModuleList.length})
+                                                    {t("assignedModulesCount", { count: coachModuleList.length })}
                                                 </h4>
                                                 {coachModuleList.length === 0 ? (
                                                     <p className="text-xs text-gray-400 italic bg-gray-50 p-3 rounded-xl border border-dashed border-gray-200">
-                                                        No modules assigned yet. Click "Assign Module" above to enable students to book 1-on-1 sessions.
+                                                        {t("noModulesAssigned")}
                                                     </p>
                                                 ) : (
                                                     <div className="flex flex-wrap gap-2">
@@ -317,7 +318,7 @@ export default function AdminCoachesPage() {
                                                                     onClick={() => handleUnassignModule(coach.id, m.id)}
                                                                     disabled={processingId === `${coach.id}-${m.id}`}
                                                                     className="hover:text-red-600 transition-colors p-0.5 rounded"
-                                                                    title="Unassign module"
+                                                                    title={t("unassignModule")}
                                                                 >
                                                                     <X className="w-3.5 h-3.5" />
                                                                 </button>
@@ -329,8 +330,8 @@ export default function AdminCoachesPage() {
                                         </div>
 
                                         <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-                                            <span>Coach ID: {coach.id.slice(0, 8)}...</span>
-                                            <span>Joined: {new Date(coach.created_at).toLocaleDateString()}</span>
+                                            <span>{t("coachIdLabel", { id: coach.id.slice(0, 8) })}</span>
+                                            <span>{t("joinedOn", { date: new Date(coach.created_at).toLocaleDateString() })}</span>
                                         </div>
                                     </div>
                                 );
@@ -344,27 +345,27 @@ export default function AdminCoachesPage() {
                     <div className="p-5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Users className="w-5 h-5 text-[#0B2545]" />
-                            <h2 className="text-lg font-bold text-[#0B2545]">Coach & Mentor Applications</h2>
+                            <h2 className="text-lg font-bold text-[#0B2545]">{t("coachApplicationsTitle")}</h2>
                         </div>
-                        <span className="text-xs text-gray-500">Submitted via Faculty / Mentor registration</span>
+                        <span className="text-xs text-gray-500">{t("coachApplicationsSubtitle")}</span>
                     </div>
 
                     {applications.length === 0 ? (
                         <div className="p-12 text-center">
                             <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-                            <h3 className="text-lg font-bold text-[#0B2545]">All caught up!</h3>
-                            <p className="text-sm text-gray-500 mt-1">There are no pending coach applications at this time.</p>
+                            <h3 className="text-lg font-bold text-[#0B2545]">{t("allCaughtUp")}</h3>
+                            <p className="text-sm text-gray-500 mt-1">{t("noPendingApplicationsDesc")}</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                     <tr>
-                                        <th className="px-6 py-4">Applicant</th>
-                                        <th className="px-6 py-4">Contact</th>
-                                        <th className="px-6 py-4">Message / Qualifications</th>
-                                        <th className="px-6 py-4">Applied Date</th>
-                                        <th className="px-6 py-4 text-right">Action</th>
+                                        <th className="px-6 py-4">{t("colApplicant")}</th>
+                                        <th className="px-6 py-4">{t("colContact")}</th>
+                                        <th className="px-6 py-4">{t("colMessageQualifications")}</th>
+                                        <th className="px-6 py-4">{t("colAppliedDate")}</th>
+                                        <th className="px-6 py-4 text-right">{t("colAction")}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -389,7 +390,7 @@ export default function AdminCoachesPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-xs text-gray-600 max-w-xs">
-                                                {app.message || "No custom message provided."}
+                                                {app.message || t("noCustomMessage")}
                                             </td>
                                             <td className="px-6 py-4 text-xs text-gray-400">
                                                 {new Date(app.created_at).toLocaleDateString()}
@@ -405,7 +406,7 @@ export default function AdminCoachesPage() {
                                                     ) : (
                                                         <>
                                                             <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
-                                                            Approve Coach
+                                                            {t("approveCoach")}
                                                         </>
                                                     )}
                                                 </button>
@@ -425,9 +426,9 @@ export default function AdminCoachesPage() {
                     <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl space-y-5">
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-lg font-bold text-[#0B2545]">Assign Module to Coach</h3>
+                                <h3 className="text-lg font-bold text-[#0B2545]">{t("modalAssignModuleTitle")}</h3>
                                 <p className="text-xs text-gray-500 mt-0.5">
-                                    Assign a program module to <span className="font-semibold text-[#0B2545]">{selectedCoach.first_name} {selectedCoach.last_name}</span>
+                                    {t("modalAssignModuleDesc", { name: `${selectedCoach.first_name} ${selectedCoach.last_name}` })}
                                 </p>
                             </div>
                             <button
@@ -440,14 +441,14 @@ export default function AdminCoachesPage() {
 
                         <div>
                             <label className="block text-xs font-bold text-[#0B2545] mb-2 uppercase tracking-wide">
-                                Select Program Module:
+                                {t("selectModuleLabel")}
                             </label>
                             <select
                                 value={selectedModuleId}
                                 onChange={(e) => setSelectedModuleId(e.target.value)}
                                 className="w-full h-12 rounded-xl border border-gray-200 bg-white px-4 text-sm text-[#0B2545] outline-none focus:border-[#0B2545] focus:ring-1 focus:ring-[#0B2545]"
                             >
-                                <option value="">-- Choose Module --</option>
+                                <option value="">{t("chooseModulePlaceholder")}</option>
                                 {modules.map((m) => (
                                     <option key={m.id} value={m.id}>
                                         {parseTitle(m.title)}
@@ -462,7 +463,7 @@ export default function AdminCoachesPage() {
                                 onClick={() => setSelectedCoach(null)}
                                 className="px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50"
                             >
-                                Cancel
+                                {t("cancel")}
                             </button>
                             <button
                                 type="button"
@@ -471,7 +472,7 @@ export default function AdminCoachesPage() {
                                 className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold hover:bg-[#133055] transition-all disabled:opacity-50 inline-flex items-center gap-2"
                             >
                                 {processingId === selectedCoach.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                                Confirm Assignment
+                                {t("confirmAssignment")}
                             </button>
                         </div>
                     </div>
@@ -494,19 +495,19 @@ export default function AdminCoachesPage() {
                         </div>
 
                         <h3 className="text-xl font-bold text-[#0B2545]">
-                            Coach Account Activated!
+                            {t("modalCredentialsTitle")}
                         </h3>
                         <p className="text-xs text-gray-500 mt-1">
-                            Coach application approved for <span className="font-semibold text-gray-800">{approvedCredentials.fullName}</span>. Please copy and provide these credentials to the coach directly:
+                            {t("modalCredentialsDesc", { name: approvedCredentials.fullName })}
                         </p>
 
                         <div className="mt-5 space-y-3 bg-gray-50 rounded-2xl p-4 border border-gray-200 text-xs">
                             <div>
-                                <span className="text-gray-400 block mb-0.5 font-medium">Login Email</span>
+                                <span className="text-gray-400 block mb-0.5 font-medium">{t("loginEmail")}</span>
                                 <span className="font-bold text-[#0B2545] text-sm select-all">{approvedCredentials.email}</span>
                             </div>
                             <div>
-                                <span className="text-gray-400 block mb-0.5 font-medium">Temporary Password</span>
+                                <span className="text-gray-400 block mb-0.5 font-medium">{t("tempPassword")}</span>
                                 <div className="flex items-center justify-between gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200">
                                     <span className="font-mono font-bold text-sm text-emerald-600 select-all">
                                         {approvedCredentials.tempPassword}
@@ -516,12 +517,12 @@ export default function AdminCoachesPage() {
                                         onClick={() => {
                                             if (approvedCredentials.tempPassword) {
                                                 navigator.clipboard.writeText(approvedCredentials.tempPassword);
-                                                toast.success("Password copied to clipboard!");
+                                                toast.success(t("toastPasswordCopied"));
                                             }
                                         }}
                                         className="px-2.5 py-1 rounded-lg bg-[#0B2545] text-white font-bold text-[11px] hover:bg-[#133055] transition-colors"
                                     >
-                                        Copy Password
+                                        {t("copyPassword")}
                                     </button>
                                 </div>
                             </div>
@@ -531,20 +532,20 @@ export default function AdminCoachesPage() {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    const text = `Young Leaders Academy Coach Credentials:\nEmail: ${approvedCredentials.email}\nTemporary Password: ${approvedCredentials.tempPassword}\nLogin at: ${window.location.origin}/login`;
+                                    const text = `${t("credentialsTemplateHeader")}\n${t("loginEmail")}: ${approvedCredentials.email}\n${t("tempPassword")}: ${approvedCredentials.tempPassword}\n${t("loginAt")}: ${window.location.origin}/login`;
                                     navigator.clipboard.writeText(text);
-                                    toast.success("Full credentials copied!");
+                                    toast.success(t("toastCredentialsCopied"));
                                 }}
                                 className="flex-1 py-3 px-4 rounded-xl bg-[#D4AF37] text-[#0B2545] font-bold text-xs hover:bg-[#c4a132] transition-colors text-center"
                             >
-                                Copy All Details
+                                {t("copyAllDetails")}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setApprovedCredentials(null)}
                                 className="py-3 px-5 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs hover:bg-gray-200 transition-colors"
                             >
-                                Done
+                                {t("done")}
                             </button>
                         </div>
                     </div>
