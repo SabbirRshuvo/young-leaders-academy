@@ -23,7 +23,7 @@ export async function generateMetadata({
 
 export default function UniversitiesPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start w-full bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-start w-full max-w-full overflow-x-hidden bg-white">
       <UniversitiesHero />
       <UniversityStats />
       <UniversityGrid />

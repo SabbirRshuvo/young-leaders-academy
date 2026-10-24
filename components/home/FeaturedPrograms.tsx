@@ -111,18 +111,20 @@ export default function FeaturedPrograms() {
                   className="group flex flex-col bg-white rounded-3xl border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl overflow-hidden"
                 >
                   {/* Image Section */}
-                  <div className="w-full h-[220px] relative bg-gray-100 overflow-hidden">
-                    {prog.image_url ? (
-                      <img
-                        src={prog.image_url}
-                        alt={titleText}
-                        className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-300">
-                        <GraduationCap className="w-16 h-16 opacity-30" />
-                      </div>
-                    )}
+                  <div className="w-full h-[220px] relative bg-gray-100">
+                    <div className="w-full h-full overflow-hidden">
+                      {prog.image_url ? (
+                        <img
+                          src={prog.image_url}
+                          alt={titleText}
+                          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                          <GraduationCap className="w-16 h-16 opacity-30" />
+                        </div>
+                      )}
+                    </div>
 
                     {/* Category Tag on Image */}
                     {categoryText && (
@@ -132,13 +134,13 @@ export default function FeaturedPrograms() {
                     )}
 
                     {/* Floating Icon with White Border */}
-                    <div className={`absolute -bottom-7 ${isAr ? 'right-6' : 'left-6'} w-14 h-14 rounded-full bg-[#D4AF37] flex items-center justify-center border-4 border-white shadow-md z-10`}>
+                    <div className={`absolute -bottom-7 ${isAr ? 'right-6' : 'left-6'} w-14 h-14 rounded-full bg-[#D4AF37] flex items-center justify-center border-4 border-white shadow-lg z-20`}>
                       <GraduationCap className="w-6 h-6 text-white" strokeWidth={1.5} />
                     </div>
                   </div>
 
                   {/* Content Section */}
-                  <div className="p-8 pt-12 flex flex-col flex-1 text-left">
+                  <div className="p-8 pt-12 flex flex-col flex-1 text-left relative z-10">
                     <h3 className="text-xl font-serif font-bold mb-3 text-[#0B2545] leading-snug">
                       {titleText}
                     </h3>
