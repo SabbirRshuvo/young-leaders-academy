@@ -352,14 +352,16 @@ export default function Page() {
                 body: JSON.stringify({ requestId, status })
             });
 
+            const data = await res.json().catch(() => ({}));
+
             if (!res.ok) {
-                throw new Error(t("failedToProcessRequest"));
+                throw new Error(data.error || data.details || t("failedToProcessRequest"));
             }
 
             setParentRequests(prev => prev.filter(r => r.id !== requestId));
             toast.success(status === "approved" ? t("parentConnectedSuccess") : t("requestRejectedSuccess"));
         } catch (e: any) {
-            console.error(e);
+            console.error("Error processing parent request:", e);
             toast.error(e.message || t("failedToUpdateRequest"));
         } finally {
             setProcessingRequest(null);
