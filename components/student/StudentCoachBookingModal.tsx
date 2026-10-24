@@ -126,8 +126,8 @@ export default function StudentCoachBookingModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto" dir="ltr">
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto" dir="ltr">
+            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto my-auto">
                 <button
                     onClick={onClose}
                     className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full cursor-pointer transition-colors"
@@ -140,7 +140,7 @@ export default function StudentCoachBookingModal({
                     <div>
                         {/* Coach Card Header */}
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                            <div className="w-12 h-12 rounded-2xl bg-[#0B2545] text-[#D4AF37] flex items-center justify-center font-bold text-lg">
+                            <div className="w-12 h-12 rounded-2xl bg-[#0B2545] text-[#D4AF37] flex items-center justify-center font-bold text-lg shrink-0">
                                 {coach.first_name?.[0] || "C"}{coach.last_name?.[0] || ""}
                             </div>
                             <div>
@@ -168,7 +168,7 @@ export default function StudentCoachBookingModal({
                                     {t("modalNoSlots")}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto p-1">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto p-1">
                                     {slots.map((s) => {
                                         const isSelected = selectedSlot?.id === s.id;
                                         return (

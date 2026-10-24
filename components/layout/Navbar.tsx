@@ -241,6 +241,17 @@ export default function Navbar() {
 
   /*
   |--------------------------------------------------------------------------
+  | Route Change Handler
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsProfileMenuOpen(false);
+  }, [pathname]);
+
+  /*
+  |--------------------------------------------------------------------------
   | Locale
   |--------------------------------------------------------------------------
   */
@@ -888,9 +899,9 @@ export default function Navbar() {
       ============================================================== */}
 
       <div
-        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen
-          ? "max-h-[700px] opacity-100 py-4"
-          : "max-h-0 opacity-0 py-0 border-t-0"
+        className={`lg:hidden absolute top-20 left-0 w-full bg-white border-t border-gray-100 shadow-xl flex flex-col z-50 transition-all duration-300 ease-in-out ${isMobileMenuOpen
+          ? "max-h-[calc(100vh-5rem)] overflow-y-auto opacity-100 py-4"
+          : "max-h-0 overflow-hidden opacity-0 py-0 border-t-0"
           }`}
       >
 
@@ -1053,10 +1064,11 @@ export default function Navbar() {
           ) : (
 
             <button
-              onClick={() =>
-                router.push(getLocalizedHref("/login"))
-              }
-              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white h-[48px] font-semibold shadow-md"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                router.push(getLocalizedHref("/login"));
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-navy text-white h-[48px] font-semibold shadow-md cursor-pointer active:scale-[0.98] transition-all"
             >
 
               <User className="w-[18px] h-[18px]" />

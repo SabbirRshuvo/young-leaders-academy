@@ -119,7 +119,7 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ${isAr ? 'font-arabic' : 'font-sans'}`} dir="ltr">
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto ${isAr ? 'font-arabic' : 'font-sans'}`} dir="ltr">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -132,7 +132,7 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}

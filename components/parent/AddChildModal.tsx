@@ -74,12 +74,12 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" dir="ltr">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" dir="ltr">
             <div 
-                className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl transition-all"
+                className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl transition-all max-h-[90vh] flex flex-col my-auto"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 shrink-0">
                     <h2 className="text-xl font-bold text-[#0B2545]">
                         {t("modalAddTitle")}
                     </h2>
@@ -92,7 +92,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                     </button>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 overflow-y-auto">
                     {success ? (
                         <div className="flex flex-col items-center justify-center py-6 text-center">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600 mb-4">
@@ -134,7 +134,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                                 </div>
                             </div>
 
-                            <div className="mt-6 flex gap-3 pt-2">
+                            <div className="mt-6 flex flex-col-reverse sm:flex-row gap-3 pt-2">
                                 <button
                                     type="button"
                                     onClick={onClose}

@@ -138,11 +138,11 @@ END:VCALENDAR`;
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto my-auto ${isAr ? 'font-arabic' : 'font-sans'}`}
+              className={`w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto my-auto max-h-[90vh] flex flex-col ${isAr ? 'font-arabic' : 'font-sans'}`}
               dir="ltr"
             >
               {/* Header */}
-              <div className="bg-[#0B2545] p-6 relative">
+              <div className="bg-[#0B2545] p-6 relative shrink-0">
                 <button
                   onClick={closeAndReset}
                   className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
@@ -159,7 +159,7 @@ END:VCALENDAR`;
               </div>
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-6 overflow-y-auto">
                 {status === 'success' ? (
                   <div className="flex flex-col items-center justify-center text-center py-6">
                     <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
@@ -203,7 +203,7 @@ END:VCALENDAR`;
                       />
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <div className="flex flex-col gap-1.5 flex-1">
                         <label className="text-xs font-bold text-[#0B2545]">
                           {isAr ? 'البريد الإلكتروني' : 'Email Address'}

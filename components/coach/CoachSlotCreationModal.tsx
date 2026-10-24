@@ -102,10 +102,10 @@ export default function CoachSlotCreationModal({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto"
             dir="ltr"
         >
-            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
+            <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto my-auto">
                 <button
                     onClick={onClose}
                     type="button"
@@ -147,7 +147,7 @@ export default function CoachSlotCreationModal({
                     </div>
 
                     {/* Start & End Time */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label className="block text-xs font-bold text-[#0B2545] mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
                                 <Clock className="w-3.5 h-3.5 text-gray-400" />

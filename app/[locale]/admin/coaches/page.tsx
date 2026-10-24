@@ -358,7 +358,7 @@ export default function AdminCoachesPage() {
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
+                            <table className="w-full min-w-[700px] text-sm text-left">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                     <tr>
                                         <th className="px-6 py-4">{t("colApplicant")}</th>
@@ -422,8 +422,8 @@ export default function AdminCoachesPage() {
 
             {/* ASSIGN MODULE MODAL */}
             {selectedCoach && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl space-y-5">
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="text-lg font-bold text-[#0B2545]">{t("modalAssignModuleTitle")}</h3>
@@ -481,8 +481,8 @@ export default function AdminCoachesPage() {
 
             {/* Coach Credentials Modal */}
             {approvedCredentials && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 relative animate-in fade-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                         <button
                             onClick={() => setApprovedCredentials(null)}
                             className="absolute top-5 right-5 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"

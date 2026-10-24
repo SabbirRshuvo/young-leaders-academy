@@ -411,12 +411,12 @@ export default function StudentApplicationsPage() {
 
             {/* DETAIL MODAL */}
             {selectedApplication && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
                     <div
                         className="fixed inset-0 bg-[#0B2545]/40 backdrop-blur-sm"
                         onClick={() => setSelectedApplication(null)}
                     />
-                    <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-10">
+                    <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-10 max-h-[90vh] flex flex-col my-auto">
                         <div className="absolute top-0 left-0 w-full h-2 bg-[#D4AF37]" />
                         <button
                             onClick={() => setSelectedApplication(null)}
@@ -482,10 +482,10 @@ export default function StudentApplicationsPage() {
                             )}
                         </div>
 
-                        <div className="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <div className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
                             <button
                                 onClick={() => setSelectedApplication(null)}
-                                className="rounded-xl px-5 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer"
+                                className="rounded-xl px-5 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer text-center"
                             >
                                 {t("closeDetails")}
                             </button>
@@ -565,7 +565,7 @@ function ApplicationCard({
                             </div>
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {application.status && (
                             <div className="shrink-0 flex items-center justify-center rounded-full bg-gray-50 px-3 py-1 border border-gray-100">
                                 <span className="text-xs font-bold uppercase tracking-wide text-gray-600">

@@ -207,10 +207,10 @@ export default function StudentCoachingPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex space-x-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+                <div className="flex flex-wrap sm:flex-nowrap gap-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm w-full sm:w-auto">
                     <button
                         onClick={() => setActiveTab("book")}
-                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors inline-flex items-center gap-1.5 ${
+                        className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-bold rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 ${
                             activeTab === "book"
                                 ? "bg-[#0B2545] text-white shadow-sm"
                                 : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
@@ -221,7 +221,7 @@ export default function StudentCoachingPage() {
                     </button>
                     <button
                         onClick={() => setActiveTab("my-sessions")}
-                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors inline-flex items-center gap-1.5 ${
+                        className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-bold rounded-lg transition-colors inline-flex items-center justify-center gap-1.5 ${
                             activeTab === "my-sessions"
                                 ? "bg-[#0B2545] text-white shadow-sm"
                                 : "text-gray-600 hover:text-[#0B2545] hover:bg-gray-100"
@@ -453,8 +453,8 @@ export default function StudentCoachingPage() {
 
             {/* BOOKING CONFIRMATION MODAL */}
             {selectedSlot && selectedCoach && (
-                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto">
                         <button
                             onClick={() => {
                                 setSelectedSlot(null);

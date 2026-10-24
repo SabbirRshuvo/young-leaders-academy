@@ -317,7 +317,7 @@ export default function CoachDashboardPage() {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
+                        <table className="w-full min-w-[650px] text-sm text-left">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                 <tr>
                                     <th className="px-6 py-4">{t("colStudent")}</th>

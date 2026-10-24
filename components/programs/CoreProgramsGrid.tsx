@@ -112,7 +112,7 @@ export default function CoreProgramsGrid({ selectedCategory }: CoreProgramsGridP
                         </p>
 
                         {/* Meta Grid */}
-                        <div className="grid grid-cols-3 gap-2 py-5 border-t border-gray-100 mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2 py-5 border-t border-gray-100 mb-6">
                             <div className="flex flex-col items-start gap-1">
                             <div className="flex items-center gap-1.5">
                                 <Calendar className="w-4 h-4 text-[#D4AF37]" strokeWidth={2} />

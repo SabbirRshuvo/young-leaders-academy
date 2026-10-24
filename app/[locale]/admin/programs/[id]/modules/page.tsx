@@ -343,8 +343,8 @@ export default function ManageModulesPage() {
 
             {/* Module Modal */}
             {isModuleModalOpen && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
                         <h2 className="text-xl font-bold text-[#0B2545] mb-4">{editingModuleId ? "Edit Module" : "New Module"}</h2>
                         <form onSubmit={handleSaveModule} className="space-y-4">
                             <div>
@@ -367,15 +367,15 @@ export default function ManageModulesPage() {
 
             {/* Content Modal */}
             {isContentModalOpen && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl">
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
                         <h2 className="text-xl font-bold text-[#0B2545] mb-4 capitalize">
                             {editingContentId ? "Edit Content" : `Add ${contentData.content_type}`}
                         </h2>
                         <form onSubmit={handleSaveContent} className="space-y-4">
                             
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="col-span-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="sm:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                                     <input required type="text" value={contentData.title} onChange={e => setContentData({...contentData, title: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder="Content Title..." />
                                 </div>

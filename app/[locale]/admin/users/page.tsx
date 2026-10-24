@@ -178,13 +178,13 @@ export default function AdminUsersPage() {
                     <h2 className="text-lg font-bold text-[#0B2545]">{t("usersListTitle", { tab: getTabLabel(activeTab) })}</h2>
                 </div>
                 
-                <div className="overflow-x-auto">
+                    <div className="overflow-x-auto">
                     {loading ? (
                         <div className="p-12 flex justify-center items-center">
                             <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
                         </div>
                     ) : (
-                        <table className="w-full text-sm text-left">
+                        <table className="w-full min-w-[650px] text-sm text-left">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                 <tr>
                                     <th className="px-6 py-4 font-semibold">{t("colUser")}</th>
@@ -295,7 +295,7 @@ export default function AdminUsersPage() {
 
             {/* Student Details Modal */}
             {selectedStudent && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
                     <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
                         {/* Header */}
                         <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex justify-between items-start z-10">
@@ -340,7 +340,7 @@ export default function AdminUsersPage() {
                                 <div className="space-y-6">
                                     
                                     {/* Stats Summary */}
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-center gap-3">
                                             <div className="bg-blue-100 p-2 rounded-lg text-blue-600"><BookOpen className="w-5 h-5" /></div>
                                             <div>

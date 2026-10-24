@@ -199,7 +199,7 @@ export default function AdminUniversitiesPage() {
             </div>
 
             {isAdding && (
-                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
                     <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <h2 className="text-xl font-bold text-[#0B2545] mb-4">
                             {editingId ? t("editUniversity") : t("addNewUniversity")}
@@ -226,7 +226,7 @@ export default function AdminUniversitiesPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">{t("universityName")}</label>
                                     <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#D4AF37] focus:border-[#D4AF37]" placeholder={t("universityPlaceholder")} />
@@ -308,7 +308,7 @@ export default function AdminUniversitiesPage() {
                                 {t("noPendingApplications")}
                             </div>
                         ) : (
-                            <table className="w-full text-sm text-left">
+                            <table className="w-full min-w-[700px] text-sm text-left">
                                 <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                     <tr>
                                         <th className="px-6 py-4 font-semibold">{t("colStudentName")}</th>
@@ -357,7 +357,7 @@ export default function AdminUniversitiesPage() {
                             <Loader2 className="h-8 w-8 animate-spin text-[#D4AF37]" />
                         </div>
                     ) : (
-                        <table className="w-full text-sm text-left">
+                        <table className="w-full min-w-[700px] text-sm text-left">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500 border-b border-gray-200">
                                 <tr>
                                     <th className="px-6 py-4 font-semibold">{t("universityName")}</th>

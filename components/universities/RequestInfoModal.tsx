@@ -88,16 +88,16 @@ export default function RequestInfoModal({ isOpen, onClose, universityId, univer
           />
 
           {/* Modal Content */}
-          <div className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none">
+          <div className="fixed inset-0 flex items-center justify-center z-[101] p-4 pointer-events-none overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto ${isAr ? 'font-arabic' : 'font-sans'}`}
+              className={`w-full max-w-md max-h-[90vh] flex flex-col my-auto bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto ${isAr ? 'font-arabic' : 'font-sans'}`}
               dir="ltr"
             >
               {/* Header */}
-              <div className="bg-[#0B2545] p-6 relative">
+              <div className="bg-[#0B2545] p-6 relative shrink-0">
                 <button
                   onClick={onClose}
                   className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
@@ -114,7 +114,7 @@ export default function RequestInfoModal({ isOpen, onClose, universityId, univer
               </div>
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-6 overflow-y-auto">
                 {status === 'success' ? (
                   <div className="flex flex-col items-center justify-center text-center py-8">
                     <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
