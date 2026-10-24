@@ -56,6 +56,25 @@ export async function POST(req: Request) {
             }
         }
 
+        // Check for double enrollment
+        if (userId && programId) {
+            const { data: existingEnrollment } = await supabase
+                .from("enrollments")
+                .select("id")
+                .eq("user_id", userId)
+                .eq("program_id", programId)
+                .maybeSingle();
+
+            if (existingEnrollment) {
+                return NextResponse.json({
+                    success: false,
+                    alreadyEnrolled: true,
+                    redirectUrl: `/${locale}/programs/${programId}/play`,
+                    error: "You are already enrolled in this program."
+                }, { status: 400 });
+            }
+        }
+
         // ----------------------------------------
         // 2. Create Pending Payment in Supabase
         // ----------------------------------------

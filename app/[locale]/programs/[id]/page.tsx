@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
+import { createServerClient } from '@supabase/ssr';
 import { supabase } from '@/lib/supabase';
 import { Clock, Calendar, Users, MonitorPlay, Banknote, ArrowRight, Lock, PlayCircle } from 'lucide-react';
 import EnrollNowButton from '@/components/programs/EnrollNowButton';
@@ -48,22 +50,44 @@ export default async function ProgramDetailsPage({
     .neq('id', id)
     .limit(3);
 
-  // Check enrollment status (Handles SSR cleanly)
+  // Check enrollment status (Handles SSR cleanly with cookies)
   let isEnrolled = false;
+  let currentUser: any = null;
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      const { data: enrollment } = await supabase
+    const cookieStore = await cookies();
+    const serverSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {}
+          },
+        },
+      }
+    );
+
+    const { data: { user } } = await serverSupabase.auth.getUser();
+    if (user) {
+      currentUser = user;
+      const { data: enrollment } = await serverSupabase
         .from('enrollments')
         .select('id')
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .eq('program_id', id)
-        .single();
-        
+        .maybeSingle();
+
       if (enrollment) isEnrolled = true;
     }
   } catch (err) {
-    console.log("Auth check error (expected if no cookies exist):", err);
+    console.log("Auth/enrollment check error on SSR:", err);
   }
 
   // Localize dynamic database fields
@@ -104,9 +128,9 @@ export default async function ProgramDetailsPage({
             <div className="relative w-full h-[240px] sm:h-[340px] md:h-[400px] lg:h-[480px] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-slate-800 flex items-center justify-center shrink-0">
               {program.image_url ? (
                 <img
-                    src={program.image_url}
-                    alt={localizedTitle}
-                    className="absolute inset-0 w-full h-full object-cover"
+                  src={program.image_url}
+                  alt={localizedTitle}
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               ) : (
                 <span className="text-slate-500 font-bold">{t('noCoverImage')}</span>
@@ -120,9 +144,9 @@ export default async function ProgramDetailsPage({
       {/* Main Content Grid */}
       <section className="py-10 sm:py-16 md:py-24 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-          
+
           <div className="w-full lg:col-span-2 flex flex-col space-y-8 sm:space-y-12">
-            
+
             {/* Program Overview */}
             <div className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl shadow-md border border-gray-300">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0B2545] mb-4 sm:mb-6">{t('overview')}</h2>
@@ -134,14 +158,14 @@ export default async function ProgramDetailsPage({
             {/* Curriculum / Modules (WITH LOCKING LOGIC) */}
             <div className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl shadow-md border border-gray-300">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-6 border-b border-gray-100 pb-4">
-                 <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0B2545]">{t('curriculum')}</h2>
-                 {!isEnrolled && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wider rounded-full border border-red-100">
-                      <Lock className="w-3.5 h-3.5" /> {t('locked')}
-                    </span>
-                 )}
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#0B2545]">{t('curriculum')}</h2>
+                {!isEnrolled && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wider rounded-full border border-red-100">
+                    <Lock className="w-3.5 h-3.5" /> {t('locked')}
+                  </span>
+                )}
               </div>
-              
+
               <div className="flex flex-col gap-3 sm:gap-4">
                 {modules && modules.length > 0 ? (
                   modules.map((mod, index) => {
@@ -158,7 +182,7 @@ export default async function ProgramDetailsPage({
                             <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">{modDesc}</p>
                           </div>
                         </div>
-                        
+
                         {isEnrolled ? (
                           <Link
                             href={`/${locale}/programs/${program.id}/play?module=${mod.id}`}
@@ -184,7 +208,7 @@ export default async function ProgramDetailsPage({
                   <p className="text-gray-500 italic text-sm sm:text-base">{t('noModules')}</p>
                 )}
               </div>
-              
+
               {!isEnrolled && (
                 <div className="mt-8 p-4 sm:p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 text-center">
                   <h3 className="text-base sm:text-lg font-bold text-[#0B2545] mb-2">{t('enrollToUnlock')}</h3>
@@ -234,6 +258,12 @@ export default async function ProgramDetailsPage({
                     category: localizedCategory,
                     duration: localizedDuration,
                   }}
+                  user={currentUser ? {
+                    id: currentUser.id,
+                    name: currentUser.user_metadata?.full_name || currentUser.user_metadata?.first_name || '',
+                    email: currentUser.email || '',
+                    phone: currentUser.phone || '',
+                  } : null}
                   isEnrolled={isEnrolled}
                   locale={locale}
                 />
@@ -297,13 +327,13 @@ export default async function ProgramDetailsPage({
                   <div key={p.id} className="group flex flex-col bg-white rounded-2xl shadow-sm border border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                     <div className="relative w-full h-[180px] sm:h-[220px] bg-gray-100 overflow-hidden shrink-0">
                       {p.image_url ? (
-                          <img 
-                              src={p.image_url} 
-                              alt={pTitle} 
-                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                          />
+                        <img
+                          src={p.image_url}
+                          alt={pTitle}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
                       ) : (
-                          <div className="absolute inset-0 bg-gray-200"></div>
+                        <div className="absolute inset-0 bg-gray-200"></div>
                       )}
                       <div className="absolute bottom-4 left-4 bg-[#D4AF37] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm">
                         {pCategory}

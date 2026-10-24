@@ -28,6 +28,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Missing required application fields' }, { status: 400 });
     }
 
+    const resolvedUniversityId = body.universityId || programId;
+    const resolvedProgramId = programId || body.programId || 'university-pathway';
+
+    // Validate that no existing application matches (user_id, university_id) before inserting
+    if (body.userId && resolvedUniversityId) {
+      const { data: existingApp } = await supabase
+        .from('university_applications')
+        .select('id')
+        .eq('user_id', body.userId)
+        .or(`university_id.eq.${resolvedUniversityId},program_id.eq.${resolvedUniversityId}`)
+        .maybeSingle();
+
+      if (existingApp) {
+        return NextResponse.json(
+          {
+            success: false,
+            alreadyApplied: true,
+            error: 'Application already submitted',
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const amount = Number(baseAmount);
     const vatAmount = amount * 0.15;
     const totalAmount = amount + vatAmount;
@@ -78,8 +102,9 @@ export async function POST(req: Request) {
     const { data: application, error: applicationError } = await supabase
       .from('university_applications')
       .insert([{
-          user_id: body.userId,
-          university_id: programId,
+          user_id: body.userId || null,
+          university_id: resolvedUniversityId,
+          program_id: resolvedProgramId,
           status: 'pending',
           payment_status: 'paid',
           first_name: firstName,

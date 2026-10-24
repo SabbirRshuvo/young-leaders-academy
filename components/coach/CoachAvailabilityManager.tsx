@@ -14,6 +14,7 @@ import {
     AlertCircle
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 import { supabase } from "@/lib/supabase";
 
 interface AvailabilitySlot {
@@ -28,6 +29,7 @@ interface AvailabilitySlot {
 
 export default function CoachAvailabilityManager({ locale = "en" }: { locale?: string }) {
     const isAr = locale === "ar";
+    const t = useTranslations("CoachPortal");
 
     const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
     const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
             setSlots(data || []);
         } catch (err: any) {
             console.error("Error fetching slots:", err);
-            toast.error(isAr ? "تعذر تحميل فترات التوفر" : "Failed to load availability slots");
+            toast.error(t("toastLoadSlotsError"));
         } finally {
             setLoading(false);
         }
@@ -96,24 +98,25 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                     start_time: startTime,
                     end_time: endTime,
                     zoom_link: finalZoom,
-                    notes: notes.trim() || (isAr ? "جلسة تدريب فردية 1-على-1" : "1-on-1 Mentorship Session"),
+                    notes: notes.trim() || t("mentorshipSession"),
                     is_booked: false
                 }]);
 
             if (error) throw error;
 
-            toast.success(isAr ? "تمت إضافة الموعد بنجاح" : "Time slot added successfully!");
+            toast.success(t("toastSlotAdded"));
             setNotes("");
             fetchSlots();
         } catch (err: any) {
             console.error("Error adding slot:", err);
-            toast.error(err.message || "Failed to create slot");
+            toast.error(err.message || t("toastCreateSlotError"));
         } finally {
             setCreating(false);
         }
     };
 
     const handleDeleteSlot = async (slotId: string) => {
+        if (!window.confirm(t("confirmDeleteSlot"))) return;
         try {
             const { error } = await supabase
                 .from("coach_availability")
@@ -121,10 +124,10 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                 .eq("id", slotId);
 
             if (error) throw error;
-            toast.success(isAr ? "تم حذف الموعد" : "Slot removed");
+            toast.success(t("toastSlotDeleted"));
             setSlots(prev => prev.filter(s => s.id !== slotId));
         } catch (err: any) {
-            toast.error(err.message || "Could not delete slot");
+            toast.error(err.message || t("toastDeleteError"));
         }
     };
 
@@ -138,10 +141,10 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                     </div>
                     <div>
                         <h2 className="text-lg font-bold text-[#0B2545]">
-                            {isAr ? "إضافة فترة توفر جديدة (جلسة 1-على-1)" : "Add New 1-on-1 Availability Slot"}
+                            {t("managerAddSlotTitle")}
                         </h2>
                         <p className="text-xs text-gray-500">
-                            {isAr ? "حدد الموعد ورابط Zoom ليتمكن الطلاب المسجلين من حجزه." : "Define your open slots and Zoom link for students to schedule with you."}
+                            {t("managerAddSlotDesc")}
                         </p>
                     </div>
                 </div>
@@ -149,9 +152,9 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                 <form onSubmit={handleCreateSlot} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* Date */}
                     <div>
-                        <label className="block text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
+                        <label className="text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
                             <CalendarIcon className="w-3.5 h-3.5 text-gray-400" />
-                            {isAr ? "التاريخ" : "Date"}
+                            {t("date")}
                         </label>
                         <input
                             type="date"
@@ -165,9 +168,9 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
 
                     {/* Start Time */}
                     <div>
-                        <label className="block text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
+                        <label className="text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5 text-gray-400" />
-                            {isAr ? "وقت البدء" : "Start Time"}
+                            {t("startTime")}
                         </label>
                         <input
                             type="time"
@@ -180,9 +183,9 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
 
                     {/* End Time */}
                     <div>
-                        <label className="block text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
+                        <label className="text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
                             <Clock className="w-3.5 h-3.5 text-gray-400" />
-                            {isAr ? "وقت الانتهاء" : "End Time"}
+                            {t("endTime")}
                         </label>
                         <input
                             type="time"
@@ -195,9 +198,9 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
 
                     {/* Zoom Link */}
                     <div>
-                        <label className="block text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
+                        <label className="text-xs font-semibold text-[#0B2545] mb-1.5 flex items-center gap-1.5">
                             <Video className="w-3.5 h-3.5 text-blue-500" />
-                            {isAr ? "رابط Zoom" : "Zoom Meeting Link"}
+                            {t("zoomMeetingLink")}
                         </label>
                         <input
                             type="url"
@@ -217,7 +220,7 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                             className="px-6 h-11 rounded-full bg-[#0B2545] hover:bg-[#0B2545]/90 text-white font-bold text-sm flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-60"
                         >
                             {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                            <span>{isAr ? "نشر فترة التوفر" : "Publish Slot"}</span>
+                            <span>{t("publishSlotBtn")}</span>
                         </button>
                     </div>
                 </form>
@@ -226,16 +229,17 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
             {/* Slots List */}
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm">
                 <h3 className="text-base font-bold text-[#0B2545] mb-4">
-                    {isAr ? "جدول الفترات المتاحة والمحجوزة" : "Your Published Slots & Booking Status"}
+                    {t("managerSlotsTitle")}
                 </h3>
 
                 {loading ? (
-                    <div className="flex justify-center py-10">
+                    <div className="flex flex-col justify-center items-center py-10 gap-2">
                         <Loader2 className="w-7 h-7 animate-spin text-[#D4AF37]" />
+                        <p className="text-xs text-gray-400">{t("loadingSessions")}</p>
                     </div>
                 ) : slots.length === 0 ? (
                     <div className="text-center py-10 text-gray-400 text-sm">
-                        {isAr ? "لم تقم بإضافة فترات توفر بعد." : "No availability slots published yet."}
+                        {t("managerNoSlots")}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -256,13 +260,13 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
                                     {slot.is_booked ? (
                                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
                                             <CheckCircle2 className="w-3 h-3" />
-                                            {isAr ? "محجوز" : "Booked"}
+                                            {t("statusBooked")}
                                         </span>
                                     ) : (
                                         <button
                                             onClick={() => handleDeleteSlot(slot.id)}
                                             className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                                            title="Delete slot"
+                                            title={t("deleteSlot")}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>

@@ -1,14 +1,11 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 export default function ProgramsCta() {
   const t = useTranslations('ProgramsCta');
-  const locale = useLocale();
 
   return (
-    <section className="relative w-full overflow-hidden flex items-center min-h-[450px] md:min-h-[500px]">
+    <section className="relative w-full overflow-hidden flex items-center min-h-[400px] md:min-h-[460px]">
 
       {/* Background Image */}
       <Image
@@ -21,7 +18,7 @@ export default function ProgramsCta() {
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 "></div>
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-brightness-75"></div>
 
       {/* Content Container */}
       <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-12 py-16 md:py-24 relative z-20">
@@ -39,19 +36,9 @@ export default function ProgramsCta() {
             {t('title')}
           </h2>
 
-          <p className="text-gray-200 text-base md:text-lg leading-relaxed mb-8 font-sans">
+          <p className="text-gray-200 text-base md:text-lg leading-relaxed font-sans">
             {t('subtitle')}
           </p>
-
-          <div>
-            <Link
-              href={`/${locale}/programs`}
-              className="inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27] hover:from-[#e3be47] hover:to-[#d6a931] text-[#0B2545] font-bold text-sm md:text-base transition-transform duration-300 hover:scale-105 group"
-            >
-              {t('cta')}
-              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
 
         </div>
       </div>

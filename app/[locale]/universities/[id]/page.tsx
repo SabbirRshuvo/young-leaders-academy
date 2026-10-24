@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
 import { universitiesData } from '@/data/universities';
 import { supabase } from '@/lib/supabase';
 import { MapPin, Globe, Users, History, CheckCircle2, ArrowLeft } from 'lucide-react';
@@ -90,6 +92,41 @@ export default async function UniversityDetailsPage({
 
   if (!university) {
     notFound();
+  }
+
+  // Check if logged-in user has already applied to this university
+  let hasApplied = false;
+  try {
+    const cookieStore = await cookies();
+    const serverSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+        },
+      }
+    );
+    const {
+      data: { user },
+    } = await serverSupabase.auth.getUser();
+
+    if (user) {
+      const { data: existingApp } = await serverSupabase
+        .from('university_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .or(`university_id.eq.${id},program_id.eq.${id}`)
+        .maybeSingle();
+
+      if (existingApp) {
+        hasApplied = true;
+      }
+    }
+  } catch (err) {
+    console.error('Error checking university application status server-side:', err);
   }
 
   // Translation helpers
@@ -246,6 +283,7 @@ export default async function UniversityDetailsPage({
               locale={locale}
               isAr={isAr}
               applyNowText={applyNowText}
+              hasApplied={hasApplied}
             />
           </div>
         </div>

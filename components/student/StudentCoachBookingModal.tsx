@@ -14,6 +14,7 @@ import {
     Check
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useTranslations } from "next-intl";
 import { supabase } from "@/lib/supabase";
 
 interface StudentCoachBookingModalProps {
@@ -40,6 +41,7 @@ export default function StudentCoachBookingModal({
     onBookingSuccess
 }: StudentCoachBookingModalProps) {
     const isAr = locale === "ar";
+    const t = useTranslations("CoachPortal");
 
     const [slots, setSlots] = useState<any[]>([]);
     const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
@@ -82,7 +84,7 @@ export default function StudentCoachBookingModal({
 
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error(isAr ? "يرجى تسجيل الدخول أولاً" : "Please log in to book");
+            if (!user) throw new Error(t("modalLoginRequired"));
 
             // 1. Create booking
             const { data: booking, error: bookingErr } = await supabase
@@ -111,11 +113,11 @@ export default function StudentCoachBookingModal({
                 .eq("id", selectedSlot.id);
 
             setConfirmedBooking(booking);
-            toast.success(isAr ? "تم تأكيد موعد جلستك بنجاح!" : "1-on-1 Session Confirmed!");
+            toast.success(t("modalBookingSuccess"));
             if (onBookingSuccess) onBookingSuccess();
         } catch (err: any) {
             console.error("Booking error:", err);
-            toast.error(err.message || "Could not complete booking");
+            toast.error(err.message || t("modalBookingError"));
         } finally {
             setBookingSubmitting(false);
         }
@@ -128,7 +130,8 @@ export default function StudentCoachBookingModal({
             <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100">
                 <button
                     onClick={onClose}
-                    className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full cursor-pointer"
+                    className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full cursor-pointer transition-colors"
+                    aria-label={t("close")}
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -145,7 +148,7 @@ export default function StudentCoachBookingModal({
                                     {coach.first_name} {coach.last_name}
                                 </h3>
                                 <p className="text-xs text-gray-500">
-                                    {coach.professional_title || (isAr ? "مدرب معتمد بالأكاديمية" : "YLA Certified Coach")}
+                                    {coach.professional_title || t("certifiedCoach")}
                                 </p>
                             </div>
                         </div>
@@ -153,7 +156,7 @@ export default function StudentCoachBookingModal({
                         {/* Slot Selection */}
                         <div className="mb-5">
                             <label className="block text-xs font-bold text-[#0B2545] mb-2">
-                                {isAr ? "اختر الموعد المتاح:" : "Select Available Time Slot:"}
+                                {t("modalSelectSlot")}
                             </label>
 
                             {loadingSlots ? (
@@ -162,7 +165,7 @@ export default function StudentCoachBookingModal({
                                 </div>
                             ) : slots.length === 0 ? (
                                 <div className="text-center py-6 text-xs text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                    {isAr ? "لا توجد مواعيد متاحة حالياً لهذا المدرب." : "No open slots currently available for this coach."}
+                                    {t("modalNoSlots")}
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto p-1">
@@ -194,13 +197,13 @@ export default function StudentCoachBookingModal({
                         {/* Notes */}
                         <div className="mb-6">
                             <label className="block text-xs font-bold text-[#0B2545] mb-1">
-                                {isAr ? "ملاحظات أو أسئلة للجلسة (اختياري):" : "Topics or Questions for the Coach (Optional):"}
+                                {t("modalNotesLabel")}
                             </label>
                             <textarea
                                 rows={2}
                                 value={studentNotes}
                                 onChange={(e) => setStudentNotes(e.target.value)}
-                                placeholder={isAr ? "ما الموضوع الذي تود التركيز عليه في هذه الجلسة؟" : "What would you like to focus on during this 1-on-1 session?"}
+                                placeholder={t("modalNotesPlaceholder")}
                                 className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-[#0B2545] outline-none resize-none"
                             />
                         </div>
@@ -217,7 +220,7 @@ export default function StudentCoachBookingModal({
                             ) : (
                                 <>
                                     <Video className="w-4 h-4 text-[#D4AF37]" />
-                                    <span>{isAr ? "تأكيد حجز جلسة Zoom" : "Confirm 1-on-1 Zoom Session"}</span>
+                                    <span>{t("modalConfirmBtn")}</span>
                                 </>
                             )}
                         </button>
@@ -229,12 +232,14 @@ export default function StudentCoachBookingModal({
                             <CheckCircle2 className="w-8 h-8" />
                         </div>
                         <h3 className="text-lg font-bold text-[#0B2545]">
-                            {isAr ? "تم تأكيد موعدك بنجاح!" : "Your Session is Confirmed!"}
+                            {t("modalSuccessTitle")}
                         </h3>
                         <p className="text-xs text-gray-500 max-w-sm mx-auto">
-                            {isAr
-                                ? `موعدك مع ${coach.first_name} في ${confirmedBooking.meeting_date} الساعة ${confirmedBooking.start_time.slice(0, 5)}`
-                                : `Your 1-on-1 session with ${coach.first_name} is set for ${confirmedBooking.meeting_date} at ${confirmedBooking.start_time.slice(0, 5)}.`}
+                            {t("modalSuccessDesc", {
+                                name: coach.first_name,
+                                date: confirmedBooking.meeting_date,
+                                time: confirmedBooking.start_time.slice(0, 5)
+                            })}
                         </p>
 
                         <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 flex items-center justify-between text-xs font-mono" dir="ltr">
@@ -243,9 +248,11 @@ export default function StudentCoachBookingModal({
                                 onClick={() => {
                                     navigator.clipboard.writeText(confirmedBooking.zoom_link);
                                     setCopied(true);
+                                    toast.success(t("toastCopied"));
                                     setTimeout(() => setCopied(false), 2000);
                                 }}
                                 className="text-gray-500 hover:text-black flex-shrink-0 cursor-pointer"
+                                title={copied ? t("copied") : t("copyLink")}
                             >
                                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                             </button>
@@ -258,7 +265,7 @@ export default function StudentCoachBookingModal({
                             className="inline-flex items-center justify-center gap-2 w-full h-11 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm cursor-pointer"
                         >
                             <Video className="w-4 h-4" />
-                            <span>{isAr ? "الانضمام إلى Zoom الآن" : "Join Zoom Meeting Room"}</span>
+                            <span>{t("modalJoinZoom")}</span>
                         </a>
                     </div>
                 )}

@@ -171,10 +171,26 @@ function ApplyFormContent() {
         }
       }
 
+      if (user && applicationType === 'university') {
+        const { data: existingUniApp } = await supabase
+          .from('university_applications')
+          .select('id')
+          .eq('user_id', user.id)
+          .or(`university_id.eq.${programId},program_id.eq.${programId}`)
+          .maybeSingle();
+
+        if (existingUniApp) {
+          toast.error(isAr ? 'لقد قمت بالتقديم بالفعل لهذه الجامعة.' : 'You have already applied to this university.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       // ----------------------------------------
       // Complete application data
       // ----------------------------------------
 
+      const targetUni = universitiesData.find((u) => u.id === programId);
       const applicationPayload = {
         userId: user?.id || null,
         firstName: formData.firstName.trim(),
@@ -184,7 +200,8 @@ function ApplyFormContent() {
         age: formData.age.trim(),
         school: formData.school.trim(),
         programId: courseDbId || programId,
-        programTitle,
+        universityId: applicationType === 'university' ? programId : undefined,
+        programTitle: applicationType === 'university' && targetUni ? targetUni.name : programTitle,
         motivation: formData.motivation.trim(),
         locale,
         baseAmount: dbPrograms.find(p => p.id === programId)?.price || 1500,

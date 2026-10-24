@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ShieldCheck, Lock, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import toast from "react-hot-toast";
+import { supabase } from "@/lib/supabase";
 import PaymentMethodSelector from "./PaymentMethodSelector";
 import { PaymentMethodType, MadaCardDetails } from "@/lib/payments/mada-applepay";
 import { getLocalizedProgramText, getLocalizedCategory } from "@/lib/program-localization";
@@ -45,6 +46,44 @@ export default function EnrollmentCheckoutModal({
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Prevent double enrollment: if user is already enrolled, block checkout and redirect
+    useEffect(() => {
+        if (!isOpen) return;
+
+        let isCancelled = false;
+        async function verifyNotEnrolled() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const uid = user?.id || session?.user?.id;
+                if (uid && program.id) {
+                    const { data: enrollment } = await supabase
+                        .from("enrollments")
+                        .select("id")
+                        .eq("user_id", uid)
+                        .eq("program_id", program.id)
+                        .maybeSingle();
+
+                    if (enrollment && !isCancelled) {
+                        toast.success(
+                            isAr
+                                ? "أنت مسجل بالفعل في هذا البرنامج! جاري نقلك إلى مشغل الدورة..."
+                                : "You are already enrolled! Redirecting to course player..."
+                        );
+                        onClose();
+                        window.location.href = `/${locale}/programs/${program.id}/play`;
+                    }
+                }
+            } catch (err) {
+                console.warn("Modal double enrollment verification:", err);
+            }
+        }
+
+        verifyNotEnrolled();
+        return () => {
+            isCancelled = true;
+        };
+    }, [isOpen, user?.id, program.id, locale, isAr, onClose]);
 
     // Prevent background scrolling while modal is open
     useEffect(() => {

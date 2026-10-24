@@ -297,7 +297,8 @@ export default function CoursePlayerPage() {
                     {type === 'quiz' && (
                         <div className="mt-6">
                             <QuizPlayer 
-                                quizJsonStr={activeContent.quiz_data ? JSON.stringify(activeContent.quiz_data) : '[]'} 
+                                quizData={activeContent.quiz_data}
+                                quizJsonStr={typeof activeContent.quiz_data === 'string' ? activeContent.quiz_data : JSON.stringify(activeContent.quiz_data || [])} 
                                 onComplete={() => toggleContentCompletion(activeContent.id)}
                             />
                         </div>

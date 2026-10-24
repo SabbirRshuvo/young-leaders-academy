@@ -489,7 +489,7 @@ export default function StudentApplicationsPage() {
                             >
                                 {t("closeDetails")}
                             </button>
-                            {selectedApplication.program_id && (selectedApplication.status === "accepted" || selectedApplication.payment_status === "paid" || selectedApplication.status === "approved" || selectedApplication.status === "enrolled") && (
+                            {selectedApplication.type === 'program' && selectedApplication.program_id && (selectedApplication.status === "accepted" || selectedApplication.payment_status === "paid" || selectedApplication.status === "approved" || selectedApplication.status === "enrolled") && (
                                 <Link
                                     href={`/${locale}/programs/${selectedApplication.program_id}/play`}
                                     className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0B2545] px-6 text-sm font-bold text-white transition-all hover:bg-[#D4AF37] hover:text-[#0B2545] hover:shadow-md hover:-translate-y-0.5"
@@ -621,7 +621,7 @@ function ApplicationCard({
                     </div>
 
                     <div className="flex items-center gap-3 w-full sm:w-auto">
-                        {application.program_id && (application.status === "accepted" || application.payment_status === "paid") && (
+                        {application.type === 'program' && application.program_id && (application.status === "accepted" || application.payment_status === "paid") && (
                             <Link
                                 href={`/${locale}/programs/${application.program_id}/play`}
                                 className="flex-1 sm:flex-none inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-5 text-sm font-bold text-[#0B2545] transition-all hover:bg-[#e3be47] hover:shadow-md hover:-translate-y-0.5"

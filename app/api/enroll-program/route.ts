@@ -34,6 +34,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'You must be logged in to enroll in a program.' }, { status: 401 });
     }
 
+    // Validate that no existing record matches (user_id, program_id)
+    const { data: existingEnrollment } = await supabase
+      .from('enrollments')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('program_id', programId)
+      .maybeSingle();
+
+    const { data: existingApp } = await supabase
+      .from('program_applications')
+      .select('id')
+      .eq('student_id', userId)
+      .eq('program_id', programId)
+      .maybeSingle();
+
+    if (existingEnrollment || existingApp) {
+      return NextResponse.json({
+        success: false,
+        alreadyEnrolled: true,
+        error: 'Already enrolled in this program',
+        redirectUrl: `/${locale}/programs/${programId}/play`
+      }, { status: 400 });
+    }
+
     const amount = Number(baseAmount);
     const vatAmount = amount * 0.15;
     const totalAmount = amount + vatAmount;
@@ -94,6 +118,16 @@ export async function POST(req: Request) {
       console.error('Supabase enrollment insert error:', enrollError);
       return NextResponse.json({ success: false, error: 'Enrollment failed. Please try again.' }, { status: 500 });
     }
+
+    // Also record in enrollments table
+    try {
+      await supabase
+        .from('enrollments')
+        .upsert([{
+            user_id: userId,
+            program_id: programId,
+        }], { onConflict: 'user_id,program_id' });
+    } catch {}
 
     return NextResponse.json({
       success: true,
