@@ -1,132 +1,205 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import {
-  UserRound,
+  User,
   Brain,
-  BriefcaseBusiness,
-  HeartPulse,
-  Globe2,
-  UsersRound,
-  Flag,
+  Users,
+  Heart,
+  Lightbulb,
+  MessageCircle,
+  Globe,
+  Star,
 } from 'lucide-react';
 
+interface PillarCardItem {
+  id: string;
+  defaultTitle: string;
+  defaultDesc: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  iconBg: string;
+  iconColor: string;
+}
 
+const PILLAR_CARDS: PillarCardItem[] = [
+  {
+    id: 'personal-development',
+    defaultTitle: 'Personal Development',
+    defaultDesc: 'Build confidence, discipline and a growth mindset.',
+    icon: User,
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+  },
+  {
+    id: 'life-skills',
+    defaultTitle: 'Life Skills',
+    defaultDesc: 'Learn practical skills for real-world success.',
+    icon: Brain,
+    iconBg: 'bg-green-100',
+    iconColor: 'text-green-600',
+  },
+  {
+    id: 'leadership',
+    defaultTitle: 'Leadership',
+    defaultDesc: 'Develop the mindset and skills to lead and create impact.',
+    icon: Users,
+    iconBg: 'bg-purple-100',
+    iconColor: 'text-purple-600',
+  },
+  {
+    id: 'health-wellbeing',
+    defaultTitle: 'Health & Wellbeing',
+    defaultDesc: 'Take care of your mental and physical health.',
+    icon: Heart,
+    iconBg: 'bg-red-100',
+    iconColor: 'text-red-500',
+  },
+  {
+    id: 'creative-critical-thinking',
+    defaultTitle: 'Creative & Critical Thinking',
+    defaultDesc: 'Solve problems, think deeper, be more innovative.',
+    icon: Lightbulb,
+    iconBg: 'bg-amber-100',
+    iconColor: 'text-amber-500',
+  },
+  {
+    id: 'communication',
+    defaultTitle: 'Communication',
+    defaultDesc: 'Express your ideas and build stronger relationships.',
+    icon: MessageCircle,
+    iconBg: 'bg-teal-100',
+    iconColor: 'text-teal-600',
+  },
+  {
+    id: 'global-awareness',
+    defaultTitle: 'Global Awareness',
+    defaultDesc: 'Understand the world and your place in it.',
+    icon: Globe,
+    iconBg: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+  },
+  {
+    id: 'career-readiness',
+    defaultTitle: 'Career Readiness',
+    defaultDesc: 'Gain skills, experience and confidence for your career.',
+    icon: Star,
+    iconBg: 'bg-purple-100',
+    iconColor: 'text-purple-600',
+  },
+];
 
 export default function Pillars() {
   const t = useTranslations('Pillars');
-  const pillars = [
-    { name: t('pillars.0.name'), icon: UserRound, points: [t('pillars.0.points.0'), t('pillars.0.points.1'), t('pillars.0.points.2'), t('pillars.0.points.3'), t('pillars.0.points.4')] },
-    { name: t('pillars.1.name'), icon: Brain, points: [t('pillars.1.points.0'), t('pillars.1.points.1'), t('pillars.1.points.2'), t('pillars.1.points.3'), t('pillars.1.points.4')] },
-    { name: t('pillars.2.name'), icon: Flag, points: [t('pillars.2.points.0'), t('pillars.2.points.1'), t('pillars.2.points.2'), t('pillars.2.points.3'), t('pillars.2.points.4')] },
-    { name: t('pillars.3.name'), icon: BriefcaseBusiness, points: [t('pillars.3.points.0'), t('pillars.3.points.1'), t('pillars.3.points.2'), t('pillars.3.points.3'), t('pillars.3.points.4')] },
-    { name: t('pillars.4.name'), icon: HeartPulse, points: [t('pillars.4.points.0'), t('pillars.4.points.1'), t('pillars.4.points.2'), t('pillars.4.points.3'), t('pillars.4.points.4')] },
-    { name: t('pillars.5.name'), icon: Globe2, points: [t('pillars.5.points.0'), t('pillars.5.points.1'), t('pillars.5.points.2'), t('pillars.5.points.3'), t('pillars.5.points.4')] },
-    { name: t('pillars.6.name'), icon: UsersRound, points: [t('pillars.6.points.0'), t('pillars.6.points.1'), t('pillars.6.points.2'), t('pillars.6.points.3'), t('pillars.6.points.4')] },
-  ];
+
+  const overline = t.has('overline') ? t('overline') : 'HOLISTIC DEVELOPMENT';
+  const title = t.has('title') ? t('title') : 'Grow in Every Area of Life';
+  const desc = t.has('desc')
+    ? t('desc')
+    : 'We focus on the complete you — building the skills, mindset and experiences you need for a successful future.';
+  const moreThanAcademics = t.has('moreThanAcademics')
+    ? t('moreThanAcademics')
+    : 'More than just academics';
 
   return (
-    <section className="relative w-full bg-[#FAF7F2] py-20 md:py-28 overflow-hidden font-sans">
+    <section className="w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 font-sans">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
+        {/* ================= HEADER AREA ================= */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex-1 max-w-3xl text-left rtl:text-right"
+          >
+            {/* Overline */}
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500 mb-2">
+              {overline}
+            </p>
 
-      {/* ================= BACKGROUND DECORATIVE RINGS ================= */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-[30%] -left-[15%] w-[60vw] h-[60vw] rounded-full border-[1.5px] border-[#D4AF37]/15" />
-        <div className="absolute top-[30%] -right-[15%] w-[50vw] h-[50vw] rounded-full border-[1.5px] border-[#D4AF37]/15" />
-      </div>
+            {/* Main Title */}
+            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-[#0B2545] tracking-tight mb-3 leading-tight">
+              {title}
+            </h2>
 
-      <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12 z-10">
+            {/* Subtitle */}
+            <p className="text-sm sm:text-base text-gray-500 leading-relaxed max-w-2xl">
+              {desc}
+            </p>
+          </motion.div>
 
-        {/* ================= HEADER ================= */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="mb-16 flex flex-col items-center text-center relative z-10"
-        >
-          <div className="mb-5 flex items-center justify-center gap-4">
-            <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
-            <span className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.4em] text-[#B8902E]">
-              {t('badge')}
+          {/* Handwritten Note with Curved Arrow pointing to cards */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden lg:flex flex-col items-center rotate-6 pointer-events-none select-none shrink-0 self-start md:self-auto mb-2"
+          >
+            <span className="font-serif italic text-base xl:text-lg text-[#6A829D] font-medium tracking-wide">
+              {moreThanAcademics}
             </span>
-            <span className="h-[1px] w-[40px] bg-[#D4AF37]" />
-          </div>
+            <svg
+              width="38"
+              height="46"
+              viewBox="0 0 40 50"
+              fill="none"
+              className="text-[#6A829D]/75 -rotate-12 mt-1 mr-4"
+              aria-hidden="true"
+            >
+              <path
+                d="M28 4C26 16 18 30 8 38M8 38L15 36M8 38L9 30"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.div>
+        </div>
 
-          <h2 className="m-0 max-w-[800px] font-serif text-[36px] sm:text-[46px] md:text-[56px] leading-[1.1] tracking-tight text-[#0B2545] mb-5">
-            <span className="font-bold">{t('title1')}</span> <br className="hidden md:block" />
-            <span className="font-bold text-[#0B2545]/90">{t('title2')}</span>{' '}
-            <span className="font-bold">{t('title3')}</span>
-          </h2>
+        {/* ================= 8-CARD STRICT CSS GRID ================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {PILLAR_CARDS.map((card, index) => {
+            const Icon = card.icon;
+            const cardTitle = t.has(`cards.${index}.title`)
+              ? t(`cards.${index}.title`)
+              : card.defaultTitle;
+            const cardDesc = t.has(`cards.${index}.desc`)
+              ? t(`cards.${index}.desc`)
+              : card.defaultDesc;
 
-          <p className="mt-2 max-w-[650px] text-[14px] md:text-[16px] leading-relaxed text-[#6B7B8F]">
-            {t('desc')}
-          </p>
-        </motion.div>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-[1440px] mx-auto">
-          {pillars.map((pillar, index) => {
-            const Icon = pillar.icon;
             return (
               <motion.div
-                key={pillar.name}
-                initial={{ opacity: 0, y: 24 }}
+                key={card.id}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-                className="group relative h-[520px] w-full sm:w-[320px] lg:w-[280px] xl:w-[295px] bg-white rounded-[28px] overflow-hidden flex flex-col items-center pt-10 px-6 sm:px-8 border border-[#D4AF37]/30 shadow-xl shadow-black/[0.04] hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-300"
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start text-left rtl:text-right group"
               >
-
-                {/* Glowing background behind the icon */}
-                <div className="absolute top-[20px] left-1/2 -translate-x-1/2 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(212,175,55,0.25)_0%,rgba(255,255,255,0)_70%)] pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-
-                {/* Icon Ring */}
-                <div className="relative flex items-center justify-center w-[75px] h-[75px] rounded-full border-[1.5px] border-[#D4AF37] bg-white shadow-sm mb-5 group-hover:bg-[#FCFAF6] transition-colors">
-                  <Icon className="w-[30px] h-[30px] text-[#0B2545]" strokeWidth={1.5} />
+                {/* Circular Icon Wrapper */}
+                <div
+                  className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 mb-6 transition-transform duration-300 group-hover:scale-105 ${card.iconBg}`}
+                >
+                  <Icon className={`w-8 h-8 ${card.iconColor}`} strokeWidth={1.8} />
                 </div>
 
-                {/* Title & Golden Divider */}
-                <h3 className="text-[#0B2545] font-bold text-[18px] uppercase tracking-[0.15em]">{pillar.name}</h3>
-                <div className="w-[35px] h-[1.5px] bg-[#D4AF37] mt-3 mb-6 group-hover:w-[50px] transition-all duration-300" />
+                {/* Title */}
+                <h3 className="text-lg font-semibold text-[#0B2545] mb-2 leading-snug">
+                  {cardTitle}
+                </h3>
 
-                {/* Bullet Points */}
-                <ul className="w-full space-y-3.5 z-10 relative">
-                  {pillar.points.map(point => (
-                    <li key={point} className="flex items-start gap-3">
-                      <span className="w-[5px] h-[5px] rounded-full bg-[#D4AF37] mt-[9px] shrink-0" />
-                      <span className="text-[#0B2545]/85 text-[18px] font-medium leading-snug">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* ================= EXACT BOTTOM ABSTRACT LAYERS ================= */}
-                <div className="absolute bottom-0 left-0 w-full h-[150px] pointer-events-none">
-                  <svg viewBox="0 0 320 150" preserveAspectRatio="none" className="w-full h-full">
-
-                    {/* Layer 1 (Back Faded Mountain) */}
-                    <path d="M0,110 L40,80 L90,100 L150,60 L210,105 L260,75 L320,110 L320,150 L0,150 Z" fill="#E8ECEF" opacity="0.6" />
-
-                    {/* Layer 2 (Middle Grey/Navy Mountain) */}
-                    <path d="M0,130 L60,95 L120,120 L180,85 L250,125 L320,100 L320,150 L0,150 Z" fill="#D3DCE3" opacity="0.7" />
-
-                    {/* Layer 3 (Front Deep Navy Upward Curve) */}
-                    <path d="M0,145 Q160,85 320,145 L320,150 L0,150 Z" fill="#0B2545" />
-
-                    {/* Gold Border on Front Curve */}
-                    <path d="M0,145 Q160,85 320,145" fill="none" stroke="#D4AF37" strokeWidth="2.5" />
-
-                    {/* Center Decor: — ✦ — */}
-                    <line x1="130" y1="125" x2="145" y2="125" stroke="#D4AF37" strokeWidth="1.5" />
-                    <path d="M160,118 L162.5,124 L168,125 L162.5,126 L160,132 L157.5,126 L152,125 L157.5,124 Z" fill="#D4AF37" />
-                    <line x1="175" y1="125" x2="190" y2="125" stroke="#D4AF37" strokeWidth="1.5" />
-
-                  </svg>
-                </div>
-
+                {/* Description */}
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {cardDesc}
+                </p>
               </motion.div>
             );
           })}
         </div>
-
       </div>
     </section>
   );

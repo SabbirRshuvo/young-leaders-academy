@@ -44,7 +44,7 @@ export default function GlobalMobility() {
 
   return (
     <section id="pathways" className="w-full py-12 sm:py-16 md:py-24 bg-[#FCFAF6] overflow-hidden">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full max-w-full">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center w-full">
 

@@ -25,81 +25,42 @@
     "step4Desc": "Become part of our global alumni network and drive change in your community."
   },
   "Pillars": {
-    "badge": "The 7 Pillars",
-    "title1": "Holistic Development",
-    "title2": "for a Brighter",
-    "title3": "Future",
-    "desc": "We nurture every aspect of a young person's growth, helping them build the skills, character and confidence to lead a meaningful life.",
-    "pillars": [
+    "overline": "HOLISTIC DEVELOPMENT",
+    "title": "Grow in Every Area of Life",
+    "desc": "We focus on the complete you — building the skills, mindset and experiences you need for a successful future.",
+    "moreThanAcademics": "More than just academics",
+    "cards": [
       {
-        "name": "SELF",
-        "points": [
-          "Identity",
-          "Values",
-          "Confidence",
-          "Purpose",
-          "Discipline"
-        ]
+        "title": "Personal Development",
+        "desc": "Build confidence, discipline and a growth mindset."
       },
       {
-        "name": "MIND",
-        "points": [
-          "Critical Thinking",
-          "AI & Technology",
-          "Innovation",
-          "Problem Solving",
-          "Creativity"
-        ]
+        "title": "Life Skills",
+        "desc": "Learn practical skills for real-world success."
       },
       {
-        "name": "LEADERSHIP",
-        "points": [
-          "Leadership",
-          "Communication",
-          "Influence",
-          "Public Speaking",
-          "Teamwork"
-        ]
+        "title": "Leadership",
+        "desc": "Develop the mindset and skills to lead and create impact."
       },
       {
-        "name": "CAREER",
-        "points": [
-          "University Guidance",
-          "Career Planning",
-          "Entrepreneurship",
-          "Internships",
-          "Financial Literacy"
-        ]
+        "title": "Health & Wellbeing",
+        "desc": "Take care of your mental and physical health."
       },
       {
-        "name": "HEALTH",
-        "points": [
-          "Sports & Fitness",
-          "Nutrition",
-          "Mental Wellbeing",
-          "Sleep & Recovery",
-          "Healthy Habits"
-        ]
+        "title": "Creative & Critical Thinking",
+        "desc": "Solve problems, think deeper, be more innovative."
       },
       {
-        "name": "SOCIETY",
-        "points": [
-          "Ethics & Integrity",
-          "Community Service",
-          "Social Intelligence",
-          "Patriotism",
-          "Global Awareness"
-        ]
+        "title": "Communication",
+        "desc": "Express your ideas and build stronger relationships."
       },
       {
-        "name": "FAMILY",
-        "points": [
-          "Parent Coaching",
-          "Teen Coaching",
-          "Parenting Skills",
-          "Family Communication",
-          "Stronger Relationships"
-        ]
+        "title": "Global Awareness",
+        "desc": "Understand the world and your place in it."
+      },
+      {
+        "title": "Career Readiness",
+        "desc": "Gain skills, experience and confidence for your career."
       }
     ]
   },

@@ -49,7 +49,7 @@ export default function UniversityStats() {
 
   return (
     <section className="w-full py-12 sm:py-16 md:py-24 bg-[#FCFAF6] overflow-hidden">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
         
         {/* Header - Split Layout */}
         <motion.div 

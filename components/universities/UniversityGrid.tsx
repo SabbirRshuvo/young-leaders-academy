@@ -308,7 +308,7 @@ export default function UniversityGrid() {
 
   return (
     <section className="w-full py-12 sm:py-16 md:py-24 bg-white overflow-hidden" id="network">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full max-w-full">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
         {/* Header - Left-aligned in both languages */}
         <motion.div
           initial="hidden"
@@ -413,7 +413,7 @@ export default function UniversityGrid() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 w-full max-w-full"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 w-full"
           >
             {filteredUniversities.map((uni, index) => {
               const displayName = getUniName(uni);
@@ -426,7 +426,7 @@ export default function UniversityGrid() {
                 <motion.div
                   key={uni.id || index}
                   variants={itemVariants}
-                  className={`bg-white rounded-2xl shadow-sm border border-gray-200/90 p-5 sm:p-6 lg:p-8 flex flex-col h-full w-full max-w-full hover:shadow-xl hover:border-[#D4AF37]/50 transition-all duration-300 ${
+                  className={`bg-white rounded-2xl shadow-sm border border-gray-200/90 p-5 sm:p-6 lg:p-8 flex flex-col h-full w-full hover:shadow-xl hover:border-[#D4AF37]/50 transition-all duration-300 ${
                     isAr ? 'font-arabic' : ''
                   }`}
                 >
