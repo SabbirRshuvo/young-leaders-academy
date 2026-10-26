@@ -8,8 +8,12 @@
   },
   "Hero": {
     "title": "Preparing Young People For Life.",
+    "titlePart1": "Preparing Young People",
+    "titlePart2": "For Life.",
     "subtitle": "Empowering youth to become life-ready, university-ready, career-ready, and future-ready.",
-    "cta": "Explore Programs"
+    "cta": "Explore Programs",
+    "ctaSecondary": "Take the Quiz",
+    "trustText": "Trusted by ambitious youth globally"
   },
   "YlaJourney": {
     "badge": "How It Works",
