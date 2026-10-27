@@ -20,9 +20,9 @@ body {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans), sans-serif;
-  --font-serif: var(--font-serif), serif;
-  --font-arabic: var(--font-arabic), var(--font-sans), sans-serif;
+  --font-sans: var(--font-sans), 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), 'Playfair Display', Georgia, serif;
+  --font-arabic: var(--font-arabic), 'Cairo', system-ui, -apple-system, sans-serif;
   --color-navy: #0B2545;
   --color-gold: #D4AF37;
 }
@@ -69,6 +69,49 @@ p, li, a, button {
   font-family: var(--font-sans), sans-serif;
   letter-spacing: 0.01em;
   line-height: 1.6;
+}
+
+/* ==========================================================================
+   ARABIC GLOBAL TYPOGRAPHY (CAIRO)
+   When active locale is Arabic (html[lang="ar"]), ensure Cairo is applied
+   consistently across all elements (headings, body, inputs, buttons).
+   ========================================================================== */
+html[lang="ar"],
+html[lang="ar"] body,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6,
+html[lang="ar"] p,
+html[lang="ar"] span,
+html[lang="ar"] a,
+html[lang="ar"] button,
+html[lang="ar"] input,
+html[lang="ar"] textarea,
+html[lang="ar"] select,
+html[lang="ar"] label,
+.font-arabic {
+  font-family: var(--font-arabic), 'Cairo', system-ui, sans-serif !important;
+}
+
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6 {
+  letter-spacing: 0 !important;
+  line-height: 1.35;
+}
+
+html[lang="ar"] p,
+html[lang="ar"] li,
+html[lang="ar"] a,
+html[lang="ar"] button {
+  letter-spacing: 0 !important;
+  line-height: 1.7;
 }
 
 @keyframes fadeInUp {

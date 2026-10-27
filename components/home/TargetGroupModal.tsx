@@ -160,7 +160,7 @@ export default function TargetGroupModal({ isOpen, onClose, targetGroup }: Targe
                     onClick={handleClose}
                     className="px-6 py-3 min-h-[44px] bg-[#0B2545] text-white font-semibold rounded-xl hover:bg-[#133055] transition-colors"
                   >
-                    Close
+                    {tf.has('close') ? tf('close') : (isAr ? 'إغلاق' : 'Close')}
                   </button>
                 </div>
               ) : (

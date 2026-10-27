@@ -13,48 +13,67 @@ export default function YlaJourney() {
 
   const steps = [
     {
-      stepNumber: "01",
+      stepNumber: t.has('step1Number') ? t('step1Number') : (isAr ? "٠١" : "01"),
       icon: BookOpen,
       image: "/card1.png",
-      titleEn: "1. Enroll in Programs",
-      titleAr: "١. التسجيل في البرامج",
-      descEn: "Enroll in premier student development programs, interactive workshops, and accredited leadership tracks.",
-      descAr: "استكشف برامج تطوير الطلاب المتميزة، وانضم إلى ورش القيادة والمخيمات التفاعلية المعتمدة.",
-      tagEn: "Skill Development",
-      tagAr: "تطوير المهارات",
-      ctaEn: "Explore Programs",
-      ctaAr: "استكشف البرامج",
+      title: t.has('step1Title') ? t('step1Title') : (isAr ? "١. التسجيل في البرامج" : "1. Enroll in Programs"),
+      desc: t.has('step1Desc')
+        ? t('step1Desc')
+        : (isAr
+          ? "استكشف برامج تطوير الطلاب المتميزة، وانضم إلى ورش القيادة والمخيمات التفاعلية المعتمدة."
+          : "Enroll in premier student development programs, interactive workshops, and accredited leadership tracks."),
+      tag: t.has('step1Tag') ? t('step1Tag') : (isAr ? "تطوير المهارات" : "Skill Development"),
+      cta: t.has('step1Cta') ? t('step1Cta') : (isAr ? "استكشف البرامج" : "Explore Programs"),
       href: `/${locale}/programs`
     },
     {
-      stepNumber: "02",
+      stepNumber: t.has('step2Number') ? t('step2Number') : (isAr ? "٠٢" : "02"),
       icon: TrendingUp,
       image: "/card3.png",
-      titleEn: "2. Track Progress",
-      titleAr: "٢. متابعة التقدم",
-      descEn: "Track your learning milestones, master modules, and build a verified digital leadership portfolio.",
-      descAr: "تابع إنجازاتك التعليمية خطوة بخطوة، وأكمل المقررات، وابنِ ملفاً قيادياً رقمياً معتمداً.",
-      tagEn: "Digital Portfolio",
-      tagAr: "الملف الرقمي",
-      ctaEn: "Check Readiness",
-      ctaAr: "قياس الجاهزية",
+      title: t.has('step2Title') ? t('step2Title') : (isAr ? "٢. متابعة التقدم" : "2. Track Progress"),
+      desc: t.has('step2Desc')
+        ? t('step2Desc')
+        : (isAr
+          ? "تابع إنجازاتك التعليمية خطوة بخطوة، وأكمل المقررات، وابنِ ملفاً قيادياً رقمياً معتمداً."
+          : "Track your learning milestones, master modules, and build a verified digital leadership portfolio."),
+      tag: t.has('step2Tag') ? t('step2Tag') : (isAr ? "الملف الرقمي" : "Digital Portfolio"),
+      cta: t.has('step2Cta') ? t('step2Cta') : (isAr ? "قياس الجاهزية" : "Check Readiness"),
       href: `/${locale}/readiness-quiz`
     },
     {
-      stepNumber: "03",
+      stepNumber: t.has('step3Number') ? t('step3Number') : (isAr ? "٠٣" : "03"),
       icon: Globe,
       image: "/campus.png",
-      titleEn: "3. Match & Apply",
-      titleAr: "٣. التطابق والتقديم",
-      descEn: "Match with world-class partner universities and submit direct applications to secure your global future.",
-      descAr: "تطابق مع نخبة الجامعات العالمية الشريكة، وقدّم طلبات القبول مباشرة لفتح آفاقك المستقبلية.",
-      tagEn: "Global Admissions",
-      tagAr: "القبول العالمي",
-      ctaEn: "Browse Universities",
-      ctaAr: "تصفح الجامعات",
+      title: t.has('step3Title') ? t('step3Title') : (isAr ? "٣. التطابق والتقديم" : "3. Match & Apply"),
+      desc: t.has('step3Desc')
+        ? t('step3Desc')
+        : (isAr
+          ? "تطابق مع نخبة الجامعات العالمية الشريكة، وقدّم طلبات القبول مباشرة لفتح آفاقك المستقبلية."
+          : "Match with world-class partner universities and submit direct applications to secure your global future."),
+      tag: t.has('step3Tag') ? t('step3Tag') : (isAr ? "القبول العالمي" : "Global Admissions"),
+      cta: t.has('step3Cta') ? t('step3Cta') : (isAr ? "تصفح الجامعات" : "Browse Universities"),
       href: `/${locale}/universities`
     }
   ];
+
+  const badgeText = t.has('badge') ? t('badge') : (isAr ? 'كيف تعمل الأكاديمية' : 'How YLA Works');
+  const mainTitle = t.has('title') ? t('title') : (isAr ? 'رحلة الأكاديمية نحو التميز' : 'The YLA Journey');
+  const mainSubtitle = t.has('subtitle')
+    ? t('subtitle')
+    : (isAr
+      ? 'مسار واضح من ٣ خطوات مدروسة ينقلك من استكشاف إمكاناتك القيادية إلى القبول في أعرق الجامعات العالمية.'
+      : 'A clear 3-step pathway from discovering your potential to matching and applying with top-tier global universities.');
+
+  const stepPrefix = t.has('stepPrefix') ? t('stepPrefix') : (isAr ? 'خطوة' : 'Step');
+  const verifiedText = t.has('verified') ? t('verified') : (isAr ? 'معتمد' : 'Verified');
+
+  const bannerTitle = t.has('bannerTitle') ? t('bannerTitle') : (isAr ? 'جاهز لبدء رحلتك القيادية معنا؟' : 'Ready to begin your leadership journey?');
+  const bannerSubtitle = t.has('bannerSubtitle')
+    ? t('bannerSubtitle')
+    : (isAr
+      ? 'انضم إلى آلاف الطلاب الذين يصنعون مستقبلهم الأكاديمي والمهني.'
+      : 'Join hundreds of ambitious students developing real-world skills today.');
+  const bannerCta = t.has('bannerCta') ? t('bannerCta') : (isAr ? 'ابدأ الآن مجاناً' : 'Get Started Now');
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -95,19 +114,17 @@ export default function YlaJourney() {
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs md:text-sm uppercase flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              {isAr ? 'كيف تعمل الأكاديمية' : 'How YLA Works'}
+              {badgeText}
             </span>
             <div className="h-[2px] w-8 md:w-12 bg-[#D4AF37]"></div>
           </div>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white mb-6 leading-tight">
-            {isAr ? 'رحلة الأكاديمية نحو التميز' : 'The YLA Journey'}
+            {mainTitle}
           </h2>
           
           <p className="text-slate-300 text-sm md:text-base lg:text-lg max-w-2xl font-sans leading-relaxed">
-            {isAr 
-              ? 'مسار واضح من ٣ خطوات مدروسة ينقلك من استكشاف إمكاناتك القيادية إلى القبول في أعرق الجامعات العالمية.' 
-              : 'A clear 3-step pathway from discovering your potential to matching and applying with top-tier global universities.'}
+            {mainSubtitle}
           </p>
         </motion.div>
 
@@ -121,10 +138,6 @@ export default function YlaJourney() {
         >
           {steps.map((step, index) => {
             const Icon = step.icon;
-            const title = isAr ? step.titleAr : step.titleEn;
-            const desc = isAr ? step.descAr : step.descEn;
-            const tag = isAr ? step.tagAr : step.tagEn;
-            const cta = isAr ? step.ctaAr : step.ctaEn;
 
             return (
               <motion.div
@@ -141,7 +154,7 @@ export default function YlaJourney() {
                   <div className="w-full h-full overflow-hidden">
                     <img
                       src={step.image}
-                      alt={title}
+                      alt={step.title}
                       className="w-full h-full object-cover object-center transition-opacity duration-300"
                     />
                     {/* Gradient Scrim */}
@@ -150,12 +163,12 @@ export default function YlaJourney() {
 
                   {/* Step Number Badge */}
                   <div className={`absolute top-4 ${isAr ? 'right-4' : 'left-4'} px-3.5 py-1 rounded-full bg-[#0B2545]/85 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs tracking-wider uppercase shadow-lg flex items-center gap-1.5 z-10 pointer-events-none`}>
-                    <span>{isAr ? `خطوة ${step.stepNumber}` : `Step ${step.stepNumber}`}</span>
+                    <span>{`${stepPrefix} ${step.stepNumber}`}</span>
                   </div>
 
                   {/* Feature Tag */}
                   <div className={`absolute top-4 ${isAr ? 'left-4' : 'right-4'} px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white/90 font-medium text-[11px] shadow-sm z-10 pointer-events-none`}>
-                    {tag}
+                    {step.tag}
                   </div>
 
                   {/* Floating Circular Icon Accent bridging Image and Body (Fully uncropped) */}
@@ -167,11 +180,11 @@ export default function YlaJourney() {
                 {/* Card Content Section */}
                 <div className="p-6 sm:p-7 pt-11 flex flex-col flex-1 text-left relative z-10">
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-2.5 group-hover:text-[#D4AF37] transition-colors leading-snug">
-                    {title}
+                    {step.title}
                   </h3>
 
                   <p className="text-slate-300 text-sm leading-relaxed mb-6 flex-1 font-sans">
-                    {desc}
+                    {step.desc}
                   </p>
 
                   {/* Card Action Link */}
@@ -180,13 +193,13 @@ export default function YlaJourney() {
                       href={step.href}
                       className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#D4AF37] group-hover:text-white transition-colors"
                     >
-                      <span>{cta}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <span>{step.cta}</span>
+                      <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                     </Link>
 
                     <div className="flex items-center gap-1 text-[11px] text-white/40 font-mono">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37]/70" />
-                      <span>{isAr ? 'معتمد' : 'Verified'}</span>
+                      <span>{verifiedText}</span>
                     </div>
                   </div>
                 </div>
@@ -205,10 +218,10 @@ export default function YlaJourney() {
         >
           <div className="text-center sm:text-left">
             <h4 className="text-lg sm:text-xl font-bold text-white mb-1 font-serif">
-              {isAr ? 'جاهز لبدء رحلتك القيادية معنا؟' : 'Ready to begin your leadership journey?'}
+              {bannerTitle}
             </h4>
             <p className="text-xs sm:text-sm text-slate-300">
-              {isAr ? 'انضم إلى آلاف الطلاب الذين يصنعون مستقبلهم الأكاديمي والمهني.' : 'Join hundreds of ambitious students developing real-world skills today.'}
+              {bannerSubtitle}
             </p>
           </div>
 
@@ -216,8 +229,8 @@ export default function YlaJourney() {
             href={`/${locale}/sign-up`}
             className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-[#D4AF37] hover:bg-[#c49f2e] text-[#0B2545] font-bold text-sm shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all shrink-0"
           >
-            <span>{isAr ? 'ابدأ الآن مجاناً' : 'Get Started Now'}</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>{bannerCta}</span>
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         </motion.div>
 

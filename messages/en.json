@@ -4,9 +4,13 @@
     "about": "About Us",
     "programs": "Programs",
     "universities": "Universities",
-    "contact": "Contact"
+    "contact": "Contact",
+    "logoLine1": "YOUNG LEADERS",
+    "logoLine2": "ACADEMY",
+    "logoFull": "Young Leaders Academy"
   },
   "Hero": {
+    "badge": "Young Leaders Academy",
     "title": "Preparing Young People For Life.",
     "titlePart1": "Preparing Young People",
     "titlePart2": "For Life.",
@@ -16,17 +20,29 @@
     "trustText": "Trusted by ambitious youth globally"
   },
   "YlaJourney": {
-    "badge": "How It Works",
+    "badge": "How YLA Works",
     "title": "The YLA Journey",
-    "subtitle": "A step-by-step pathway from discovering your potential to making a real-world impact.",
-    "step1Title": "1. Discover Potential",
-    "step1Desc": "Identify your unique strengths and build self-awareness through tailored assessments.",
-    "step2Title": "2. Build Leadership",
-    "step2Desc": "Join exclusive programs and camps designed to develop critical 21st-century skills.",
-    "step3Title": "3. Global Mobility",
-    "step3Desc": "Access our network of top-tier universities and scholarship opportunities worldwide.",
-    "step4Title": "4. Real-World Impact",
-    "step4Desc": "Become part of our global alumni network and drive change in your community."
+    "subtitle": "A clear 3-step pathway from discovering your potential to matching and applying with top-tier global universities.",
+    "stepPrefix": "Step",
+    "verified": "Verified",
+    "step1Number": "01",
+    "step1Title": "1. Enroll in Programs",
+    "step1Desc": "Enroll in premier student development programs, interactive workshops, and accredited leadership tracks.",
+    "step1Tag": "Skill Development",
+    "step1Cta": "Explore Programs",
+    "step2Number": "02",
+    "step2Title": "2. Track Progress",
+    "step2Desc": "Track your learning milestones, master modules, and build a verified digital leadership portfolio.",
+    "step2Tag": "Digital Portfolio",
+    "step2Cta": "Check Readiness",
+    "step3Number": "03",
+    "step3Title": "3. Match & Apply",
+    "step3Desc": "Match with world-class partner universities and submit direct applications to secure your global future.",
+    "step3Tag": "Global Admissions",
+    "step3Cta": "Browse Universities",
+    "bannerTitle": "Ready to begin your leadership journey?",
+    "bannerSubtitle": "Join hundreds of ambitious students developing real-world skills today.",
+    "bannerCta": "Get Started Now"
   },
   "Pillars": {
     "overline": "HOLISTIC DEVELOPMENT",
@@ -66,7 +82,23 @@
         "title": "Career Readiness",
         "desc": "Gain skills, experience and confidence for your career."
       }
-    ]
+    ],
+    "card_personal-development_title": "Personal Development",
+    "card_personal-development_desc": "Build confidence, discipline and a growth mindset.",
+    "card_life-skills_title": "Life Skills",
+    "card_life-skills_desc": "Learn practical skills for real-world success.",
+    "card_leadership_title": "Leadership",
+    "card_leadership_desc": "Develop the mindset and skills to lead and create impact.",
+    "card_health-wellbeing_title": "Health & Wellbeing",
+    "card_health-wellbeing_desc": "Take care of your mental and physical health.",
+    "card_creative-critical-thinking_title": "Creative & Critical Thinking",
+    "card_creative-critical-thinking_desc": "Solve problems, think deeper, be more innovative.",
+    "card_communication_title": "Communication",
+    "card_communication_desc": "Express your ideas and build stronger relationships.",
+    "card_global-awareness_title": "Global Awareness",
+    "card_global-awareness_desc": "Understand the world and your place in it.",
+    "card_career-readiness_title": "Career Readiness",
+    "card_career-readiness_desc": "Gain skills, experience and confidence for your career."
   },
   "WhoWeServe": {
     "tag": "WHO WE SERVE",
@@ -148,7 +180,8 @@
     "submitBtn": "Submit Request",
     "submitting": "Submitting...",
     "errorMsg": "An error occurred. Please try again.",
-    "pdplError": "You must agree to the privacy policy"
+    "pdplError": "You must agree to the privacy policy",
+    "close": "Close"
   },
   "EventsPage": {
     "title": "Upcoming Events",
@@ -204,6 +237,8 @@
     "ctaBtn": "Explore Recommended Programs"
   },
   "Footer": {
+    "logoLine1": "YOUNG LEADERS",
+    "logoLine2": "ACADEMY",
     "tagline": "One Academy. One Journey. A Lifetime of Impact.",
     "quickLinksTitle": "Quick Links",
     "contactUsTitle": "Contact Us",
@@ -241,8 +276,11 @@
   },
   "Partners": {
     "badge": "OUR UNIVERSITY PARTNERS",
-    "title": "Top Universities. Global Opportunities.",
-    "subtitle": "Our partnerships with leading universities open doors to world-class education and endless possibilities."
+    "tag": "Global Network",
+    "title": "Direct Pathways to Global Universities",
+    "desc": "YLA connects students to partners, creating direct pathways to global education and prestigious academic opportunities around the world.",
+    "subtitle": "Our partnerships with leading universities open doors to world-class education and endless possibilities.",
+    "exploreBtn": "Explore Partner Universities"
   },
   "ContactHero": {
     "badge": "Get In Touch",
@@ -469,6 +507,7 @@
   "NavbarExtra": {
     "brand1": "YOUNG LEADERS",
     "brand2": "ACADEMY",
+    "brandFull": "Young Leaders Academy",
     "login": "Login / Register",
     "logout": "Logout"
   },
@@ -490,7 +529,10 @@
     "subtitle1": "The world's leading universities represent more than prestigious names — they are communities built around curiosity, intellectual ambition, innovation, and impact.",
     "subtitle2": "Through carefully designed academic pathways and global experiences, YLA helps students understand these environments, prepare for them, and aspire to become part of them.",
     "viewBtn": "View Partnership",
-    "requestInfo": "Request Info"
+    "requestInfo": "Request Info",
+    "searchPlaceholder": "Search universities, countries, or tags...",
+    "noResults": "No universities found matching your search.",
+    "resetFilters": "Reset Filters"
   },
   "ApplyPage": {
     "badge": "Join the Academy",

@@ -41,15 +41,19 @@ export default function Partners() {
           <div className="flex items-center gap-4">
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
             <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-[11px] uppercase">
-              {isAr ? 'الشبكة العالمية' : 'Global Network'}
+              {t.has('tag') ? t('tag') : (isAr ? 'الشبكة العالمية' : 'Global Network')}
             </span>
             <div className="h-[1.5px] w-12 bg-[#D4AF37]"></div>
           </div>
           <h2 className="text-3xl font-serif font-bold tracking-tight sm:text-4xl md:text-5xl text-[#0B2545]">
-            {isAr ? 'مسارات مباشرة للجامعات العالمية' : 'Direct Pathways to Global Universities'}
+            {t.has('title') ? t('title') : (isAr ? 'مسارات مباشرة للجامعات العالمية' : 'Direct Pathways to Global Universities')}
           </h2>
           <p className="max-w-[750px] text-[#6B7B8F] md:text-lg">
-            {isAr ? 'تربط الأكاديمية الطلاب بالشركاء، مما يخلق مسارات مباشرة للتعليم العالمي والفرص الأكاديمية المرموقة حول العالم.' : 'YLA connects students to partners, creating direct pathways to global education and prestigious academic opportunities around the world.'}
+            {t.has('desc')
+              ? t('desc')
+              : (isAr
+                ? 'تربط الأكاديمية الطلاب بالشركاء، مما يخلق مسارات مباشرة للتعليم العالمي والفرص الأكاديمية المرموقة حول العالم.'
+                : 'YLA connects students to partners, creating direct pathways to global education and prestigious academic opportunities around the world.')}
           </p>
         </motion.div>
 
@@ -142,8 +146,8 @@ export default function Partners() {
             href={`/${locale}/universities`}
             className="inline-flex h-[48px] items-center justify-center gap-2 rounded-full bg-[#0B2545] px-8 text-[14px] font-semibold text-white shadow-lg hover:shadow-xl hover:bg-[#113059] transition-all duration-300 group"
           >
-            {isAr ? 'استكشف الجامعات الشريكة' : 'Explore Partner Universities'}
-            <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
+            {t.has('exploreBtn') ? t('exploreBtn') : (isAr ? 'استكشف الجامعات الشريكة' : 'Explore Partner Universities')}
+            <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1 rtl:rotate-180" />
           </Link>
         </motion.div>
       </div>

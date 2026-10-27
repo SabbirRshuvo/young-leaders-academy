@@ -351,7 +351,7 @@ export default function UniversityGrid() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isAr ? 'ابحث عن جامعة، دولة، أو تخصص...' : 'Search universities, countries, or tags...'}
+              placeholder={t.has('searchPlaceholder') ? t('searchPlaceholder') : (isAr ? 'ابحث عن جامعة، دولة، أو تخصص...' : 'Search universities, countries, or tags...')}
               className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-gray-200 bg-white text-xs sm:text-sm text-[#0B2545] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:border-[#D4AF37] transition-all"
             />
             {searchQuery && (
@@ -393,7 +393,7 @@ export default function UniversityGrid() {
         ) : filteredUniversities.length === 0 ? (
           <div className="w-full py-12 sm:py-16 px-4 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
             <p className="text-gray-500 text-sm mb-4">
-              {isAr ? 'لم يتم العثور على جامعات تطابق بحثك.' : 'No universities found matching your search.'}
+              {t.has('noResults') ? t('noResults') : (isAr ? 'لم يتم العثور على جامعات تطابق بحثك.' : 'No universities found matching your search.')}
             </p>
             <button
               type="button"
@@ -404,7 +404,7 @@ export default function UniversityGrid() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B2545] text-white text-xs font-semibold hover:bg-[#1a365d] transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>{isAr ? 'إعادة ضبط الفلاتر' : 'Reset Filters'}</span>
+              <span>{t.has('resetFilters') ? t('resetFilters') : (isAr ? 'إعادة ضبط الفلاتر' : 'Reset Filters')}</span>
             </button>
           </div>
         ) : (

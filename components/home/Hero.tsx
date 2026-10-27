@@ -11,6 +11,12 @@ export default function Hero() {
   const locale = useLocale();
   const isAr = locale === 'ar';
 
+  const badge = t.has('badge')
+    ? t('badge')
+    : isAr
+    ? 'أكاديمية قادة الشباب'
+    : 'Young Leaders Academy';
+
   const titlePart1 = t.has('titlePart1')
     ? t('titlePart1')
     : isAr
@@ -25,12 +31,16 @@ export default function Hero() {
 
   const subtitle = t.has('subtitle')
     ? t('subtitle')
+    : isAr
+    ? 'تمكين الشباب ليصبحوا مستعدين للحياة، مستعدين للجامعة، مستعدين للمهنة، ومستعدين للمستقبل.'
     : 'Empowering youth to become life-ready, university-ready, career-ready, and future-ready.';
 
-  const ctaPrimary = t.has('cta') ? t('cta') : 'Explore Programs';
-  const ctaSecondary = t.has('ctaSecondary') ? t('ctaSecondary') : 'Take the Quiz';
+  const ctaPrimary = t.has('cta') ? t('cta') : isAr ? 'استكشف البرامج' : 'Explore Programs';
+  const ctaSecondary = t.has('ctaSecondary') ? t('ctaSecondary') : isAr ? 'ابدأ الاختبار' : 'Take the Quiz';
   const trustText = t.has('trustText')
     ? t('trustText')
+    : isAr
+    ? 'موثوق به من قبل الشباب الطموح عالمياً'
     : 'Trusted by ambitious youth globally';
 
   return (
@@ -63,7 +73,7 @@ export default function Hero() {
             <div className="flex items-center gap-3">
               <span className="w-12 sm:w-16 h-1 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C59B27]"></span>
               <span className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.22em] text-[#D4AF37]">
-                Young Leaders Academy
+                {badge}
               </span>
             </div>
 

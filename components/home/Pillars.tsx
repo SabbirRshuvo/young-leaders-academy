@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   User,
   Brain,
@@ -18,6 +18,8 @@ interface PillarCardItem {
   id: string;
   defaultTitle: string;
   defaultDesc: string;
+  defaultTitleAr: string;
+  defaultDescAr: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   iconBg: string;
   iconColor: string;
@@ -28,6 +30,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'personal-development',
     defaultTitle: 'Personal Development',
     defaultDesc: 'Build confidence, discipline and a growth mindset.',
+    defaultTitleAr: 'التطوير الشخصي',
+    defaultDescAr: 'بناء الثقة والانضباط وعقلية النمو.',
     icon: User,
     iconBg: 'bg-blue-100',
     iconColor: 'text-blue-600',
@@ -36,6 +40,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'life-skills',
     defaultTitle: 'Life Skills',
     defaultDesc: 'Learn practical skills for real-world success.',
+    defaultTitleAr: 'المهارات الحياتية',
+    defaultDescAr: 'تعلم مهارات عملية لتحقيق النجاح في العالم الواقعي.',
     icon: Brain,
     iconBg: 'bg-green-100',
     iconColor: 'text-green-600',
@@ -44,6 +50,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'leadership',
     defaultTitle: 'Leadership',
     defaultDesc: 'Develop the mindset and skills to lead and create impact.',
+    defaultTitleAr: 'القيادة',
+    defaultDescAr: 'تطوير العقلية والمهارات للقيادة وخلق التأثير.',
     icon: Users,
     iconBg: 'bg-purple-100',
     iconColor: 'text-purple-600',
@@ -52,6 +60,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'health-wellbeing',
     defaultTitle: 'Health & Wellbeing',
     defaultDesc: 'Take care of your mental and physical health.',
+    defaultTitleAr: 'الصحة والرفاهية',
+    defaultDescAr: 'الاعتناء بصحتك النفسية والبدنية.',
     icon: Heart,
     iconBg: 'bg-red-100',
     iconColor: 'text-red-500',
@@ -60,6 +70,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'creative-critical-thinking',
     defaultTitle: 'Creative & Critical Thinking',
     defaultDesc: 'Solve problems, think deeper, be more innovative.',
+    defaultTitleAr: 'التفكير الإبداعي والنقدي',
+    defaultDescAr: 'حل المشكلات، والتفكير بعمق، وزيادة الابتكار.',
     icon: Lightbulb,
     iconBg: 'bg-amber-100',
     iconColor: 'text-amber-500',
@@ -68,6 +80,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'communication',
     defaultTitle: 'Communication',
     defaultDesc: 'Express your ideas and build stronger relationships.',
+    defaultTitleAr: 'التواصل',
+    defaultDescAr: 'التعبير عن أفكارك وبناء علاقات أقوى.',
     icon: MessageCircle,
     iconBg: 'bg-teal-100',
     iconColor: 'text-teal-600',
@@ -76,6 +90,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'global-awareness',
     defaultTitle: 'Global Awareness',
     defaultDesc: 'Understand the world and your place in it.',
+    defaultTitleAr: 'الوعي العالمي',
+    defaultDescAr: 'فهم العالم ومكانتك فيه.',
     icon: Globe,
     iconBg: 'bg-blue-100',
     iconColor: 'text-blue-600',
@@ -84,6 +100,8 @@ const PILLAR_CARDS: PillarCardItem[] = [
     id: 'career-readiness',
     defaultTitle: 'Career Readiness',
     defaultDesc: 'Gain skills, experience and confidence for your career.',
+    defaultTitleAr: 'الجاهزية المهنية',
+    defaultDescAr: 'اكتساب المهارات والخبرة والثقة لمسيرتك المهنية.',
     icon: Star,
     iconBg: 'bg-purple-100',
     iconColor: 'text-purple-600',
@@ -92,18 +110,44 @@ const PILLAR_CARDS: PillarCardItem[] = [
 
 export default function Pillars() {
   const t = useTranslations('Pillars');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
 
-  const overline = t.has('overline') ? t('overline') : 'HOLISTIC DEVELOPMENT';
-  const title = t.has('title') ? t('title') : 'Grow in Every Area of Life';
+  const overline = t.has('overline')
+    ? t('overline')
+    : isAr
+    ? 'التنمية الشاملة'
+    : 'HOLISTIC DEVELOPMENT';
+
+  const title = t.has('title')
+    ? t('title')
+    : isAr
+    ? 'انمو في كل مجال من مجالات الحياة'
+    : 'Grow in Every Area of Life';
+
   const desc = t.has('desc')
     ? t('desc')
+    : isAr
+    ? 'نحن نركز على شخصيتك المتكاملة — بناء المهارات والعقلية والتجارب التي تحتاجها لمستقبل ناجح.'
     : 'We focus on the complete you — building the skills, mindset and experiences you need for a successful future.';
+
   const moreThanAcademics = t.has('moreThanAcademics')
     ? t('moreThanAcademics')
+    : isAr
+    ? 'أكثر من مجرد دراسة أكاديمية'
     : 'More than just academics';
 
+  const cardsRaw = (() => {
+    try {
+      const res = t.raw('cards');
+      return Array.isArray(res) ? res : null;
+    } catch {
+      return null;
+    }
+  })();
+
   return (
-    <section className="w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 font-sans">
+    <section className={`w-full bg-[#F8F9FA] py-16 sm:py-20 lg:py-24 ${isAr ? 'font-arabic' : 'font-sans'}`}>
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* ================= HEADER AREA ================= */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 relative">
@@ -120,7 +164,7 @@ export default function Pillars() {
             </p>
 
             {/* Main Title */}
-            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-[#0B2545] tracking-tight mb-3 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#0B2545] tracking-tight mb-3 leading-tight">
               {title}
             </h2>
 
@@ -164,12 +208,18 @@ export default function Pillars() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {PILLAR_CARDS.map((card, index) => {
             const Icon = card.icon;
-            const cardTitle = t.has(`cards.${index}.title`)
-              ? t(`cards.${index}.title`)
-              : card.defaultTitle;
-            const cardDesc = t.has(`cards.${index}.desc`)
-              ? t(`cards.${index}.desc`)
-              : card.defaultDesc;
+
+            const cardTitle =
+              cardsRaw?.[index]?.title ||
+              (t.has(`cards.${index}.title`) ? t(`cards.${index}.title`) : null) ||
+              (t.has(`card_${card.id}_title`) ? t(`card_${card.id}_title`) : null) ||
+              (isAr ? card.defaultTitleAr : card.defaultTitle);
+
+            const cardDesc =
+              cardsRaw?.[index]?.desc ||
+              (t.has(`cards.${index}.desc`) ? t(`cards.${index}.desc`) : null) ||
+              (t.has(`card_${card.id}_desc`) ? t(`card_${card.id}_desc`) : null) ||
+              (isAr ? card.defaultDescAr : card.defaultDesc);
 
             return (
               <motion.div

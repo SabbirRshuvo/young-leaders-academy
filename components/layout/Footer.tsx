@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, ShieldCheck, Receipt } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube, FaApplePay, FaCcVisa, FaCcMastercard } from 'react-icons/fa';
 import { useTranslations, useLocale } from 'next-intl';
 import { supabase } from '@/lib/supabase';
+import Logo from './Logo';
 
 export default function Footer() {
   const t = useTranslations('Footer');
@@ -69,17 +70,11 @@ export default function Footer() {
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-8 mb-6 w-max">
-              <Image src="/logo.jpeg" alt="Logo" width={150} height={150} className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain rounded-md" />
-              <div className="hidden sm:flex flex-col justify-center">
-                <div className="text-[14px] md:text-[16px] font-extrabold text-white leading-none tracking-[0.05em] mb-[6px]">YOUNG LEADERS</div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="h-[1px] w-4 bg-gold"></div>
-                  <div className="text-[9px] md:text-[10px] font-bold text-gold tracking-[0.2em] leading-none">ACADEMY</div>
-                  <div className="h-[1px] w-4 bg-gold"></div>
-                </div>
-              </div>
-            </Link>
+            <Logo
+              variant="white"
+              href={locale === "en" ? "/" : `/${locale}`}
+              className="mb-6 w-max"
+            />
             <p className="text-white text-sm font-bold leading-relaxed max-w-[250px]">
               {t('tagline')}
             </p>

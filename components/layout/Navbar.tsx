@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { supabase } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import Logo from "./Logo";
 
 type UserRole = "student" | "parent" | "coach" | "admin" | null;
 
@@ -641,43 +642,7 @@ export default function Navbar() {
         ============================================================ */}
 
         <div className="flex-1 flex items-center justify-start">
-
-          <Link
-            href={getLocalizedHref("/")}
-            className="flex items-center gap-0"
-          >
-
-            <Image
-              src="/logo.jpeg"
-              alt="Logo"
-              width={150}
-              height={150}
-              priority
-              className="w-16 h-16 md:w-[120px] md:h-[70px] object-contain"
-            />
-
-            <div className="hidden sm:flex flex-col justify-center -ml-3 md:-ml-4">
-
-              <div className="text-[14px] md:text-[16px] font-extrabold text-navy leading-none tracking-[0.05em] mb-[6px]">
-                YOUNG LEADERS
-              </div>
-
-              <div className="flex items-center justify-center gap-2">
-
-                <div className="h-[1px] w-4 bg-gold" />
-
-                <div className="text-[9px] md:text-[10px] font-bold text-gold tracking-[0.2em] leading-none">
-                  ACADEMY
-                </div>
-
-                <div className="h-[1px] w-4 bg-gold" />
-
-              </div>
-
-            </div>
-
-          </Link>
-
+          <Logo variant="navy" priority href={getLocalizedHref("/")} />
         </div>
 
         {/* ============================================================
