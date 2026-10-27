@@ -113,7 +113,7 @@ export default function Logo({
   return (
     <Link
       href={targetHref}
-      className={`flex items-center gap-0 select-none group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded ${className}`}
+      className={`flex items-center gap-0 select-none group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded transition-opacity duration-300 hover:opacity-80 cursor-pointer ${className}`}
       aria-label={isAr ? "أكاديمية قادة الشباب" : "Young Leaders Academy"}
     >
       {/* Shield Emblem */}
@@ -123,7 +123,7 @@ export default function Logo({
         width={150}
         height={150}
         priority={priority}
-        className={`w-16 h-16 md:w-[120px] md:h-[70px] object-contain shrink-0 transition-transform duration-200 group-hover:scale-[1.02] ${imageClassName}`}
+        className={`w-16 h-16 md:w-[120px] md:h-[70px] object-contain shrink-0 ${imageClassName}`}
       />
 
       {/* Brand Typography */}

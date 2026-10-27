@@ -635,13 +635,13 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full bg-white shadow-sm">
 
-      <div className="max-w-[1440px] mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-12">
+      <div className="max-w-[1440px] mx-auto flex h-20 items-center justify-between gap-x-8 lg:gap-x-12 px-4 sm:px-6 lg:px-12">
 
         {/* ============================================================
             LOGO
         ============================================================ */}
 
-        <div className="flex-1 flex items-center justify-start">
+        <div className="flex-1 flex items-center justify-start shrink-0 mr-8 me-8">
           <Logo variant="navy" priority href={getLocalizedHref("/")} />
         </div>
 
@@ -649,7 +649,7 @@ export default function Navbar() {
             DESKTOP NAVIGATION
         ============================================================ */}
 
-        <div className="hidden lg:flex items-center justify-center gap-8 text-[15px] font-bold text-navy">
+        <div className="hidden lg:flex items-center justify-center gap-6 xl:gap-8 text-[15px] font-bold text-navy shrink-0">
 
           {navLinks.map((link) => (
 
