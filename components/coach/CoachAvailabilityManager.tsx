@@ -48,16 +48,7 @@ export default function CoachAvailabilityManager({ locale = "en" }: { locale?: s
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // Fetch default Zoom link from coach_profiles if not set
-            const { data: cp } = await supabase
-                .from("coach_profiles")
-                .select("default_zoom_link")
-                .eq("id", user.id)
-                .maybeSingle();
 
-            if (cp?.default_zoom_link && !zoomLink) {
-                setZoomLink(cp.default_zoom_link);
-            }
 
             const { data, error } = await supabase
                 .from("coach_availability")

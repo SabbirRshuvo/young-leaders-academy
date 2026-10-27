@@ -40,41 +40,64 @@ export default function Navbar() {
   useEffect(() => {
     let mounted = true;
 
-    const getUserRole = async (userId: string) => {
-      const { data: roleData, error: roleError } = await supabase
-        .from("user_roles")
-        .select(`
-          role_id,
-          roles (
-            name
-          )
-        `)
-        .eq("user_id", userId);
+    const getUserRole = async (authUser: SupabaseUser) => {
+      let roleName: string | null = null;
 
-      if (roleError) {
-        console.error("Navbar role lookup error:", roleError);
+      try {
+        const { data: roleData, error: roleError } = await supabase
+          .from("user_roles")
+          .select(`
+            role_id,
+            roles (
+              name
+            )
+          `)
+          .eq("user_id", authUser.id);
 
-        if (mounted) {
-          setUserRole(null);
+        if (roleError) {
+          console.error("Navbar role lookup error:", roleError);
+        } else if (roleData && roleData.length > 0) {
+          const roleNames = roleData
+            .map((r) => {
+              const roles = r.roles;
+              if (Array.isArray(roles)) return roles[0]?.name?.toLowerCase();
+              if (roles && typeof roles === "object")
+                return (roles as { name?: string }).name?.toLowerCase();
+              return null;
+            })
+            .filter(Boolean);
+
+          if (roleNames.includes("admin")) roleName = "admin";
+          else if (roleNames.includes("coach") || roleNames.includes("instructor"))
+            roleName = "coach";
+          else if (roleNames.includes("student")) roleName = "student";
+          else if (roleNames.includes("parent")) roleName = "parent";
+          else if (roleNames.length > 0) roleName = roleNames[0] || null;
         }
-
-        return;
+      } catch (err) {
+        console.error("Navbar role lookup exception:", err);
       }
 
-      const rolesArray = roleData || [];
-      const roleNames = rolesArray.map(r => {
-        const roles = r.roles;
-        if (Array.isArray(roles)) return roles[0]?.name;
-        if (roles && typeof roles === "object") return (roles as { name?: string }).name;
-        return null;
-      }).filter(Boolean);
-      
-      let roleName: string | null = null;
-      if (roleNames.includes("admin")) roleName = "admin";
-      else if (roleNames.includes("coach")) roleName = "coach";
-      else if (roleNames.includes("student")) roleName = "student";
-      else if (roleNames.includes("parent")) roleName = "parent";
-      else if (roleNames.length > 0) roleName = roleNames[0] || null;
+      // Fallback to metadata / admin email if database role is missing or pending
+      if (!roleName) {
+        if (authUser.email === "adminsabbir@gmail.com") {
+          roleName = "admin";
+        } else {
+          const metaRole = (
+            authUser.user_metadata?.role ||
+            authUser.app_metadata?.role ||
+            ""
+          )
+            .toLowerCase()
+            .trim();
+
+          if (metaRole === "admin") roleName = "admin";
+          else if (metaRole === "coach" || metaRole === "instructor")
+            roleName = "coach";
+          else if (metaRole === "student") roleName = "student";
+          else if (metaRole === "parent") roleName = "parent";
+        }
+      }
 
       if (
         roleName === "student" ||
@@ -83,7 +106,7 @@ export default function Navbar() {
         roleName === "admin"
       ) {
         if (mounted) {
-          setUserRole(roleName);
+          setUserRole(roleName as UserRole);
         }
       } else {
         if (mounted) {
@@ -148,7 +171,7 @@ export default function Navbar() {
           setUser(session.user);
         }
 
-        await getUserRole(session.user.id);
+        await getUserRole(session.user);
 
       } catch (error) {
         console.error(
@@ -219,7 +242,7 @@ export default function Navbar() {
       setTimeout(async () => {
         if (!mounted) return;
 
-        await getUserRole(session.user.id);
+        await getUserRole(session.user);
 
         if (mounted) {
           setRoleLoading(false);
@@ -520,30 +543,52 @@ export default function Navbar() {
 
   /*
   |--------------------------------------------------------------------------
-  | Profile path
+  | Active role & Dashboard / Profile paths
   |--------------------------------------------------------------------------
+  | Dynamically construct hrefs based on the active user's role (coach,
+  | student, parent, admin) and integrate with next-intl locale routing.
+  |
   */
 
-  const getProfilePath = () => {
-    switch (userRole) {
-      case "student":
-        return "/student/profile";
+  const activeRole: UserRole =
+    userRole ||
+    (user?.user_metadata?.role as UserRole) ||
+    (user?.app_metadata?.role as UserRole) ||
+    (user?.email === "adminsabbir@gmail.com" ? "admin" : null);
 
-      case "parent":
-        return "/parent/profile";
+  const isCoach = activeRole === "coach";
 
+  const getDashboardPath = () => {
+    switch (activeRole) {
       case "coach":
-        return "/coach/profile";
-
+        return "/coach/dashboard";
+      case "student":
+        return "/student/dashboard";
+      case "parent":
+        return "/parent/dashboard";
       case "admin":
-        return "/admin/profile";
-
+        return "/admin/dashboard";
       default:
-        return null;
+        return "/student/dashboard";
     }
   };
 
+  const getProfilePath = () => {
+    switch (activeRole) {
+      case "student":
+        return "/student/profile";
+      case "parent":
+        return "/parent/profile";
+      case "admin":
+        return "/admin/profile";
+      default:
+        return "/student/profile";
+    }
+  };
+
+  const dashboardHref = getLocalizedHref(getDashboardPath());
   const profilePath = getProfilePath();
+  const profileHref = getLocalizedHref(profilePath);
 
   /*
   |--------------------------------------------------------------------------
@@ -797,23 +842,37 @@ export default function Navbar() {
                         {user.email}
                       </p>
 
-                      {userRole && (
+                      {activeRole && (
                         <p className="text-xs text-gold font-semibold mt-1 capitalize">
-                          {userRole}
+                          {activeRole}
                         </p>
                       )}
 
                     </div>
 
+                    {/* Dashboard Link (Always visible for coaches, students, parents, admins) */}
                     <Link
-                      href={getLocalizedHref(profilePath || "")}
+                      href={dashboardHref}
                       onClick={() =>
                         setIsProfileMenuOpen(false)
                       }
                       className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold"
                     >
-                      {isAr ? "ملفي الشخصي" : "My Profile"}
+                      {isAr ? "لوحة التحكم" : "Dashboard"}
                     </Link>
+
+                    {/* Profile link: Conditionally rendered only if user is NOT a coach */}
+                    {!isCoach && (
+                      <Link
+                        href={profileHref}
+                        onClick={() =>
+                          setIsProfileMenuOpen(false)
+                        }
+                        className="block px-4 py-3 text-sm font-semibold text-navy hover:bg-gray-50 hover:text-gold border-t border-gray-50"
+                      >
+                        {isAr ? "ملفي الشخصي" : "My Profile"}
+                      </Link>
+                    )}
 
                     <button
                       onClick={handleLogout}
@@ -1020,9 +1079,9 @@ export default function Navbar() {
                         {userName}
                       </p>
 
-                      {userRole && (
+                      {activeRole && (
                         <p className="text-xs text-gold capitalize">
-                          {userRole}
+                          {activeRole}
                         </p>
                       )}
 
@@ -1030,12 +1089,21 @@ export default function Navbar() {
 
                   </div>
 
-                  {/* My Profile */}
+                  {/* Dashboard */}
+                  <Link
+                    href={dashboardHref}
+                    onClick={() =>
+                      setIsMobileMenuOpen(false)
+                    }
+                    className="w-full flex items-center justify-center gap-2 rounded-full bg-gray-50 text-navy h-[48px] font-semibold border border-gray-200"
+                  >
+                    {isAr ? "لوحة التحكم" : "Dashboard"}
+                  </Link>
 
-                  {profilePath && (
-
+                  {/* My Profile: Only display if role is NOT coach */}
+                  {!isCoach && (
                     <Link
-                      href={getLocalizedHref(profilePath || "")}
+                      href={profileHref}
                       onClick={() =>
                         setIsMobileMenuOpen(false)
                       }
@@ -1043,11 +1111,9 @@ export default function Navbar() {
                     >
                       {isAr ? "ملفي الشخصي" : "My Profile"}
                     </Link>
-
                   )}
 
                   {/* Logout */}
-
                   <button
                     onClick={handleLogout}
                     className="w-full rounded-full bg-gray-100 text-navy h-[48px] font-semibold border border-gray-200"
