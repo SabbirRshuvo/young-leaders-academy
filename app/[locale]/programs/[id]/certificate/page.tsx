@@ -303,7 +303,6 @@ export default function CertificatePage() {
                         }}
                     />
 
-                    {/* Corner Ornaments (Standard RGBA Gradients) */}
                     <div
                         style={{
                             position: "absolute",
@@ -348,8 +347,6 @@ export default function CertificatePage() {
                             background: "linear-gradient(45deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0) 100%)"
                         }}
                     />
-
-                    {/* Certificate Body Content */}
                     <div
                         style={{
                             position: "absolute",
@@ -366,7 +363,6 @@ export default function CertificatePage() {
                             zIndex: 20
                         }}
                     >
-                        {/* Header: Academy Brand */}
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <div
                                 style={{
@@ -397,7 +393,6 @@ export default function CertificatePage() {
                             </h1>
                         </div>
 
-                        {/* Title */}
                         <div style={{ marginTop: "8px", marginBottom: "8px" }}>
                             <h2
                                 style={{
@@ -473,7 +468,6 @@ export default function CertificatePage() {
                             </h4>
                         </div>
 
-                        {/* Footer Signatures and Official Seal */}
                         <div
                             style={{
                                 display: "flex",
@@ -485,7 +479,6 @@ export default function CertificatePage() {
                                 paddingTop: "16px"
                             }}
                         >
-                            {/* Date */}
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                                 <div
                                     style={{
@@ -514,8 +507,6 @@ export default function CertificatePage() {
                                     Date of Completion
                                 </span>
                             </div>
-
-                            {/* Official Seal */}
                             <div
                                 style={{
                                     width: "88px",
@@ -623,3 +614,4 @@ export default function CertificatePage() {
         </div>
     );
 }
+
